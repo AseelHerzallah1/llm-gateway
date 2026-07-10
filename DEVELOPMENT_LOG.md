@@ -53,7 +53,7 @@ Review this before meetings.
 ### Task 1.1 — Define v1 scope and boundaries
 
 **Date:** 2026-07-10  
-**Commit:** _(pending push)_
+**Commit:** `1c9240e` — `phase-1/task-1.1: define v1 scope and boundaries`
 
 **What we built:**
 - `docs/SCOPE.md` — problem statement, v1 in/out-of-scope, success criteria, phase map
@@ -74,3 +74,44 @@ Review this before meetings.
 > Before writing code, I defined strict v1 scope for an LLM gateway focused on three deep pillars: streaming proxy, semantic cache, and percentile observability. I explicitly cut PII handling, multi-provider routing, LangChain, and regex security to later phases so engineering depth stays on systems problems, not admin CRUD.
 
 ---
+
+### Task 1.2–1.4 — API contract, schemas, and auth
+
+**Date:** 2026-07-10  
+**Commit:** `f5a538d` — `phase-1/task-1.2-1.4: document API endpoints schemas and auth`
+
+**Decisions:**
+- OpenAI-compatible `/v1/chat/completions` as primary proxy endpoint
+- Auth via `Authorization: Bearer gw-sk-...` (OpenAI SDK compatible)
+- API keys shown once at creation; only hash stored
+- Metrics and request log endpoints scoped to Phase 5
+
+**Tests:** Documentation only
+
+**Meeting-ready summary:**
+> I defined an OpenAI-compatible API contract so existing SDK clients only need to change base_url and api_key. Auth uses Bearer tokens, errors follow a consistent schema, and streaming uses SSE matching OpenAI's format.
+
+---
+
+### Task 1.5 — Architecture and data flow
+
+**Date:** 2026-07-10  
+**Commit:** _(this commit)_
+
+**What we built:**
+- `docs/ARCHITECTURE.md` — system context, sequence diagrams, component map, ER diagram
+
+**Decisions:**
+- Document non-streaming, streaming, and cache flows as separate diagrams
+- Component directories planned upfront for consistent Phase 2+ structure
+
+**Tests:** Documentation only
+
+**Meeting-ready summary:**
+> I documented three request flows — non-streaming proxy, streaming with cancellation, and semantic cache lookup — so each phase has a clear target architecture before implementation starts.
+
+---
+
+## Phase 1 complete
+
+All documentation tasks finished. Next: **Phase 2, Task 2.1** — project skeleton.
