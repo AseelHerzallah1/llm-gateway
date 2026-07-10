@@ -96,7 +96,7 @@ Review this before meetings.
 ### Task 1.5 — Architecture and data flow
 
 **Date:** 2026-07-10  
-**Commit:** _(this commit)_
+**Commit:** `32b5b0a` — `phase-1/task-1.5: add architecture and data flow diagrams`
 
 **What we built:**
 - `docs/ARCHITECTURE.md` — system context, sequence diagrams, component map, ER diagram
@@ -115,3 +115,37 @@ Review this before meetings.
 ## Phase 1 complete
 
 All documentation tasks finished. Next: **Phase 2, Task 2.1** — project skeleton.
+
+---
+
+## Phase 2 — Basic project structure
+
+### Task 2.1 — Project skeleton and dependencies
+
+**Date:** 2026-07-10  
+**Commit:** _(pending push)_
+
+**What we built:**
+- `pyproject.toml` — project metadata, dependencies, tool config
+- `requirements.txt` — pip-installable dependency list
+- `.env.example` — environment variable template
+- `app/` package tree (empty `__init__.py` files per planned module)
+- `tests/`, `migrations/` placeholders
+- `docs/PROJECT_STRUCTURE.md` — folder layout reference
+
+**Decisions:**
+- `pyproject.toml` as source of truth; `requirements.txt` for simple `pip install`
+- Dependencies listed upfront (FastAPI, httpx, SQLAlchemy, asyncpg, Alembic, bcrypt) — installed in Task 2.2+
+- No `app/main.py` yet — that's Task 2.2
+- Python >= 3.11 required (async typing improvements)
+
+**Tests:**
+- `tomllib.load(pyproject.toml)` — valid TOML
+- `pip install -r requirements.txt --dry-run` — resolves without error
+
+**Alternatives considered:**
+- Poetry vs plain pip → chose pip + pyproject.toml for fewer abstractions to explain in interviews
+- Single `requirements-dev.txt` → used `[project.optional-dependencies]` in pyproject.toml instead
+
+**Meeting-ready summary:**
+> I set up the Python project skeleton with a modular package layout matching the architecture doc — separate packages for auth, providers, routes, observability, and cache. Dependencies are declared but no application code runs yet; that starts with the FastAPI entrypoint in the next task.
