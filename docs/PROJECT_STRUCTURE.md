@@ -20,11 +20,23 @@ llm-gateway/
 
 Each package is created empty in Phase 2.1. Code is added in later phases — one layer at a time.
 
-## Install (after Phase 2.2)
+## Install and run (Phase 2.2+)
 
 ```bash
 python -m venv .venv
 .venv\Scripts\activate        # Windows
 pip install -r requirements.txt
-cp .env.example .env        # then fill in real values
+cp .env.example .env        # then fill in real values (not needed for /health)
+
+# Start the server
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+# Verify health check
+curl http://localhost:8000/health
+```
+
+Expected response:
+
+```json
+{"status":"ok","version":"0.1.0"}
 ```

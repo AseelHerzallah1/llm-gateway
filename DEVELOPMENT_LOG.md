@@ -123,7 +123,7 @@ All documentation tasks finished. Next: **Phase 2, Task 2.1** — project skelet
 ### Task 2.1 — Project skeleton and dependencies
 
 **Date:** 2026-07-10  
-**Commit:** _(pending push)_
+**Commit:** `4b26b76` — `phase-2/task-2.1: add project skeleton and dependencies`
 
 **What we built:**
 - `pyproject.toml` — project metadata, dependencies, tool config
@@ -149,3 +149,35 @@ All documentation tasks finished. Next: **Phase 2, Task 2.1** — project skelet
 
 **Meeting-ready summary:**
 > I set up the Python project skeleton with a modular package layout matching the architecture doc — separate packages for auth, providers, routes, observability, and cache. Dependencies are declared but no application code runs yet; that starts with the FastAPI entrypoint in the next task.
+
+---
+
+### Task 2.2 — FastAPI entrypoint and health check
+
+**Date:** 2026-07-10  
+**Commit:** _(pending push)_
+
+**What we built:**
+- `app/main.py` — FastAPI application entrypoint
+- `app/routes/health.py` — `GET /health` endpoint
+- `app/version.py` — single version constant (`0.1.0`)
+
+**Decisions:**
+- Health route in `app/routes/health.py`, not inline in `main.py` — keeps entrypoint thin; pattern for future routes
+- Pydantic `HealthResponse` model — response shape validated and documented automatically
+- `async def` on health handler — consistent with future async proxy handlers (even though this handler does no I/O)
+- No config loading yet — hardcoded version; `app/config.py` comes in Task 2.3
+
+**Tests:**
+```bash
+uvicorn app.main:app --host 127.0.0.1 --port 8000
+curl http://127.0.0.1:8000/health
+# → {"status":"ok","version":"0.1.0"}
+```
+
+**Alternatives considered:**
+- Health in `main.py` directly → rejected; modular routes scale better
+- Sync `def` vs `async def` → chose async for consistency across the app
+
+**Meeting-ready summary:**
+> I added a FastAPI entrypoint with a /health liveness endpoint returning status and version. The route lives in its own module following the architecture plan. I verified it with uvicorn and a live HTTP request.
