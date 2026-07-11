@@ -20,4 +20,4 @@ A production-style **LLM Gateway** — a middleware layer between applications a
 
 ## Documentation
 
-Design and API docs will live in [`docs/`](docs/) as each phase completes.
+Design and API docs live in [`docs/`](docs/). Docker setup: [`docs/DOCKER.md`](docs/DOCKER.md).

@@ -210,3 +210,30 @@ uvicorn app.main:app --host 127.0.0.1 --port 8001
 
 **Meeting-ready summary:**
 > I centralized configuration in a Pydantic Settings class that reads from environment variables and a .env file. Secrets use SecretStr, settings are cached per process, and startup logs confirm which environment loaded — without hardcoding values in code.
+
+---
+
+### Task 2.4 — Docker Compose (app + PostgreSQL)
+
+**Date:** 2026-07-11  
+**Commit:** _(pending push)_
+
+**What we built:**
+- `Dockerfile` — Python 3.11 image, installs deps, runs uvicorn
+- `docker-compose.yml` — `app` + `db` (PostgreSQL 16) services
+- `.dockerignore` — keeps image small (no `.venv`, `.env`, docs)
+- `docs/DOCKER.md` — setup and troubleshooting guide
+
+**Decisions:**
+- PostgreSQL hostname `db` inside Docker network; `localhost` only when running uvicorn on host
+- Host port `8001:8000` — avoids conflict with user's busy port 8000
+- `depends_on` + `healthcheck` on `db` — app waits until PostgreSQL is ready
+- `postgres_data` named volume — database survives `docker compose down`
+- App does not connect to DB yet — that's Task 2.5
+
+**Tests:**
+- Docker not installed on dev machine during implementation — files validated manually
+- User test: `docker compose up --build` then `Invoke-RestMethod http://127.0.0.1:8001/health`
+
+**Meeting-ready summary:**
+> I containerized the gateway with Docker Compose — one service for FastAPI, one for PostgreSQL. The app container overrides DATABASE_URL to use the Docker network hostname. A healthcheck ensures Postgres is ready before the app starts. The app doesn't use the DB yet; this task only establishes the runtime environment.
