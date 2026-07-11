@@ -50,3 +50,13 @@ INFO: Starting LLM Gateway (env=development, host=0.0.0.0, port=8000)
 ```
 
 > **Note:** `APP_PORT` in `.env` is loaded into settings. The uvicorn `--port` flag still controls the actual listen port for now.
+
+## Database migrations (Phase 2.6+)
+
+```powershell
+docker compose up db -d
+alembic upgrade head
+alembic current
+```
+
+See [`migrations/README.md`](../migrations/README.md) for details.

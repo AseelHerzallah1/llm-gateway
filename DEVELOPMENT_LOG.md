@@ -268,3 +268,39 @@ python -c "import asyncio; from app.db.session import verify_db_connection; asyn
 
 **Meeting-ready summary:**
 > I set up async SQLAlchemy with asyncpg. On startup the gateway runs SELECT 1 to verify PostgreSQL is reachable before accepting requests. Sessions are provided via a get_db dependency for future routes. The connection pool is disposed cleanly on shutdown.
+
+---
+
+### Task 2.6 — Initial migrations (users + projects)
+
+**Date:** 2026-07-11  
+**Commit:** _(pending push)_
+
+**What we built:**
+- `app/db/models/user.py` — User ORM model
+- `app/db/models/project.py` — Project ORM model (FK to users)
+- `alembic.ini` + `migrations/env.py` — async Alembic setup
+- `migrations/versions/0001_create_users_and_projects.py` — first migration
+
+**Decisions:**
+- UUID primary keys — standard for distributed APIs
+- `password_hash` / `api_key_hash` columns — never store plaintext (hashing in Phase 3)
+- Alembic async `env.py` — matches asyncpg engine from Task 2.5
+- Only `users` + `projects` now — `requests` (Phase 5), `cache_entries` (Phase 6) later
+
+**Tests:**
+```bash
+alembic upgrade head   # → Running upgrade -> 0001
+alembic current        # → 0001 (head)
+docker exec llm-gateway-db psql -U gateway -d llm_gateway -c "\dt"
+# → users, projects, alembic_version
+```
+
+**Meeting-ready summary:**
+> I added SQLAlchemy ORM models for users and projects, and an Alembic migration that creates both tables with UUID keys and foreign key relationships. Migrations run asynchronously against the same PostgreSQL database, and I verified the tables exist after upgrade.
+
+---
+
+## Phase 2 complete
+
+Next: **Phase 3, Task 3.1** — provider interface (abstract base for OpenAI).

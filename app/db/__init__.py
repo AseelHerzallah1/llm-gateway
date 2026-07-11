@@ -1,10 +1,13 @@
 """Database connection and models."""
 
 from app.db.base import Base
+from app.db.models import Project, User
 from app.db.session import async_session_factory, close_db, engine, get_db, verify_db_connection
 
 __all__ = [
     "Base",
+    "Project",
+    "User",
     "async_session_factory",
     "close_db",
     "engine",
