@@ -6,6 +6,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app.config import settings
+from app.db.session import close_db, verify_db_connection
 from app.routes.health import router as health_router
 from app.version import __version__
 
@@ -22,7 +23,13 @@ async def lifespan(app: FastAPI):
         settings.app_host,
         settings.app_port,
     )
+
+    await verify_db_connection()
+    logger.info("Database connection verified")
+
     yield
+
+    await close_db()
     logger.info("Shutting down LLM Gateway")
 
 

@@ -237,3 +237,34 @@ uvicorn app.main:app --host 127.0.0.1 --port 8001
 
 **Meeting-ready summary:**
 > I containerized the gateway with Docker Compose — one service for FastAPI, one for PostgreSQL. The app container overrides DATABASE_URL to use the Docker network hostname. A healthcheck ensures Postgres is ready before the app starts. The app doesn't use the DB yet; this task only establishes the runtime environment.
+
+---
+
+### Task 2.5 — Database connection setup
+
+**Date:** 2026-07-11  
+**Commit:** _(pending push)_
+
+**What we built:**
+- `app/db/base.py` — SQLAlchemy `Base` for future ORM models
+- `app/db/session.py` — async engine, session factory, `get_db` dependency, `verify_db_connection()`
+- Updated `app/main.py` — verifies DB on startup, disposes pool on shutdown
+
+**Decisions:**
+- **asyncpg** driver via `postgresql+asyncpg://` URL — matches FastAPI async style
+- `verify_db_connection()` runs `SELECT 1` at startup — fail fast if Postgres is down
+- `get_db()` dependency ready for routes in Phase 3+ (not wired to any endpoint yet)
+- `echo=True` SQL logging only in `development` environment
+- Local setup: uvicorn on host + Postgres in Docker (`localhost:5432`)
+
+**Tests:**
+```bash
+python -c "import asyncio; from app.db.session import verify_db_connection; asyncio.run(verify_db_connection())"
+# → DB connection OK
+
+# Restart uvicorn — server log should show:
+# INFO: Database connection verified
+```
+
+**Meeting-ready summary:**
+> I set up async SQLAlchemy with asyncpg. On startup the gateway runs SELECT 1 to verify PostgreSQL is reachable before accepting requests. Sessions are provided via a get_db dependency for future routes. The connection pool is disposed cleanly on shutdown.
