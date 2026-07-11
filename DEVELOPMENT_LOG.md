@@ -155,7 +155,7 @@ All documentation tasks finished. Next: **Phase 2, Task 2.1** — project skelet
 ### Task 2.2 — FastAPI entrypoint and health check
 
 **Date:** 2026-07-10  
-**Commit:** _(pending push)_
+**Commit:** `504e9cf` — `phase-2/task-2.2: add FastAPI entrypoint and health check`
 
 **What we built:**
 - `app/main.py` — FastAPI application entrypoint
@@ -181,3 +181,32 @@ curl http://127.0.0.1:8000/health
 
 **Meeting-ready summary:**
 > I added a FastAPI entrypoint with a /health liveness endpoint returning status and version. The route lives in its own module following the architecture plan. I verified it with uvicorn and a live HTTP request.
+
+---
+
+### Task 2.3 — Config loading from environment
+
+**Date:** 2026-07-11  
+**Commit:** _(pending push)_
+
+**What we built:**
+- `app/config.py` — `Settings` class using `pydantic-settings`, loads from `.env`
+- Updated `app/main.py` — startup log reads from `settings`
+
+**Decisions:**
+- `SecretStr` for `openai_api_key` and `secret_key` — prevents accidental logging of secrets
+- `@lru_cache` on `get_settings()` — settings loaded once per process, not on every import call
+- `lifespan` hook in FastAPI — logs config at startup without changing `/health` response
+- `.env` copied locally from `.env.example`; never committed (in `.gitignore`)
+
+**Tests:**
+```bash
+python -c "from app.config import settings; print(settings.app_env)"
+# → development
+
+uvicorn app.main:app --host 127.0.0.1 --port 8001
+# → INFO: Starting LLM Gateway (env=development, host=0.0.0.0, port=8000)
+```
+
+**Meeting-ready summary:**
+> I centralized configuration in a Pydantic Settings class that reads from environment variables and a .env file. Secrets use SecretStr, settings are cached per process, and startup logs confirm which environment loaded — without hardcoding values in code.

@@ -26,13 +26,15 @@ Each package is created empty in Phase 2.1. Code is added in later phases — on
 python -m venv .venv
 .venv\Scripts\activate        # Windows
 pip install -r requirements.txt
-cp .env.example .env        # then fill in real values (not needed for /health)
 
-# Start the server
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+# Copy env template and edit values (Phase 2.3+)
+copy .env.example .env        # Windows — do NOT commit .env
+
+# Start the server (use --reload-dir app to avoid .venv reload loops)
+uvicorn app.main:app --reload --reload-dir app --host 127.0.0.1 --port 8001
 
 # Verify health check
-curl http://localhost:8000/health
+Invoke-RestMethod -Uri "http://127.0.0.1:8001/health"
 ```
 
 Expected response:
@@ -40,3 +42,11 @@ Expected response:
 ```json
 {"status":"ok","version":"0.1.0"}
 ```
+
+On startup you should also see a log line like:
+
+```
+INFO: Starting LLM Gateway (env=development, host=0.0.0.0, port=8000)
+```
+
+> **Note:** `APP_PORT` in `.env` is loaded into settings. The uvicorn `--port` flag still controls the actual listen port for now.
