@@ -329,3 +329,36 @@ Next: **Phase 3, Task 3.1** — provider interface (abstract base for OpenAI).
 
 **Meeting-ready summary:**
 > I defined an abstract LLMProvider interface with complete() for non-streaming requests. Request and response types are normalized dataclasses so routes never depend on a specific vendor SDK.
+
+---
+
+### Task 3.2 — OpenAI provider (non-streaming)
+
+**Date:** 2026-07-12  
+**Commit:** _(pending push)_
+
+**What we built:**
+- `app/providers/openai.py` — `OpenAIProvider` using httpx async client
+- `create_openai_provider()` — builds provider from settings
+- `scripts/test_openai_provider.py` — manual live test script
+
+**Decisions:**
+- **httpx** async client — no OpenAI SDK (fewer dependencies, full control)
+- `stream: False` hardcoded in payload — streaming is Phase 4
+- Maps OpenAI JSON → normalized `CompletionResponse`
+- `OpenAIProviderError` wraps HTTP failures — full gateway error mapping in Task 3.5
+- `aclose()` for clean client shutdown
+
+**Tests:**
+- `OpenAIProvider` implements `LLMProvider` — verified
+- Live API test requires `OPENAI_API_KEY` in `.env` — not set on dev machine during commit
+
+**User action needed:**
+Add real key to `.env`:
+```
+OPENAI_API_KEY=sk-...
+```
+Then run: `python scripts/test_openai_provider.py`
+
+**Meeting-ready summary:**
+> I implemented OpenAIProvider using httpx to call /v1/chat/completions with stream=false. The provider implements our abstract interface and normalizes the response. I deliberately avoided the OpenAI SDK so the HTTP layer is visible and testable.
