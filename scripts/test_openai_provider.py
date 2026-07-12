@@ -1,6 +1,6 @@
 """Manual test script for OpenAI provider (Task 3.2).
 
-Usage:
+Usage (from project root):
     python scripts/test_openai_provider.py
 
 Requires OPENAI_API_KEY in .env
@@ -8,6 +8,10 @@ Requires OPENAI_API_KEY in .env
 
 import asyncio
 import sys
+from pathlib import Path
+
+# Allow imports from project root when running as a script
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from app.providers.base import ChatMessage, CompletionRequest
 from app.providers.openai import create_openai_provider
