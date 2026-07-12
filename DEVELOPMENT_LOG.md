@@ -304,3 +304,28 @@ docker exec llm-gateway-db psql -U gateway -d llm_gateway -c "\dt"
 ## Phase 2 complete
 
 Next: **Phase 3, Task 3.1** — provider interface (abstract base for OpenAI).
+
+---
+
+## Phase 3 — One provider, non-streaming proxy
+
+### Task 3.1 — Provider interface
+
+**Date:** 2026-07-12  
+**Commit:** _(pending push)_
+
+**What we built:**
+- `app/providers/base.py` — `LLMProvider` ABC, `ChatMessage`, `CompletionRequest`, `CompletionResponse`
+
+**Decisions:**
+- Python `abc.ABC` + `@abstractmethod` — standard interface pattern
+- `dataclass(frozen=True)` for DTOs — immutable, simple to explain
+- `complete()` only (non-streaming) — streaming added as separate method in Phase 4
+- Normalized `CompletionResponse` — gateway uses same shape regardless of provider
+
+**Tests:** ABC cannot be instantiated; incomplete subclass raises TypeError
+
+**API keys:** Not needed until Task 3.2 (OpenAI HTTP calls)
+
+**Meeting-ready summary:**
+> I defined an abstract LLMProvider interface with complete() for non-streaming requests. Request and response types are normalized dataclasses so routes never depend on a specific vendor SDK.
