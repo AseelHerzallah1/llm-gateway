@@ -362,3 +362,33 @@ Then run: `python scripts/test_openai_provider.py`
 
 **Meeting-ready summary:**
 > I implemented OpenAIProvider using httpx to call /v1/chat/completions with stream=false. The provider implements our abstract interface and normalizes the response. I deliberately avoided the OpenAI SDK so the HTTP layer is visible and testable.
+
+---
+
+### Task 3.3 — API key auth middleware
+
+**Date:** 2026-07-12  
+**Commit:** _(pending push)_
+
+**What we built:**
+- `app/auth/api_keys.py` — generate/hash/validate key format
+- `app/auth/dependencies.py` — `get_current_project` FastAPI dependency
+- `app/errors.py` — structured `GatewayHTTPException` + handler
+- `scripts/seed_test_project.py` — creates test user + project
+- `scripts/test_auth.py` — manual auth test
+
+**Decisions:**
+- SHA-256 hash for API key lookup (per docs/API.md validation flow)
+- Accept `Authorization: Bearer` or `X-API-Key` header
+- bcrypt for admin **passwords** only (users table); API keys use SHA-256
+- `get_current_project` ready to inject into routes in Task 3.4
+
+**Tests:**
+- `seed_test_project.py` — inserts test user + project
+- `test_auth.py` with invalid key — rejected (exit 1)
+
+**User action:** Save API key printed by seed script; test with:
+`python scripts/test_auth.py <your-key>`
+
+**Meeting-ready summary:**
+> I built API key auth as a FastAPI dependency. Keys are extracted from Bearer or X-API-Key headers, hashed with SHA-256, and looked up in the projects table. Invalid or inactive projects return structured 401 errors matching our API contract.

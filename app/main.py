@@ -7,6 +7,7 @@ from fastapi import FastAPI
 
 from app.config import settings
 from app.db.session import close_db, verify_db_connection
+from app.errors import GatewayHTTPException, gateway_exception_handler
 from app.routes.health import router as health_router
 from app.version import __version__
 
@@ -39,5 +40,7 @@ app = FastAPI(
     version=__version__,
     lifespan=lifespan,
 )
+
+app.add_exception_handler(GatewayHTTPException, gateway_exception_handler)
 
 app.include_router(health_router)
