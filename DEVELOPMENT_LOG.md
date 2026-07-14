@@ -425,3 +425,36 @@ python scripts/test_chat_completions.py gw-sk-your-key
 
 **Meeting-ready summary:**
 > I wired the first real gateway endpoint: authenticated clients POST to /v1/chat/completions, the gateway validates their project API key, forwards to OpenAI via our provider interface, and returns an OpenAI-shaped JSON response.
+
+---
+
+### Task 3.5 — Provider error mapping
+
+**Date:** 2026-07-14  
+**Commit:** _(pending push)_
+
+**What we built:**
+- `app/providers/exceptions.py` — `OpenAIProviderError` with `status_code` and `is_timeout`
+- Expanded `app/errors.py` — `map_openai_provider_error()`, rate limit / timeout helpers, validation handler
+- Updated `app/providers/openai.py` — parse OpenAI error JSON, distinguish timeout vs HTTP vs connection errors
+- Updated `app/routes/chat.py` — uses centralized mapper instead of generic 502
+- Updated `app/main.py` — `RequestValidationError` → structured 422 response
+- `scripts/test_error_mapping.py` — offline mapping assertions
+
+**Error mapping:**
+
+| Upstream situation | Gateway status | Code |
+|--------------------|----------------|------|
+| httpx timeout | 504 | `gateway_timeout` |
+| OpenAI 429 | 429 | `rate_limit_exceeded` |
+| OpenAI 400 | 400 | `invalid_request` |
+| OpenAI 401/403 (server key) | 502 | `provider_error` (message sanitized) |
+| OpenAI 5xx | 502 | `provider_error` |
+| Connection errors | 502 | `provider_error` |
+| Invalid JSON body | 422 | `validation_error` |
+
+**Tests:**
+- `python scripts/test_error_mapping.py` → Error mapping OK
+
+**Meeting-ready summary:**
+> I centralized provider failure handling: OpenAI timeouts become 504, rate limits become 429, client mistakes from OpenAI become 400, and server-side misconfiguration never leaks upstream auth details. FastAPI validation errors also return our consistent error JSON shape.

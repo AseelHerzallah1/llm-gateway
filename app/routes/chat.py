@@ -9,9 +9,9 @@ from fastapi import APIRouter, Depends, Request
 
 from app.auth.dependencies import get_current_project
 from app.db.models.project import Project
-from app.errors import provider_error, streaming_not_supported_error
+from app.errors import map_openai_provider_error, streaming_not_supported_error
 from app.providers.base import ChatMessage, CompletionRequest
-from app.providers.openai import OpenAIProviderError
+from app.providers.exceptions import OpenAIProviderError
 from app.schemas.chat import (
     ChatChoice,
     ChatCompletionRequest,
@@ -54,8 +54,8 @@ async def create_chat_completion(
     try:
         result = await provider.complete(completion_request)
     except OpenAIProviderError as exc:
-        logger.warning("Provider error for project_id=%s: %s", project.id, exc)
-        raise provider_error(str(exc)) from exc
+        logger.warning("Provider error for project_id=%s: %s", project.id, exc.message)
+        raise map_openai_provider_error(exc) from exc
 
     return ChatCompletionResponse(
         id=result.id,

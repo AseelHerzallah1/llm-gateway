@@ -6,10 +6,7 @@ import httpx
 
 from app.config import settings
 from app.providers.base import CompletionRequest, CompletionResponse, LLMProvider
-
-
-class OpenAIProviderError(Exception):
-    """Raised when the OpenAI API returns an error response."""
+from app.providers.exceptions import OpenAIProviderError
 
 
 class OpenAIProvider(LLMProvider):
@@ -46,12 +43,16 @@ class OpenAIProvider(LLMProvider):
         try:
             response = await self._client.post("/chat/completions", json=payload)
             response.raise_for_status()
+        except httpx.TimeoutException as exc:
+            raise OpenAIProviderError("OpenAI request timed out", is_timeout=True) from exc
         except httpx.HTTPStatusError as exc:
+            message = _extract_openai_error_message(exc.response)
             raise OpenAIProviderError(
-                f"OpenAI API error {exc.response.status_code}: {exc.response.text}"
+                message,
+                status_code=exc.response.status_code,
             ) from exc
         except httpx.RequestError as exc:
-            raise OpenAIProviderError(f"OpenAI request failed: {exc}") from exc
+            raise OpenAIProviderError(f"OpenAI connection error: {exc}") from exc
 
         data = response.json()
         choice = data["choices"][0]
@@ -71,6 +72,18 @@ class OpenAIProvider(LLMProvider):
     async def aclose(self) -> None:
         """Close the underlying HTTP client."""
         await self._client.aclose()
+
+
+def _extract_openai_error_message(response: httpx.Response) -> str:
+    """Parse OpenAI error JSON when available."""
+    try:
+        body = response.json()
+        error = body.get("error", {})
+        if isinstance(error, dict) and error.get("message"):
+            return str(error["message"])
+    except Exception:
+        pass
+    return f"OpenAI API error (HTTP {response.status_code})"
 
 
 def create_openai_provider() -> OpenAIProvider:

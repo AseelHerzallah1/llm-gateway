@@ -6,7 +6,8 @@ from app.providers.base import (
     CompletionResponse,
     LLMProvider,
 )
-from app.providers.openai import OpenAIProvider, OpenAIProviderError, create_openai_provider
+from app.providers.exceptions import OpenAIProviderError
+from app.providers.openai import OpenAIProvider, create_openai_provider
 
 __all__ = [
     "ChatMessage",

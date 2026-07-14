@@ -4,10 +4,15 @@ import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
 
 from app.config import settings
 from app.db.session import close_db, verify_db_connection
-from app.errors import GatewayHTTPException, gateway_exception_handler
+from app.errors import (
+    GatewayHTTPException,
+    gateway_exception_handler,
+    validation_exception_handler,
+)
 from app.providers.openai import create_openai_provider
 from app.routes.chat import router as chat_router
 from app.routes.health import router as health_router
@@ -48,6 +53,7 @@ app = FastAPI(
 )
 
 app.add_exception_handler(GatewayHTTPException, gateway_exception_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
 
 app.include_router(health_router)
 app.include_router(chat_router)
