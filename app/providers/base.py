@@ -33,6 +33,7 @@ class CompletionResponse:
     prompt_tokens: int
     completion_tokens: int
     total_tokens: int
+    created: int
 
 
 class LLMProvider(ABC):

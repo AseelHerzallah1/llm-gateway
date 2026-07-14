@@ -38,3 +38,21 @@ def inactive_project_error() -> GatewayHTTPException:
         error_type="authentication_error",
         code="inactive_project",
     )
+
+
+def streaming_not_supported_error() -> GatewayHTTPException:
+    return GatewayHTTPException(
+        status_code=400,
+        message="Streaming is not supported yet. Set stream to false.",
+        error_type="invalid_request_error",
+        code="streaming_not_supported",
+    )
+
+
+def provider_error(message: str = "Upstream provider error.") -> GatewayHTTPException:
+    return GatewayHTTPException(
+        status_code=502,
+        message=message,
+        error_type="provider_error",
+        code="provider_error",
+    )

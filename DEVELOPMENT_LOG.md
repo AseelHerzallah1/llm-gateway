@@ -392,3 +392,36 @@ Then run: `python scripts/test_openai_provider.py`
 
 **Meeting-ready summary:**
 > I built API key auth as a FastAPI dependency. Keys are extracted from Bearer or X-API-Key headers, hashed with SHA-256, and looked up in the projects table. Invalid or inactive projects return structured 401 errors matching our API contract.
+
+---
+
+### Task 3.4 — POST /v1/chat/completions (non-streaming)
+
+**Date:** 2026-07-14  
+**Commit:** _(pending push)_
+
+**What we built:**
+- `app/schemas/chat.py` — OpenAI-compatible request/response models
+- `app/routes/chat.py` — proxied chat completion endpoint
+- Updated `app/main.py` — LLM provider in app lifespan, chat router registered
+- `scripts/test_chat_completions.py` — manual HTTP test
+
+**Decisions:**
+- Auth via `get_current_project` dependency — route only runs for valid keys
+- Provider stored on `app.state` — one httpx client for app lifetime
+- `stream: true` rejected with 400 until Phase 4
+- Provider errors mapped to 502 (full error taxonomy in Task 3.5)
+- Response shape matches OpenAI `chat.completion` object
+
+**Tests:**
+- POST without API key → 401 `invalid_api_key` (verified)
+- Full success test requires running uvicorn + gateway key + OpenAI key
+
+**User test:**
+```powershell
+uvicorn app.main:app --host 127.0.0.1 --port 8001
+python scripts/test_chat_completions.py gw-sk-your-key
+```
+
+**Meeting-ready summary:**
+> I wired the first real gateway endpoint: authenticated clients POST to /v1/chat/completions, the gateway validates their project API key, forwards to OpenAI via our provider interface, and returns an OpenAI-shaped JSON response.
