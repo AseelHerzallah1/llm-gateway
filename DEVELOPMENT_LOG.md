@@ -431,7 +431,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 3.5 — Provider error mapping
 
 **Date:** 2026-07-14  
-**Commit:** _(pending push)_
+**Commit:** `2755c12`
 
 **What we built:**
 - `app/providers/exceptions.py` — `OpenAIProviderError` with `status_code` and `is_timeout`
@@ -458,3 +458,20 @@ python scripts/test_chat_completions.py gw-sk-your-key
 
 **Meeting-ready summary:**
 > I centralized provider failure handling: OpenAI timeouts become 504, rate limits become 429, client mistakes from OpenAI become 400, and server-side misconfiguration never leaks upstream auth details. FastAPI validation errors also return our consistent error JSON shape.
+
+---
+
+### Task 3.6 — Manual testing documentation
+
+**Date:** 2026-07-14  
+**Commit:** _(pending push)_
+
+**What we built:**
+- `docs/TESTING.md` — Phase 3 manual test guide with PowerShell, curl, and script commands
+- Checklist covering health, auth, provider, chat completions, and error scenarios
+- Troubleshooting table for common local dev issues (port 8001, OneDrive reload, Docker DB-only)
+
+**Tests:** Documentation only — no code changes
+
+**Meeting-ready summary:**
+> I documented the full Phase 3 test flow: bottom-up from offline error mapping through direct OpenAI calls to authenticated chat completions, with copy-paste PowerShell/curl examples and a pass/fail checklist.
