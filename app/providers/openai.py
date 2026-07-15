@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from collections.abc import AsyncIterator
 
 import httpx
@@ -14,17 +15,33 @@ from app.providers.exceptions import OpenAIProviderError
 class OpenAIProvider(LLMProvider):
     """Calls OpenAI's /v1/chat/completions endpoint."""
 
-    def __init__(self, api_key: str, base_url: str) -> None:
+    def __init__(
+        self,
+        api_key: str,
+        base_url: str,
+        *,
+        connect_timeout: float,
+        read_timeout: float,
+        stream_idle_timeout: float,
+        write_timeout: float,
+        pool_timeout: float,
+    ) -> None:
         if not api_key:
             raise ValueError("OpenAI API key is required")
 
+        self._stream_idle_timeout = stream_idle_timeout
         self._client = httpx.AsyncClient(
             base_url=base_url.rstrip("/"),
             headers={
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
             },
-            timeout=httpx.Timeout(60.0, connect=10.0),
+            timeout=httpx.Timeout(
+                connect=connect_timeout,
+                read=read_timeout,
+                write=write_timeout,
+                pool=pool_timeout,
+            ),
         )
 
     @property
@@ -38,7 +55,7 @@ class OpenAIProvider(LLMProvider):
             response = await self._client.post("/chat/completions", json=payload)
             response.raise_for_status()
         except httpx.TimeoutException as exc:
-            raise OpenAIProviderError("OpenAI request timed out", is_timeout=True) from exc
+            raise _timeout_error("OpenAI request timed out", exc) from exc
         except httpx.HTTPStatusError as exc:
             message = _extract_openai_error_message(exc.response)
             raise OpenAIProviderError(
@@ -77,14 +94,12 @@ class OpenAIProvider(LLMProvider):
                         status_code=response.status_code,
                     )
 
-                async for line in response.aiter_lines():
-                    if not line or not line.startswith("data:"):
-                        continue
-                    yield f"{line}\n\n"
+                async for sse_event in _iter_sse_events(response, self._stream_idle_timeout):
+                    yield sse_event
         except OpenAIProviderError:
             raise
         except httpx.TimeoutException as exc:
-            raise OpenAIProviderError("OpenAI request timed out", is_timeout=True) from exc
+            raise _timeout_error("OpenAI request timed out", exc) from exc
         except httpx.RequestError as exc:
             if isinstance(exc, httpx.StreamClosed):
                 return
@@ -93,6 +108,29 @@ class OpenAIProvider(LLMProvider):
     async def aclose(self) -> None:
         """Close the underlying HTTP client."""
         await self._client.aclose()
+
+
+async def _iter_sse_events(response: httpx.Response, idle_timeout: float) -> AsyncIterator[str]:
+    """Read SSE lines with a max idle gap — detects hung upstream streams."""
+    line_source = response.aiter_lines().__aiter__()
+    while True:
+        try:
+            line = await asyncio.wait_for(line_source.__anext__(), timeout=idle_timeout)
+        except TimeoutError as exc:
+            raise OpenAIProviderError(
+                f"OpenAI stream idle for {idle_timeout:.0f}s",
+                is_timeout=True,
+            ) from exc
+        except StopAsyncIteration:
+            break
+
+        if not line or not line.startswith("data:"):
+            continue
+        yield f"{line}\n\n"
+
+
+def _timeout_error(message: str, exc: httpx.TimeoutException) -> OpenAIProviderError:
+    return OpenAIProviderError(message, is_timeout=True)
 
 
 def _build_payload(request: CompletionRequest, *, stream: bool) -> dict:
@@ -125,4 +163,9 @@ def create_openai_provider() -> OpenAIProvider:
     return OpenAIProvider(
         api_key=settings.openai_api_key.get_secret_value(),
         base_url=settings.openai_base_url,
+        connect_timeout=settings.openai_connect_timeout_s,
+        read_timeout=settings.openai_read_timeout_s,
+        stream_idle_timeout=settings.openai_stream_idle_timeout_s,
+        write_timeout=settings.openai_write_timeout_s,
+        pool_timeout=settings.openai_pool_timeout_s,
     )

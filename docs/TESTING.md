@@ -467,6 +467,25 @@ Concurrent streams OK
 | Connection refused | uvicorn not running |
 | Some streams FAIL with 401 | Invalid gateway key |
 | Timeouts under load | OpenAI rate limits or slow network — retry with lower concurrency |
+| Stream hangs | Check `OPENAI_STREAM_IDLE_TIMEOUT_S` in `.env` (default 30s) |
+
+---
+
+### 11. Provider timeout handling
+
+Offline test — no gateway or OpenAI key required.
+
+```powershell
+python scripts/test_provider_timeouts.py
+```
+
+**Expected:**
+
+```
+Provider timeout handling OK
+```
+
+Verifies connect timeout to unreachable host and idle timeout → `504 gateway_timeout` mapping.
 
 ---
 
@@ -494,6 +513,7 @@ Concurrent streams OK
 | 3 | Stream auth error | POST stream + invalid model | HTTP 400 JSON (before SSE) |
 | 4 | Disconnect cancel | `python scripts/test_stream_cancel.py <key>` | Client drops; server logs cancellation |
 | 5 | Concurrent streams | `python scripts/test_concurrent_streams.py <key>` | All N streams + non-stream requests succeed |
+| 6 | Provider timeouts | `python scripts/test_provider_timeouts.py` | Prints `Provider timeout handling OK` |
 
 ---
 
@@ -527,6 +547,7 @@ Concurrent streams OK
 | `scripts/test_chat_stream.py` | Gateway + OpenAI | Gateway key + running uvicorn |
 | `scripts/test_stream_cancel.py` | Gateway + OpenAI | Gateway key + running uvicorn |
 | `scripts/test_concurrent_streams.py` | Gateway + OpenAI | Gateway key + running uvicorn |
+| `scripts/test_provider_timeouts.py` | None (offline) | None |
 
 ---
 

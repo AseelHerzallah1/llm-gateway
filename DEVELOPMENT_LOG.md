@@ -575,7 +575,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 4.4 — Concurrent request handling verification (original plan)
 
 **Date:** 2026-07-15  
-**Commit:** _(pending push)_
+**Commit:** `890936d`
 
 **What we built:**
 - `scripts/test_concurrent_streams.py` — fires N parallel streaming requests + 3 non-streaming via `asyncio.gather`
@@ -593,3 +593,30 @@ python scripts/test_chat_completions.py gw-sk-your-key
 > I added a concurrency verification script that runs multiple parallel SSE streams through the gateway plus non-streaming requests, confirming the async proxy handles overlapping requests without cross-talk or dropped streams.
 
 **Remaining (original plan):** Task 4.6 — timeouts and provider hang handling.
+
+---
+
+### Task 4.6 — Timeouts and provider hang handling (original plan)
+
+**Date:** 2026-07-15  
+**Commit:** _(pending push)_
+
+**What we built:**
+- Configurable timeouts in `app/config.py` — connect, read, stream idle, write, pool
+- `app/providers/openai.py` — granular `httpx.Timeout`, `_iter_sse_events()` with `asyncio.wait_for` idle detection
+- `.env.example` — timeout settings documented
+- `scripts/test_provider_timeouts.py` — offline 504 mapping + connect timeout to unreachable host
+
+**Decisions:**
+- **Stream idle timeout (default 30s)** — if OpenAI sends no SSE chunk for 30s, treat as hang → `504 gateway_timeout`
+- **Separate read timeout (60s)** for non-streaming full responses
+- **Configurable via `.env`** — tunable per environment without code changes
+- Mid-stream timeout ends SSE gracefully (HTTP 200 already sent); pre-stream timeout returns JSON 504
+
+**Tests:**
+- `python scripts/test_provider_timeouts.py` → Provider timeout handling OK
+
+**Meeting-ready summary:**
+> I added explicit timeout layers: connect/read/write limits on httpx, plus a stream idle watchdog that detects when OpenAI stops sending chunks. Hung or slow streams surface as gateway 504 errors instead of tying up connections forever.
+
+**Phase 4 complete (original plan).** Next: Phase 5 — observability.
