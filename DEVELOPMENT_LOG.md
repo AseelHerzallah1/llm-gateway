@@ -475,3 +475,30 @@ python scripts/test_chat_completions.py gw-sk-your-key
 
 **Meeting-ready summary:**
 > I documented the full Phase 3 test flow: bottom-up from offline error mapping through direct OpenAI calls to authenticated chat completions, with copy-paste PowerShell/curl examples and a pass/fail checklist.
+
+---
+
+## Phase 4 — Real streaming proxy
+
+### Task 4.1 — Provider streaming interface + OpenAI SSE
+
+**Date:** 2026-07-15  
+**Commit:** _(pending push)_
+
+**What we built:**
+- `app/providers/base.py` — `stream()` abstract method on `LLMProvider`
+- `app/providers/openai.py` — httpx streaming via `client.stream()`, forwards SSE lines chunk-by-chunk
+- `_build_payload()` shared helper for streaming and non-streaming requests
+- `scripts/test_openai_stream.py` — live provider streaming test
+
+**Decisions:**
+- **Transparent SSE passthrough** — gateway re-emits OpenAI `data: ...` lines without re-serializing JSON
+- **No full-response buffering** — `async for line in response.aiter_lines()` yields immediately
+- HTTP errors before stream starts mapped via existing `OpenAIProviderError` (route wiring in Task 4.2)
+- Same httpx client and timeout settings as non-streaming
+
+**Tests:**
+- `python scripts/test_openai_stream.py` → SSE chunks + `data: [DONE]` (verified live)
+
+**Meeting-ready summary:**
+> I added streaming to the provider layer: OpenAIProvider opens an httpx stream, reads SSE lines as they arrive, and yields them without buffering the full response. This is the foundation for the gateway's real-time token proxy in the next task.

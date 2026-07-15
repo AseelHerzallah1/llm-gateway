@@ -1,6 +1,7 @@
 """Provider interface — abstract contract for all LLM backends."""
 
 from abc import ABC, abstractmethod
+from collections.abc import AsyncIterator
 from dataclasses import dataclass
 
 
@@ -14,7 +15,7 @@ class ChatMessage:
 
 @dataclass(frozen=True)
 class CompletionRequest:
-    """Input for a non-streaming chat completion."""
+    """Input for a chat completion (streaming or non-streaming)."""
 
     model: str
     messages: list[ChatMessage]
@@ -47,3 +48,7 @@ class LLMProvider(ABC):
     @abstractmethod
     async def complete(self, request: CompletionRequest) -> CompletionResponse:
         """Send a non-streaming completion request and return the full response."""
+
+    @abstractmethod
+    def stream(self, request: CompletionRequest) -> AsyncIterator[str]:
+        """Stream OpenAI-compatible SSE events (`data: ...\\n\\n` lines)."""

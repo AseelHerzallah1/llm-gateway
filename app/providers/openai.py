@@ -1,6 +1,8 @@
-"""OpenAI provider — non-streaming chat completions via httpx."""
+"""OpenAI provider — chat completions via httpx (non-streaming and SSE streaming)."""
 
 from __future__ import annotations
+
+from collections.abc import AsyncIterator
 
 import httpx
 
@@ -10,7 +12,7 @@ from app.providers.exceptions import OpenAIProviderError
 
 
 class OpenAIProvider(LLMProvider):
-    """Calls OpenAI's /v1/chat/completions endpoint (non-streaming)."""
+    """Calls OpenAI's /v1/chat/completions endpoint."""
 
     def __init__(self, api_key: str, base_url: str) -> None:
         if not api_key:
@@ -30,15 +32,7 @@ class OpenAIProvider(LLMProvider):
         return "openai"
 
     async def complete(self, request: CompletionRequest) -> CompletionResponse:
-        payload: dict = {
-            "model": request.model,
-            "messages": [{"role": m.role, "content": m.content} for m in request.messages],
-            "stream": False,
-        }
-        if request.temperature is not None:
-            payload["temperature"] = request.temperature
-        if request.max_tokens is not None:
-            payload["max_tokens"] = request.max_tokens
+        payload = _build_payload(request, stream=False)
 
         try:
             response = await self._client.post("/chat/completions", json=payload)
@@ -69,9 +63,47 @@ class OpenAIProvider(LLMProvider):
             created=data["created"],
         )
 
+    async def stream(self, request: CompletionRequest) -> AsyncIterator[str]:
+        """Forward OpenAI SSE chunks as they arrive — no full-response buffering."""
+        payload = _build_payload(request, stream=True)
+
+        try:
+            async with self._client.stream("POST", "/chat/completions", json=payload) as response:
+                if response.status_code >= 400:
+                    await response.aread()
+                    message = _extract_openai_error_message(response)
+                    raise OpenAIProviderError(
+                        message,
+                        status_code=response.status_code,
+                    )
+
+                async for line in response.aiter_lines():
+                    if not line or not line.startswith("data:"):
+                        continue
+                    yield f"{line}\n\n"
+        except OpenAIProviderError:
+            raise
+        except httpx.TimeoutException as exc:
+            raise OpenAIProviderError("OpenAI request timed out", is_timeout=True) from exc
+        except httpx.RequestError as exc:
+            raise OpenAIProviderError(f"OpenAI connection error: {exc}") from exc
+
     async def aclose(self) -> None:
         """Close the underlying HTTP client."""
         await self._client.aclose()
+
+
+def _build_payload(request: CompletionRequest, *, stream: bool) -> dict:
+    payload: dict = {
+        "model": request.model,
+        "messages": [{"role": m.role, "content": m.content} for m in request.messages],
+        "stream": stream,
+    }
+    if request.temperature is not None:
+        payload["temperature"] = request.temperature
+    if request.max_tokens is not None:
+        payload["max_tokens"] = request.max_tokens
+    return payload
 
 
 def _extract_openai_error_message(response: httpx.Response) -> str:
