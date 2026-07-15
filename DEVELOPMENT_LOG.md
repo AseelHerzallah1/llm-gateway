@@ -556,7 +556,9 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 4.4 — Streaming testing documentation
 
 **Date:** 2026-07-15  
-**Commit:** _(pending push)_
+**Commit:** `bf84654`
+
+**Note:** This was committed under task 4.4 before aligning with the original 6-task Phase 4 plan. The original plan's 4.4 (concurrent verification) is the next entry below.
 
 **What we built:**
 - Expanded `docs/TESTING.md` — Phase 4 sections for provider stream, gateway SSE, disconnect cancellation
@@ -566,6 +568,28 @@ python scripts/test_chat_completions.py gw-sk-your-key
 **Tests:** Documentation only — no code changes
 
 **Meeting-ready summary:**
-> Phase 4 is fully documented: how to test direct provider streaming, gateway SSE with stream=true, and client disconnect cancellation, with copy-paste commands and pass/fail checklists.
+> Phase 4 streaming flows are documented: how to test direct provider streaming, gateway SSE with stream=true, and client disconnect cancellation, with copy-paste commands and pass/fail checklists.
 
-**Phase 4 complete.** Next: Phase 5 — observability (p50/p95/p99, cost tracking, requests table).
+---
+
+### Task 4.4 — Concurrent request handling verification (original plan)
+
+**Date:** 2026-07-15  
+**Commit:** _(pending push)_
+
+**What we built:**
+- `scripts/test_concurrent_streams.py` — fires N parallel streaming requests + 3 non-streaming via `asyncio.gather`
+- Updated `docs/TESTING.md` — section 10 and Phase 4 checklist item for concurrency
+
+**Decisions:**
+- Default concurrency **5** — enough to stress async handling without hammering OpenAI rate limits
+- Single shared `httpx.AsyncClient` with raised connection limits — mirrors real multi-client usage
+- Mixed stream + non-stream in one run — verifies both code paths work under parallel load
+
+**Tests:**
+- `python scripts/test_concurrent_streams.py gw-sk-...` → all streams reach `[DONE]`, non-stream return 200
+
+**Meeting-ready summary:**
+> I added a concurrency verification script that runs multiple parallel SSE streams through the gateway plus non-streaming requests, confirming the async proxy handles overlapping requests without cross-talk or dropped streams.
+
+**Remaining (original plan):** Task 4.6 — timeouts and provider hang handling.

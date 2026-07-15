@@ -78,6 +78,7 @@ Phase 4 — Streaming
   7. OpenAI provider stream        → direct SSE from OpenAI
   8. Gateway SSE stream            → stream=true via HTTP
   9. Client disconnect cancel      → upstream cancellation
+ 10. Concurrent streams            → parallel stream=true requests
 ```
 
 ---
@@ -440,6 +441,35 @@ python scripts/test_stream_cancel.py gw-sk-YOUR-KEY
 
 ---
 
+### 10. Concurrent streaming requests
+
+Verifies multiple parallel `stream=true` requests (and a few non-streaming) complete without interfering with each other.
+
+```powershell
+python scripts/test_concurrent_streams.py gw-sk-YOUR-KEY
+
+# Optional: custom concurrency (default 5)
+python scripts/test_concurrent_streams.py gw-sk-YOUR-KEY 8
+```
+
+**Expected:**
+
+```
+Streaming:     5/5 succeeded
+Non-streaming: 3/3 succeeded
+Concurrent streams OK
+```
+
+**If it fails:**
+
+| Symptom | Likely cause |
+|---------|--------------|
+| Connection refused | uvicorn not running |
+| Some streams FAIL with 401 | Invalid gateway key |
+| Timeouts under load | OpenAI rate limits or slow network — retry with lower concurrency |
+
+---
+
 ## Checklists
 
 ### Phase 3
@@ -463,6 +493,7 @@ python scripts/test_stream_cancel.py gw-sk-YOUR-KEY
 | 2 | Gateway stream | `python scripts/test_chat_stream.py <key>` | HTTP 200, `text/event-stream`, `[DONE]` |
 | 3 | Stream auth error | POST stream + invalid model | HTTP 400 JSON (before SSE) |
 | 4 | Disconnect cancel | `python scripts/test_stream_cancel.py <key>` | Client drops; server logs cancellation |
+| 5 | Concurrent streams | `python scripts/test_concurrent_streams.py <key>` | All N streams + non-stream requests succeed |
 
 ---
 
@@ -495,6 +526,7 @@ python scripts/test_stream_cancel.py gw-sk-YOUR-KEY
 | `scripts/test_chat_completions.py` | Gateway + OpenAI | Gateway key + running uvicorn |
 | `scripts/test_chat_stream.py` | Gateway + OpenAI | Gateway key + running uvicorn |
 | `scripts/test_stream_cancel.py` | Gateway + OpenAI | Gateway key + running uvicorn |
+| `scripts/test_concurrent_streams.py` | Gateway + OpenAI | Gateway key + running uvicorn |
 
 ---
 
