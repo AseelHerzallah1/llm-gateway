@@ -29,3 +29,4 @@ class Project(Base):
     )
 
     owner: Mapped["User"] = relationship(back_populates="projects")
+    requests: Mapped[list["RequestLog"]] = relationship(back_populates="project")

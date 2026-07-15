@@ -620,3 +620,39 @@ python scripts/test_chat_completions.py gw-sk-your-key
 > I added explicit timeout layers: connect/read/write limits on httpx, plus a stream idle watchdog that detects when OpenAI stops sending chunks. Hung or slow streams surface as gateway 504 errors instead of tying up connections forever.
 
 **Phase 4 complete (original plan).** Next: Phase 5 — observability.
+
+---
+
+## Phase 5 — Observability and cost tracking
+
+### Task 5.1 — `requests` table migration + ORM model
+
+**Date:** 2026-07-15  
+**Commit:** _(pending push)_
+
+**What we built:**
+- `migrations/versions/0002_create_requests_table.py` — `requests` table per architecture spec
+- `app/db/models/request.py` — `RequestLog` ORM model
+- Updated `app/db/models/project.py` — `requests` relationship
+- Updated `app/db/models/__init__.py` — export `RequestLog` for Alembic discovery
+
+**Schema (`requests`):**
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | UUID | Primary key |
+| `project_id` | UUID FK | Indexed — filter metrics per project |
+| `created_at` | timestamptz | Indexed — time-window queries |
+| `status` | string | `success`, `error`, `cache_hit` |
+| `model` | string | e.g. `gpt-4o-mini` |
+| `latency_ms` | int | End-to-end gateway latency |
+| `input_tokens` / `output_tokens` | int | From provider usage |
+| `cost_usd` | float | Computed in Task 5.2+ |
+| `cache_hit` | bool | Phase 6 sets true on cache hits |
+| `error_reason` | string nullable | Short error code/message |
+
+**Tests:**
+- `alembic upgrade head` → migration 0002 applies cleanly
+
+**Meeting-ready summary:**
+> I added the requests table — the foundation for observability. Every chat completion will log latency, tokens, cost, and status here so we can compute p50/p95/p99 percentiles instead of meaningless averages.
