@@ -533,7 +533,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 4.3 — Client disconnect cancellation
 
 **Date:** 2026-07-15  
-**Commit:** _(pending push)_
+**Commit:** `d3f1534`
 
 **What we built:**
 - `_sse_event_generator()` in `app/routes/chat.py` — polls `request.is_disconnected()`, closes provider stream in `finally`
@@ -550,3 +550,22 @@ python scripts/test_chat_completions.py gw-sk-your-key
 
 **Meeting-ready summary:**
 > When a client disconnects mid-stream, the gateway stops forwarding SSE chunks and closes the provider async generator, which tears down the httpx upstream connection instead of letting OpenAI keep generating tokens nobody reads.
+
+---
+
+### Task 4.4 — Streaming testing documentation
+
+**Date:** 2026-07-15  
+**Commit:** _(pending push)_
+
+**What we built:**
+- Expanded `docs/TESTING.md` — Phase 4 sections for provider stream, gateway SSE, disconnect cancellation
+- Updated Phase 3 checklist (removed obsolete `streaming_not_supported` test)
+- Added Phase 4 checklist, script reference, and troubleshooting (Docker quit, port conflicts, curl `-N`)
+
+**Tests:** Documentation only — no code changes
+
+**Meeting-ready summary:**
+> Phase 4 is fully documented: how to test direct provider streaming, gateway SSE with stream=true, and client disconnect cancellation, with copy-paste commands and pass/fail checklists.
+
+**Phase 4 complete.** Next: Phase 5 — observability (p50/p95/p99, cost tracking, requests table).
