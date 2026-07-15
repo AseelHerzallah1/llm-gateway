@@ -508,7 +508,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 4.2 — SSE streaming endpoint
 
 **Date:** 2026-07-15  
-**Commit:** _(pending push)_
+**Commit:** `cb7ba78`
 
 **What we built:**
 - Updated `app/routes/chat.py` — `stream: true` returns `StreamingResponse` (`text/event-stream`)
@@ -527,3 +527,26 @@ python scripts/test_chat_completions.py gw-sk-your-key
 
 **Meeting-ready summary:**
 > I wired the chat endpoint for real SSE streaming: authenticated clients set stream=true and receive OpenAI-compatible event-stream chunks forwarded chunk-by-chunk. Provider errors before the first byte still return structured JSON errors.
+
+---
+
+### Task 4.3 — Client disconnect cancellation
+
+**Date:** 2026-07-15  
+**Commit:** _(pending push)_
+
+**What we built:**
+- `_sse_event_generator()` in `app/routes/chat.py` — polls `request.is_disconnected()`, closes provider stream in `finally`
+- Updated `app/providers/openai.py` — treat `httpx.StreamClosed` as clean shutdown when upstream is cancelled
+- `scripts/test_stream_cancel.py` — reads a few SSE events then closes connection early
+
+**Decisions:**
+- **`await stream_iter.aclose()`** in `finally` — closes async generator, exits httpx `stream()` context, cancels upstream HTTP
+- Check disconnect **before each yield** — stop forwarding and break loop
+- Handle **`asyncio.CancelledError`** — ASGI server may cancel the stream task on client drop
+
+**Tests:**
+- `python scripts/test_stream_cancel.py gw-sk-...` — client drops after 5 events; check uvicorn logs for cancellation message
+
+**Meeting-ready summary:**
+> When a client disconnects mid-stream, the gateway stops forwarding SSE chunks and closes the provider async generator, which tears down the httpx upstream connection instead of letting OpenAI keep generating tokens nobody reads.

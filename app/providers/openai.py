@@ -86,6 +86,8 @@ class OpenAIProvider(LLMProvider):
         except httpx.TimeoutException as exc:
             raise OpenAIProviderError("OpenAI request timed out", is_timeout=True) from exc
         except httpx.RequestError as exc:
+            if isinstance(exc, httpx.StreamClosed):
+                return
             raise OpenAIProviderError(f"OpenAI connection error: {exc}") from exc
 
     async def aclose(self) -> None:

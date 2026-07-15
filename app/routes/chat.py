@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from collections.abc import AsyncIterator
 from typing import Annotated
@@ -42,6 +43,44 @@ def _to_completion_request(body: ChatCompletionRequest) -> CompletionRequest:
     )
 
 
+async def _sse_event_generator(
+    http_request: Request,
+    project: Project,
+    stream_iter: AsyncIterator[str],
+    first_chunk: str | None,
+) -> AsyncIterator[str]:
+    """Forward SSE events and cancel upstream when the client disconnects."""
+    try:
+        if first_chunk is not None:
+            if await http_request.is_disconnected():
+                logger.info(
+                    "Client disconnected before stream delivery project_id=%s",
+                    project.id,
+                )
+                return
+            yield first_chunk
+
+        async for sse_event in stream_iter:
+            if await http_request.is_disconnected():
+                logger.info(
+                    "Client disconnected mid-stream, cancelling upstream project_id=%s",
+                    project.id,
+                )
+                break
+            yield sse_event
+    except OpenAIProviderError as exc:
+        logger.warning(
+            "Provider stream interrupted for project_id=%s: %s",
+            project.id,
+            exc.message,
+        )
+    except asyncio.CancelledError:
+        logger.info("Stream task cancelled for project_id=%s", project.id)
+        raise
+    finally:
+        await stream_iter.aclose()
+
+
 @router.post("/chat/completions", response_model=None)
 async def create_chat_completion(
     body: ChatCompletionRequest,
@@ -70,21 +109,8 @@ async def create_chat_completion(
             logger.warning("Provider stream error for project_id=%s: %s", project.id, exc.message)
             raise map_openai_provider_error(exc) from exc
 
-        async def event_generator() -> AsyncIterator[str]:
-            if first_chunk is not None:
-                yield first_chunk
-            try:
-                async for sse_event in stream_iter:
-                    yield sse_event
-            except OpenAIProviderError as exc:
-                logger.warning(
-                    "Provider stream interrupted for project_id=%s: %s",
-                    project.id,
-                    exc.message,
-                )
-
         return StreamingResponse(
-            event_generator(),
+            _sse_event_generator(request, project, stream_iter, first_chunk),
             media_type="text/event-stream",
             headers=SSE_HEADERS,
         )
