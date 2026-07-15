@@ -628,7 +628,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 5.1 — `requests` table migration + ORM model
 
 **Date:** 2026-07-15  
-**Commit:** _(pending push)_
+**Commit:** `8710090`
 
 **What we built:**
 - `migrations/versions/0002_create_requests_table.py` — `requests` table per architecture spec
@@ -656,3 +656,31 @@ python scripts/test_chat_completions.py gw-sk-your-key
 
 **Meeting-ready summary:**
 > I added the requests table — the foundation for observability. Every chat completion will log latency, tokens, cost, and status here so we can compute p50/p95/p99 percentiles instead of meaningless averages.
+
+---
+
+### Task 5.2 — Wire request logging into chat completions
+
+**Date:** 2026-07-15  
+**Commit:** _(pending push)_
+
+**What we built:**
+- `app/observability/request_log.py` — `persist_request_log()` writes to `requests` table
+- `app/observability/sse_usage.py` — parse token usage from streaming SSE chunks
+- Updated `app/routes/chat.py` — log success/error for non-streaming and streaming paths
+- Updated `app/providers/openai.py` — `stream_options.include_usage` for streaming token counts
+- `scripts/test_request_logging.py` — E2E check after chat completion
+- `scripts/test_sse_usage.py` — offline usage parser test
+
+**Decisions:**
+- **Own DB session per log** — safe for streaming (runs after response body finishes)
+- **Latency** measured wall-clock from route entry to log write
+- **cost_usd = 0** for now — cost calculation in Task 5.3
+- Stream outcomes: `success` ([DONE]), `error` (provider fail, disconnect, incomplete)
+
+**Tests:**
+- `python scripts/test_sse_usage.py` → SSE usage parsing OK
+- `python scripts/test_request_logging.py gw-sk-...` → row in `requests` table
+
+**Meeting-ready summary:**
+> Every chat completion now writes a row to the requests table with latency, tokens, and status. Streaming requests include usage via OpenAI's stream_options, and errors are logged before we return structured error responses to the client.

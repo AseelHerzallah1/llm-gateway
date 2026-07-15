@@ -143,6 +143,8 @@ def _build_payload(request: CompletionRequest, *, stream: bool) -> dict:
         payload["temperature"] = request.temperature
     if request.max_tokens is not None:
         payload["max_tokens"] = request.max_tokens
+    if stream:
+        payload["stream_options"] = {"include_usage": True}
     return payload
 
 
