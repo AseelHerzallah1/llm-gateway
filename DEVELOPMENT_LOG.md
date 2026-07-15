@@ -483,7 +483,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 4.1 — Provider streaming interface + OpenAI SSE
 
 **Date:** 2026-07-15  
-**Commit:** _(pending push)_
+**Commit:** `1bf98a1`
 
 **What we built:**
 - `app/providers/base.py` — `stream()` abstract method on `LLMProvider`
@@ -502,3 +502,28 @@ python scripts/test_chat_completions.py gw-sk-your-key
 
 **Meeting-ready summary:**
 > I added streaming to the provider layer: OpenAIProvider opens an httpx stream, reads SSE lines as they arrive, and yields them without buffering the full response. This is the foundation for the gateway's real-time token proxy in the next task.
+
+---
+
+### Task 4.2 — SSE streaming endpoint
+
+**Date:** 2026-07-15  
+**Commit:** _(pending push)_
+
+**What we built:**
+- Updated `app/routes/chat.py` — `stream: true` returns `StreamingResponse` (`text/event-stream`)
+- Prefetch first SSE chunk before starting response so provider HTTP errors map to JSON (502/504/429/400)
+- SSE headers: `Cache-Control`, `Connection`, `X-Accel-Buffering`
+- `scripts/test_chat_stream.py` — manual HTTP streaming test
+
+**Decisions:**
+- `response_model=None` on route — FastAPI cannot union JSON and SSE response types
+- Removed `streaming_not_supported` rejection — streaming enabled for Phase 4
+- Mid-stream provider failures log and terminate SSE (HTTP status already committed as 200)
+
+**Tests:**
+- `POST /v1/chat/completions` with `stream: true` without auth → 401 (verified)
+- Full E2E: `python scripts/test_chat_stream.py gw-sk-...` with uvicorn running
+
+**Meeting-ready summary:**
+> I wired the chat endpoint for real SSE streaming: authenticated clients set stream=true and receive OpenAI-compatible event-stream chunks forwarded chunk-by-chunk. Provider errors before the first byte still return structured JSON errors.
