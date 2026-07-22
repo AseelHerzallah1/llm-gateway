@@ -880,10 +880,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 6.3 — `cache_entries` table + persistence
 
 **Date:** 2026-07-22  
-**Commit:** _(pending)_
-
-**What we built:**
-- Migration `0003_create_cache_entries_table.py` — `cache_entries` with JSONB embeddings
+**Commit:** `7a11255` — `cache_entries` with JSONB embeddings
 - `app/db/models/cache_entry.py` — ORM model with `use_count`, `last_used_at`
 - `app/cache/persistence.py` — persist, hydrate on startup, increment use_count on hit
 - Updated chat store/hit path to write/read PostgreSQL
@@ -906,10 +903,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 6.5 — Threshold tuning + hit rate documentation
 
 **Date:** 2026-07-22  
-**Commit:** _(pending)_
-
-**What we built:**
-- `app/cache/threshold_pairs.py` — prompt pairs for experiments (incl. diabetes symptoms vs causes)
+**Commit:** _(pending 6.5)_ — prompt pairs for experiments (incl. diabetes symptoms vs causes)
 - `scripts/test_cache_thresholds.py` — live similarity measurements at 0.92
 - `docs/CACHE_TUNING.md` — measured similarities, trade-offs, recommendations
 

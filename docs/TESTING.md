@@ -654,10 +654,51 @@ The API key stays in browser `sessionStorage` only — it is not sent to any rou
 | `scripts/test_metrics.py` | Gateway + PostgreSQL | Gateway key + running uvicorn |
 | `scripts/test_requests.py` | Gateway + PostgreSQL | Gateway key + running uvicorn |
 | `scripts/test_dashboard.py` | Gateway | Running uvicorn |
+| `scripts/test_cache_similarity.py` | None (offline) | None |
+| `scripts/test_semantic_cache.py` | None (offline) | None |
+| `scripts/test_embeddings.py` | OpenAI | `OPENAI_API_KEY` |
+| `scripts/test_cache_persistence.py` | PostgreSQL | Migration 0003 |
+| `scripts/test_cache_hit.py` | Gateway + OpenAI | Gateway key + running uvicorn |
+| `scripts/test_cache_thresholds.py` | OpenAI | `OPENAI_API_KEY` |
 
 ---
 
-## What's next (Phase 6+)
+## Phase 6 — Semantic cache
 
-- **Phase 6:** Semantic cache — embeddings, similarity lookup, cache hits in metrics
-- **Phase 8:** Automated test suite expansion, benchmarks
+### 18. Cache similarity (offline)
+
+```powershell
+python scripts/test_cache_similarity.py
+python scripts/test_semantic_cache.py
+```
+
+### 19. Embeddings (live)
+
+```powershell
+python scripts/test_embeddings.py
+```
+
+### 20. Cache persistence
+
+```powershell
+alembic upgrade head
+python scripts/test_cache_persistence.py
+```
+
+### 21. Cache hit (E2E)
+
+```powershell
+python scripts/test_cache_hit.py gw-sk-your-key
+```
+
+### 22. Threshold tuning
+
+```powershell
+python scripts/test_cache_thresholds.py
+```
+
+See `docs/CACHE_TUNING.md` for measured similarities and threshold trade-offs.
+
+---
+
+## What's next (Phase 7+)
