@@ -743,7 +743,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 5.5 — Request log listing
 
 **Date:** 2026-07-22  
-**Commit:** _(pending)_
+**Commit:** `25e722e`
 
 **What we built:**
 - `app/observability/request_list.py` — paginated query with status/model filters
