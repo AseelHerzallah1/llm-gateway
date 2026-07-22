@@ -9,7 +9,7 @@ from app.cache.types import CacheEntry, CacheLookupResult, new_cache_entry
 
 
 class InMemorySemanticCache:
-    """Process-local cache. Entries are lost on restart (acceptable for v1)."""
+    """Process-local cache backed by PostgreSQL persistence on store/hydrate."""
 
     def __init__(self, similarity_threshold: float) -> None:
         if not 0.0 <= similarity_threshold <= 1.0:
@@ -24,6 +24,10 @@ class InMemorySemanticCache:
     @property
     def size(self) -> int:
         return len(self._entries)
+
+    def load_entry(self, entry: CacheEntry) -> None:
+        """Load one entry from the database without persisting again."""
+        self._entries.append(entry)
 
     def lookup(
         self,
@@ -47,7 +51,11 @@ class InMemorySemanticCache:
         if best_entry is None or best_similarity < self._threshold:
             return None
 
-        return CacheLookupResult(response=best_entry.response, similarity=best_similarity)
+        return CacheLookupResult(
+            response=best_entry.response,
+            similarity=best_similarity,
+            entry_id=best_entry.entry_id,
+        )
 
     def store(
         self,
@@ -55,9 +63,19 @@ class InMemorySemanticCache:
         model: str,
         embedding: list[float],
         response: str,
-    ) -> None:
-        """Append a new cache entry."""
-        self._entries.append(new_cache_entry(project_id, model, embedding, response))
+        *,
+        entry_id: UUID | None = None,
+    ) -> CacheEntry:
+        """Append a new in-memory cache entry."""
+        entry = new_cache_entry(
+            project_id,
+            model,
+            embedding,
+            response,
+            entry_id=entry_id,
+        )
+        self._entries.append(entry)
+        return entry
 
     def clear(self) -> None:
         """Remove all entries (used in tests)."""

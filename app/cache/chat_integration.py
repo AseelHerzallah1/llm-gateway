@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 
 from fastapi import Request
 
+from app.cache.persistence import persist_cache_entry, record_cache_use
 from app.db.models.project import Project
 from app.embeddings.prompt import messages_to_embed_text
 from app.observability.request_log import RequestLogCreate, persist_request_log
@@ -72,11 +73,22 @@ async def try_cached_non_streaming_completion(
         return None
 
     logger.info(
-        "Semantic cache hit project_id=%s model=%s similarity=%.4f",
+        "Semantic cache hit project_id=%s model=%s similarity=%.4f entry_id=%s",
         project.id,
         body.model,
         hit.similarity,
+        hit.entry_id,
     )
+
+    if hit.entry_id is not None:
+        try:
+            await record_cache_use(hit.entry_id)
+        except Exception as exc:
+            logger.warning(
+                "Failed to update cache use_count for entry_id=%s: %s",
+                hit.entry_id,
+                exc,
+            )
 
     await persist_request_log(
         RequestLogCreate(
@@ -105,12 +117,25 @@ async def store_non_streaming_completion(
 
     try:
         embedding = await embedding_provider.embed(embed_text)
-        cache.store(project.id, model, embedding, result.content)
+        entry_id = await persist_cache_entry(
+            project.id,
+            model,
+            embedding,
+            result.content,
+        )
+        cache.store(
+            project.id,
+            model,
+            embedding,
+            result.content,
+            entry_id=entry_id,
+        )
         logger.info(
-            "Semantic cache store project_id=%s model=%s entries=%d",
+            "Semantic cache store project_id=%s model=%s entries=%d entry_id=%s",
             project.id,
             model,
             cache.size,
+            entry_id,
         )
     except Exception as exc:
         logger.warning(

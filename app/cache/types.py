@@ -9,6 +9,7 @@ from uuid import UUID
 
 @dataclass(frozen=True)
 class CacheEntry:
+    entry_id: UUID | None
     project_id: UUID
     model: str
     embedding: list[float]
@@ -20,6 +21,7 @@ class CacheEntry:
 class CacheLookupResult:
     response: str
     similarity: float
+    entry_id: UUID | None = None
 
 
 def new_cache_entry(
@@ -27,11 +29,15 @@ def new_cache_entry(
     model: str,
     embedding: list[float],
     response: str,
+    *,
+    entry_id: UUID | None = None,
+    created_at: datetime | None = None,
 ) -> CacheEntry:
     return CacheEntry(
+        entry_id=entry_id,
         project_id=project_id,
         model=model,
         embedding=embedding,
         response=response,
-        created_at=datetime.now(timezone.utc),
+        created_at=created_at or datetime.now(timezone.utc),
     )

@@ -14,6 +14,7 @@ from app.errors import (
     validation_exception_handler,
 )
 from app.cache.factory import create_semantic_cache
+from app.cache.persistence import hydrate_semantic_cache
 from app.embeddings.openai import create_openai_embedding_provider
 from app.providers.openai import create_openai_provider
 from app.routes.chat import router as chat_router
@@ -44,9 +45,11 @@ async def lifespan(app: FastAPI):
     logger.info("LLM provider initialized: %s", app.state.llm_provider.name)
 
     app.state.semantic_cache = create_semantic_cache()
+    loaded = await hydrate_semantic_cache(app.state.semantic_cache)
     logger.info(
-        "Semantic cache initialized (threshold=%.2f)",
+        "Semantic cache initialized (threshold=%.2f, entries=%d)",
         app.state.semantic_cache.similarity_threshold,
+        loaded,
     )
 
     app.state.embedding_provider = create_openai_embedding_provider()

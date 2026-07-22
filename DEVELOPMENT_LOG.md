@@ -873,4 +873,59 @@ python scripts/test_chat_completions.py gw-sk-your-key
 **Meeting-ready summary:**
 > Non-streaming chat now embeds the prompt, checks the semantic cache, and returns the stored answer on a similarity hit — skipping OpenAI entirely while logging cache_hit for metrics.
 
+> **Plan note:** This commit maps to **plan task 6.4** (cache lookup before provider). Plan **6.3** (DB persistence) followed in the next commit.
+
+---
+
+### Task 6.3 — `cache_entries` table + persistence
+
+**Date:** 2026-07-22  
+**Commit:** _(pending)_
+
+**What we built:**
+- Migration `0003_create_cache_entries_table.py` — `cache_entries` with JSONB embeddings
+- `app/db/models/cache_entry.py` — ORM model with `use_count`, `last_used_at`
+- `app/cache/persistence.py` — persist, hydrate on startup, increment use_count on hit
+- Updated chat store/hit path to write/read PostgreSQL
+- `scripts/test_cache_persistence.py` — store, hydrate, use_count test
+
+**Decisions:**
+- **JSONB embeddings** — no pgvector yet; linear scan matches in-memory v1 approach
+- **Hydrate on startup** — reload all rows into process memory for fast lookup
+- **use_count** — incremented on cache hit for reuse analytics
+
+**Tests:**
+- `alembic upgrade head` → migration 0003 applies
+- `python scripts/test_cache_persistence.py` → Cache persistence OK
+
+**Meeting-ready summary:**
+> Cache entries now survive process restarts — embeddings and responses persist in PostgreSQL, hydrate into memory at startup, and track reuse via use_count.
+
+---
+
+### Task 6.5 — Threshold tuning + hit rate documentation
+
+**Date:** 2026-07-22  
+**Commit:** _(pending)_
+
+**What we built:**
+- `app/cache/threshold_pairs.py` — prompt pairs for experiments (incl. diabetes symptoms vs causes)
+- `scripts/test_cache_thresholds.py` — live similarity measurements at 0.92
+- `docs/CACHE_TUNING.md` — measured similarities, trade-offs, recommendations
+
+**Decisions:**
+- **Keep 0.92 default** — identical prompts hit; same-topic-different-intent pairs miss (diabetes 0.57)
+- **Paraphrases miss at 0.92** — capital-of-France paraphrase measured 0.82; documented as trade-off
+- **Hit rate via existing metrics** — `cache_hit_rate` on `/v1/metrics`, no new endpoint
+
+**Measured (text-embedding-3-small):**
+- symptoms vs causes: **0.5696** → MISS at 0.92 ✓
+- paraphrase capital: **0.8224** → MISS at 0.92
+
+**Tests:**
+- `python scripts/test_cache_thresholds.py` → Threshold tuning OK
+
+**Meeting-ready summary:**
+> I measured real embedding similarities for hit/miss pairs and documented why 0.92 avoids false hits like symptoms vs causes, at the cost of missing light paraphrases.
+
 ---
