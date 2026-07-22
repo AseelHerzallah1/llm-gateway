@@ -771,7 +771,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 6.1 — OpenAI embedding provider
 
 **Date:** 2026-07-22  
-**Commit:** _(pending)_
+**Commit:** `866716c`
 
 **What we built:**
 - `app/embeddings/base.py` — `EmbeddingProvider` interface
