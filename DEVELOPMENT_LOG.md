@@ -823,7 +823,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 6.2 — In-memory semantic cache
 
 **Date:** 2026-07-22  
-**Commit:** _(pending)_
+**Commit:** `b7903eb`
 
 **What we built:**
 - `app/cache/similarity.py` — pure-Python cosine similarity
