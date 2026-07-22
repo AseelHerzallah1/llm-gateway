@@ -662,7 +662,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 5.2 — Wire request logging into chat completions
 
 **Date:** 2026-07-15  
-**Commit:** _(pending push)_
+**Commit:** `430e091`
 
 **What we built:**
 - `app/observability/request_log.py` — `persist_request_log()` writes to `requests` table
@@ -690,10 +690,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 5.3 — Cost calculation
 
 **Date:** 2026-07-22  
-**Commit:** _(pending push)_
-
-**What we built:**
-- `app/observability/cost.py` — per-model token pricing and `estimate_cost_usd()`
+**Commit:** `d221dfe`
 - Updated `persist_request_log()` — auto-computes cost when tokens are present
 - `scripts/test_cost.py` — offline pricing tests
 - Updated `scripts/test_request_logging.py` — asserts `cost_usd > 0` on success
@@ -712,3 +709,33 @@ python scripts/test_chat_completions.py gw-sk-your-key
 
 **Meeting-ready summary:**
 > I added per-model cost estimation from token counts using published OpenAI rates. Every successful logged request now stores cost_usd, which feeds into the metrics API we'll build next.
+
+---
+
+### Task 5.4 — Metrics endpoint
+
+**Date:** 2026-07-22  
+**Commit:** _(pending)_
+
+**What we built:**
+- `app/observability/metrics.py` — `compute_metrics()` and pure-Python percentile helper
+- `app/schemas/metrics.py` — response models for `/v1/metrics`
+- `app/routes/metrics.py` — `GET /v1/metrics` with auth and optional filters
+- Registered metrics router in `app/main.py`
+- `scripts/test_percentiles.py` — offline percentile tests
+- `scripts/test_metrics.py` — E2E metrics fetch
+
+**Decisions:**
+- **Percentiles, not averages** — p50/p95/p99 from sorted `latency_ms` values in the window
+- **Project scoping** — metrics always limited to the authenticated project; cross-project `project_id` returns 403
+- **Default window** — last 24 hours (`since` query param overrides start)
+- **cache_hit_rate** — computed now; stays 0 until Phase 6 semantic cache
+
+**Tests:**
+- `python scripts/test_percentiles.py` → Percentile helper OK
+- `python scripts/test_metrics.py gw-sk-...` → JSON with latency percentiles
+
+**Meeting-ready summary:**
+> I exposed GET /v1/metrics so clients can see p50/p95/p99 latency, success rate, token totals, and cost for their project over a time window — the observability read path on top of the request logs we already persist.
+
+---
