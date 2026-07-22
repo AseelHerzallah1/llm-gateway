@@ -935,7 +935,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 7.1 — Anthropic provider
 
 **Date:** 2026-07-22  
-**Commit:** _(pending)_
+**Commit:** `8ecb6c6`
 
 **What we built:**
 - `app/providers/anthropic.py` — Messages API client (non-streaming + streaming)
