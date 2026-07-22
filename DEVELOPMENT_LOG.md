@@ -819,3 +819,32 @@ python scripts/test_chat_completions.py gw-sk-your-key
 > I added an embedding client that turns chat messages into vectors via OpenAI's embeddings API — the first building block for semantic cache lookup by cosine similarity.
 
 ---
+
+### Task 6.2 — In-memory semantic cache
+
+**Date:** 2026-07-22  
+**Commit:** _(pending)_
+
+**What we built:**
+- `app/cache/similarity.py` — pure-Python cosine similarity
+- `app/cache/types.py` — `CacheEntry` and `CacheLookupResult`
+- `app/cache/memory.py` — `InMemorySemanticCache` lookup/store
+- `app/cache/factory.py` — builds cache from `CACHE_SIMILARITY_THRESHOLD`
+- Initialized `app.state.semantic_cache` in `app/main.py` lifespan
+- `scripts/test_cache_similarity.py` — offline similarity tests
+- `scripts/test_semantic_cache.py` — offline hit/miss/scoping tests
+
+**Decisions:**
+- **In-memory only** — entries lost on restart; pgvector deferred per SCOPE
+- **Scoped by project + model** — no cross-tenant or cross-model hits
+- **Best match above threshold** — linear scan over entries (fine for v1 portfolio scale)
+- **Not wired into chat yet** — lookup on completions lands in Task 6.3
+
+**Tests:**
+- `python scripts/test_cache_similarity.py` → Cosine similarity OK
+- `python scripts/test_semantic_cache.py` → Semantic cache OK
+
+**Meeting-ready summary:**
+> I built an in-memory semantic cache that finds the nearest stored embedding by cosine similarity, scoped per project and model — ready to plug into the chat route so similar prompts skip the provider call.
+
+---

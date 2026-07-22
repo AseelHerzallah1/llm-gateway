@@ -13,6 +13,7 @@ from app.errors import (
     gateway_exception_handler,
     validation_exception_handler,
 )
+from app.cache.factory import create_semantic_cache
 from app.providers.openai import create_openai_provider
 from app.routes.chat import router as chat_router
 from app.routes.dashboard import router as dashboard_router
@@ -40,6 +41,12 @@ async def lifespan(app: FastAPI):
 
     app.state.llm_provider = create_openai_provider()
     logger.info("LLM provider initialized: %s", app.state.llm_provider.name)
+
+    app.state.semantic_cache = create_semantic_cache()
+    logger.info(
+        "Semantic cache initialized (threshold=%.2f)",
+        app.state.semantic_cache.similarity_threshold,
+    )
 
     yield
 
