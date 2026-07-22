@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LLM Gateway — Dashboard</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #0f1419;
+      --panel: #1a2332;
+      --text: #e7ecf3;
+      --muted: #8b98a8;
+      --accent: #3b82f6;
+      --border: #2a3544;
+      --ok: #22c55e;
+      --warn: #f59e0b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    main { max-width: 1100px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+    h1 { margin: 0 0 0.25rem; font-size: 1.75rem; }
+    .subtitle { color: var(--muted); margin-bottom: 1.5rem; }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+    label { display: block; font-size: 0.875rem; color: var(--muted); margin-bottom: 0.35rem; }
+    input[type="password"], input[type="text"] {
+      width: 100%;
+      padding: 0.65rem 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+    }
+    .row { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: end; }
+    .row > * { flex: 1 1 220px; }
+    button {
+      padding: 0.65rem 1rem;
+      border: none;
+      border-radius: 8px;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0.75rem;
+    }
+    .metric {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.85rem;
+    }
+    .metric-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .metric-value { font-size: 1.35rem; font-weight: 700; margin-top: 0.25rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    th, td { text-align: left; padding: 0.55rem 0.4rem; border-bottom: 1px solid var(--border); }
+    th { color: var(--muted); font-weight: 600; }
+    .status-success { color: var(--ok); }
+    .status-error { color: var(--warn); }
+    .error { color: #f87171; margin-top: 0.75rem; white-space: pre-wrap; }
+    .window { color: var(--muted); font-size: 0.875rem; margin-bottom: 0.75rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>LLM Gateway</h1>
+    <p class="subtitle">Observability dashboard — last 24 hours</p>
+
+    <section class="panel">
+      <div class="row">
+        <div>
+          <label for="api-key">Gateway API key</label>
+          <input id="api-key" type="password" placeholder="gw-sk-..." autocomplete="off" />
+        </div>
+        <div style="flex: 0 0 auto;">
+          <button id="refresh-btn" type="button">Refresh</button>
+        </div>
+      </div>
+      <p id="error" class="error" hidden></p>
+    </section>
+
+    <section class="panel">
+      <h2 style="margin-top:0;font-size:1.1rem;">Metrics</h2>
+      <p id="window" class="window">—</p>
+      <div class="metrics" id="metrics-grid">
+        <div class="metric"><div class="metric-label">Total requests</div><div class="metric-value" id="total-requests">—</div></div>
+        <div class="metric"><div class="metric-label">Success rate</div><div class="metric-value" id="success-rate">—</div></div>
+        <div class="metric"><div class="metric-label">Cache hit rate</div><div class="metric-value" id="cache-hit-rate">—</div></div>
+        <div class="metric"><div class="metric-label">p50 latency</div><div class="metric-value" id="p50">—</div></div>
+        <div class="metric"><div class="metric-label">p95 latency</div><div class="metric-value" id="p95">—</div></div>
+        <div class="metric"><div class="metric-label">p99 latency</div><div class="metric-value" id="p99">—</div></div>
+        <div class="metric"><div class="metric-label">Input tokens</div><div class="metric-value" id="input-tokens">—</div></div>
+        <div class="metric"><div class="metric-label">Output tokens</div><div class="metric-value" id="output-tokens">—</div></div>
+        <div class="metric"><div class="metric-label">Cost (USD)</div><div class="metric-value" id="cost-usd">—</div></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 style="margin-top:0;font-size:1.1rem;">Recent requests</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Model</th>
+            <th>Status</th>
+            <th>Latency</th>
+            <th>Tokens</th>
+            <th>Cost</th>
+            <th>Cache</th>
+          </tr>
+        </thead>
+        <tbody id="requests-body">
+          <tr><td colspan="7">Enter API key and click Refresh</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    const keyInput = document.getElementById("api-key");
+    const refreshBtn = document.getElementById("refresh-btn");
+    const errorEl = document.getElementById("error");
+
+    const savedKey = sessionStorage.getItem("gateway_api_key");
+    if (savedKey) keyInput.value = savedKey;
+
+    function showError(message) {
+      errorEl.hidden = !message;
+      errorEl.textContent = message || "";
+    }
+
+    function pct(value) {
+      return `${(value * 100).toFixed(1)}%`;
+    }
+
+    function ms(value) {
+      return `${value} ms`;
+    }
+
+    async function apiFetch(path) {
+      const apiKey = keyInput.value.trim();
+      if (!apiKey) throw new Error("Enter your gateway API key (gw-sk-...).");
+
+      sessionStorage.setItem("gateway_api_key", apiKey);
+
+      const response = await fetch(path, {
+        headers: { Authorization: `Bearer ${apiKey}` },
+      });
+
+      if (!response.ok) {
+        const body = await response.text();
+        throw new Error(`${path} failed (${response.status}): ${body}`);
+      }
+
+      return response.json();
+    }
+
+    function renderMetrics(data) {
+      document.getElementById("window").textContent =
+        `Window: ${data.window.since} → ${data.window.until}`;
+      document.getElementById("total-requests").textContent = data.total_requests;
+      document.getElementById("success-rate").textContent = pct(data.success_rate);
+      document.getElementById("cache-hit-rate").textContent = pct(data.cache_hit_rate);
+      document.getElementById("p50").textContent = ms(data.latency_ms.p50);
+      document.getElementById("p95").textContent = ms(data.latency_ms.p95);
+      document.getElementById("p99").textContent = ms(data.latency_ms.p99);
+      document.getElementById("input-tokens").textContent = data.tokens.input.toLocaleString();
+      document.getElementById("output-tokens").textContent = data.tokens.output.toLocaleString();
+      document.getElementById("cost-usd").textContent = `$${data.cost_usd.toFixed(6)}`;
+    }
+
+    function renderRequests(data) {
+      const tbody = document.getElementById("requests-body");
+      tbody.innerHTML = "";
+
+      if (!data.items.length) {
+        tbody.innerHTML = "<tr><td colspan=\"7\">No requests in this window</td></tr>";
+        return;
+      }
+
+      for (const item of data.items) {
+        const row = document.createElement("tr");
+        const statusClass = item.status === "success" ? "status-success" : "status-error";
+        row.innerHTML = `
+          <td>${new Date(item.created_at).toLocaleString()}</td>
+          <td>${item.model}</td>
+          <td class="${statusClass}">${item.status}</td>
+          <td>${item.latency_ms} ms</td>
+          <td>${item.input_tokens}/${item.output_tokens}</td>
+          <td>$${item.cost_usd.toFixed(6)}</td>
+          <td>${item.cache_hit ? "hit" : "—"}</td>
+        `;
+        tbody.appendChild(row);
+      }
+    }
+
+    async function refresh() {
+      showError("");
+      refreshBtn.disabled = true;
+
+      try {
+        const [metrics, requests] = await Promise.all([
+          apiFetch("/v1/metrics"),
+          apiFetch("/v1/requests?limit=20"),
+        ]);
+        renderMetrics(metrics);
+        renderRequests(requests);
+      } catch (err) {
+        showError(err.message || String(err));
+      } finally {
+        refreshBtn.disabled = false;
+      }
+    }
+
+    refreshBtn.addEventListener("click", refresh);
+    if (savedKey) refresh();
+  </script>
+</body>
+</html>

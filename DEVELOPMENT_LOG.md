@@ -766,6 +766,31 @@ python scripts/test_chat_completions.py gw-sk-your-key
 
 ---
 
+### Task 5.6 — Minimal dashboard + testing docs
+
+**Date:** 2026-07-22  
+**Commit:** _(pending)_
+
+**What we built:**
+- `app/static/dashboard.html` — single-page metrics + recent requests UI
+- `app/routes/dashboard.py` — `GET /dashboard` (no server-side auth; browser calls APIs with user key)
+- `scripts/test_dashboard.py` — verifies HTML page is served
+- Updated `docs/TESTING.md` — Phase 5 test order, checklist, script reference
+
+**Decisions:**
+- **Numbers over UI polish** — cards for p50/p95/p99, success rate, cost; table for recent requests
+- **API key in browser only** — stored in `sessionStorage`; dashboard route does not accept keys server-side
+- **Same data as APIs** — fetches `/v1/metrics` and `/v1/requests?limit=20` client-side
+
+**Tests:**
+- `python scripts/test_dashboard.py` → Dashboard page OK
+- Manual: open `http://127.0.0.1:8001/dashboard`, paste key, Refresh
+
+**Meeting-ready summary:**
+> I shipped a one-page observability dashboard that reads live metrics and request logs through the same authenticated APIs — good for demos and screenshots without building a full frontend.
+
+---
+
 ## Phase 6 — Semantic cache
 
 ### Task 6.1 — OpenAI embedding provider

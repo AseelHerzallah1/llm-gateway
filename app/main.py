@@ -15,6 +15,7 @@ from app.errors import (
 )
 from app.providers.openai import create_openai_provider
 from app.routes.chat import router as chat_router
+from app.routes.dashboard import router as dashboard_router
 from app.routes.health import router as health_router
 from app.routes.metrics import router as metrics_router
 from app.routes.requests import router as requests_router
@@ -58,6 +59,7 @@ app.add_exception_handler(GatewayHTTPException, gateway_exception_handler)
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
 
 app.include_router(health_router)
+app.include_router(dashboard_router)
 app.include_router(chat_router)
 app.include_router(metrics_router)
 app.include_router(requests_router)

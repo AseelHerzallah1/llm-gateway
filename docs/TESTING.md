@@ -1,6 +1,6 @@
 # Manual Testing — LLM Gateway
 
-Step-by-step checks for Phases 3–4: non-streaming proxy, SSE streaming, cancellation, auth, and error mapping.
+Step-by-step checks for Phases 3–5: non-streaming proxy, SSE streaming, observability, auth, and error mapping.
 
 **Local base URL:** `http://127.0.0.1:8001`  
 (Port 8001 avoids conflicts with other services on 8000.)
@@ -79,6 +79,13 @@ Phase 4 — Streaming
   8. Gateway SSE stream            → stream=true via HTTP
   9. Client disconnect cancel      → upstream cancellation
  10. Concurrent streams            → parallel stream=true requests
+
+Phase 5 — Observability
+ 11. Request logging               → row in requests table after chat
+ 12. Cost calculation              → cost_usd > 0 on success
+ 13. Metrics endpoint              → p50/p95/p99 percentiles
+ 14. Request log API                → paginated GET /v1/requests
+ 15. Dashboard                     → browser page at /dashboard
 ```
 
 ---
@@ -489,6 +496,85 @@ Verifies connect timeout to unreachable host and idle timeout → `504 gateway_t
 
 ---
 
+## Phase 5 — Observability
+
+Run after Phase 4. Requires migration `0002` (`requests` table) and at least one successful chat completion logged.
+
+### 11. SSE usage parser (offline)
+
+```powershell
+python scripts/test_sse_usage.py
+```
+
+**Expected:** `SSE usage parsing OK`
+
+### 12. Request logging (E2E)
+
+Send a non-streaming chat completion, then confirm a row was written:
+
+```powershell
+python scripts/test_request_logging.py gw-sk-your-key
+```
+
+**Expected:** `Request logging OK` with `Cost USD` > 0.
+
+### 13. Cost calculation (offline)
+
+```powershell
+python scripts/test_cost.py
+```
+
+**Expected:** `Cost estimation OK`
+
+### 14. Percentile helper (offline)
+
+```powershell
+python scripts/test_percentiles.py
+```
+
+**Expected:** `Percentile helper OK`
+
+### 15. Metrics endpoint
+
+```powershell
+python scripts/test_metrics.py gw-sk-your-key
+```
+
+**Expected:** JSON with `latency_ms.p50`, `p95`, `p99`, token totals, and `cost_usd`.
+
+Optional manual check:
+
+```powershell
+curl -H "Authorization: Bearer gw-sk-your-key" http://127.0.0.1:8001/v1/metrics
+```
+
+### 16. Request log listing
+
+```powershell
+python scripts/test_requests.py gw-sk-your-key
+```
+
+**Expected:** `Requests endpoint OK` with `total` ≥ 1 and expected item fields.
+
+### 17. Dashboard page
+
+```powershell
+python scripts/test_dashboard.py
+```
+
+**Expected:** `Dashboard page OK`
+
+Manual UI check (good for screenshots):
+
+1. Open `http://127.0.0.1:8001/dashboard`
+2. Paste your `gw-sk-...` key
+3. Click **Refresh**
+4. Confirm metrics cards and recent-requests table populate
+
+The API key stays in browser `sessionStorage` only — it is not sent to any route except `/v1/metrics` and `/v1/requests`.
+
+---
+
 ## Checklists
 
 ### Phase 3
@@ -515,6 +601,18 @@ Verifies connect timeout to unreachable host and idle timeout → `504 gateway_t
 | 5 | Concurrent streams | `python scripts/test_concurrent_streams.py <key>` | All N streams + non-stream requests succeed |
 | 6 | Provider timeouts | `python scripts/test_provider_timeouts.py` | Prints `Provider timeout handling OK` |
 
+### Phase 5
+
+| # | Test | Command / action | Pass criteria |
+|---|------|------------------|---------------|
+| 1 | SSE usage parser | `python scripts/test_sse_usage.py` | `SSE usage parsing OK` |
+| 2 | Cost calculation | `python scripts/test_cost.py` | `Cost estimation OK` |
+| 3 | Percentiles | `python scripts/test_percentiles.py` | `Percentile helper OK` |
+| 4 | Request logging | `python scripts/test_request_logging.py <key>` | Row logged, `cost_usd > 0` |
+| 5 | Metrics API | `python scripts/test_metrics.py <key>` | Latency percentiles returned |
+| 6 | Requests API | `python scripts/test_requests.py <key>` | Paginated list with fields |
+| 7 | Dashboard | `python scripts/test_dashboard.py` then open `/dashboard` | Page loads; Refresh shows data |
+
 ---
 
 ## Troubleshooting
@@ -528,7 +626,8 @@ Verifies connect timeout to unreachable host and idle timeout → `504 gateway_t
 | `relation "projects" does not exist` | Migrations not applied | `alembic upgrade head` |
 | Auth OK in script but 401 on HTTP | Wrong key in header | Re-copy key from seed output |
 | 502 `provider_error` | Bad `OPENAI_API_KEY` in `.env` | Fix server-side OpenAI key |
-| uvicorn reload loop | OneDrive syncing `.venv` | Drop `--reload` or use `--reload-dir app` |
+| 404 on `/v1/metrics` or `/v1/requests` | Old uvicorn without new routes | Restart uvicorn after pulling code |
+| 404 on `/dashboard` | Same as above | Restart uvicorn |
 | Docker app image pull fails | Network/CDN issue | Run DB in Docker, app locally (this guide) |
 | Stream hangs with no output | Client buffering | Use `curl -N` or the Python stream scripts |
 
@@ -548,10 +647,17 @@ Verifies connect timeout to unreachable host and idle timeout → `504 gateway_t
 | `scripts/test_stream_cancel.py` | Gateway + OpenAI | Gateway key + running uvicorn |
 | `scripts/test_concurrent_streams.py` | Gateway + OpenAI | Gateway key + running uvicorn |
 | `scripts/test_provider_timeouts.py` | None (offline) | None |
+| `scripts/test_sse_usage.py` | None (offline) | None |
+| `scripts/test_cost.py` | None (offline) | None |
+| `scripts/test_percentiles.py` | None (offline) | None |
+| `scripts/test_request_logging.py` | Gateway + OpenAI + PostgreSQL | Gateway key + running uvicorn |
+| `scripts/test_metrics.py` | Gateway + PostgreSQL | Gateway key + running uvicorn |
+| `scripts/test_requests.py` | Gateway + PostgreSQL | Gateway key + running uvicorn |
+| `scripts/test_dashboard.py` | Gateway | Running uvicorn |
 
 ---
 
-## What's next (Phase 5+)
+## What's next (Phase 6+)
 
-- **Phase 5:** Metrics (`GET /v1/metrics`) and request logging (`GET /v1/requests`)
-- **Phase 6:** Semantic cache behavior tests
+- **Phase 6:** Semantic cache — embeddings, similarity lookup, cache hits in metrics
+- **Phase 8:** Automated test suite expansion, benchmarks
