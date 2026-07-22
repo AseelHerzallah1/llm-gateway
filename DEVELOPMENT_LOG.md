@@ -1133,7 +1133,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 8.3b — Benchmark investigation + miss-path optimization
 
 **Date:** 2026-07-23  
-**Commit:** _(pending)_
+**Commit:** `f23492b`
 
 **Problem:** Initial benchmark showed +744 ms p50 overhead — too high to hand-wave in interviews.
 
