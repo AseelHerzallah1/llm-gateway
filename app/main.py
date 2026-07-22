@@ -17,6 +17,7 @@ from app.providers.openai import create_openai_provider
 from app.routes.chat import router as chat_router
 from app.routes.health import router as health_router
 from app.routes.metrics import router as metrics_router
+from app.routes.requests import router as requests_router
 from app.version import __version__
 
 logging.basicConfig(level=settings.log_level.upper())
@@ -59,3 +60,4 @@ app.add_exception_handler(RequestValidationError, validation_exception_handler)
 app.include_router(health_router)
 app.include_router(chat_router)
 app.include_router(metrics_router)
+app.include_router(requests_router)

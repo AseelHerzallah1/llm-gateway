@@ -739,3 +739,29 @@ python scripts/test_chat_completions.py gw-sk-your-key
 > I exposed GET /v1/metrics so clients can see p50/p95/p99 latency, success rate, token totals, and cost for their project over a time window — the observability read path on top of the request logs we already persist.
 
 ---
+
+### Task 5.5 — Request log listing
+
+**Date:** 2026-07-22  
+**Commit:** _(pending)_
+
+**What we built:**
+- `app/observability/request_list.py` — paginated query with status/model filters
+- `app/schemas/requests.py` — response models for `/v1/requests`
+- `app/routes/requests.py` — `GET /v1/requests` with auth
+- Registered requests router in `app/main.py`
+- `scripts/test_requests.py` — E2E list + filter validation
+
+**Decisions:**
+- **Newest first** — ordered by `created_at DESC`
+- **Project scoping** — only the authenticated project's rows
+- **Status filter** — `success`, `error`, or `cache_hit` (cache rows, not a status value)
+- **Pagination** — default limit 50, max 200, offset from 0
+
+**Tests:**
+- `python scripts/test_requests.py gw-sk-...` → paginated JSON with expected fields
+
+**Meeting-ready summary:**
+> I added GET /v1/requests so clients can browse individual request logs with pagination and filters — the drill-down companion to the aggregated metrics endpoint.
+
+---
