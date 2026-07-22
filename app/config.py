@@ -64,6 +64,9 @@ class Settings(BaseSettings):
     # Provider retries (Phase 7+)
     provider_max_retries: int = 2
     provider_retry_backoff_s: float = 0.5
+    provider_fallback_enabled: bool = True
+    provider_fallback_openai_model: str = "gpt-4o-mini"
+    provider_fallback_groq_model: str = "llama-3.3-70b-versatile"
 
 
 @lru_cache

@@ -1015,3 +1015,34 @@ python scripts/test_chat_completions.py gw-sk-your-key
 > Transient provider failures now retry with exponential backoff before the gateway returns an error — covering rate limits, upstream 5xx, and timeouts for both streaming and non-streaming requests.
 
 ---
+
+### Task 7.4 — Provider fallback
+
+**Date:** 2026-07-22  
+**Commit:** _(pending)_
+
+**What we built:**
+- `app/providers/fallback.py` — `complete_with_fallback()` and `stream_with_fallback()`
+- `ProviderRouter.get_fallback_target()` — maps primary provider → secondary provider + fallback model
+- Updated `app/routes/chat.py` — uses fallback wrappers instead of retry-only
+- Config: `PROVIDER_FALLBACK_ENABLED`, `PROVIDER_FALLBACK_OPENAI_MODEL`, `PROVIDER_FALLBACK_GROQ_MODEL`
+- `scripts/test_provider_fallback.py` — offline fallback test with failing primary + success fallback
+
+**Fallback rules (when enabled and secondary provider configured):**
+- Groq primary fails → OpenAI with `PROVIDER_FALLBACK_OPENAI_MODEL` (default `gpt-4o-mini`)
+- OpenAI primary fails → Groq with `PROVIDER_FALLBACK_GROQ_MODEL` (default `llama-3.3-70b-versatile`)
+- Anthropic primary fails → OpenAI with `PROVIDER_FALLBACK_OPENAI_MODEL`
+
+**Decisions:**
+- **Fallback after retries** — primary must exhaust retry policy before fallback runs
+- **Model swap on fallback** — request is retried with the configured fallback model, not the client's original model id
+- **Same retry policy on fallback** — secondary provider also gets retries
+- **Logging** — warning log when fallback triggers; request log stores the fallback model/tokens
+
+**Tests:**
+- `python scripts/test_provider_fallback.py` → Provider fallback OK
+
+**Meeting-ready summary:**
+> If the primary provider still fails after retries, the gateway automatically tries a configured fallback provider and model — so a Groq outage can transparently degrade to OpenAI instead of failing the client request.
+
+---

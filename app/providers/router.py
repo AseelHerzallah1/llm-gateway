@@ -3,18 +3,25 @@
 from __future__ import annotations
 
 import logging
+from dataclasses import dataclass
 
 from app.config import settings
 from app.errors import invalid_request_error
 from app.providers.anthropic import create_anthropic_provider
 from app.providers.base import LLMProvider
 from app.providers.groq import create_groq_provider
-from app.providers.openai import OpenAIProvider, create_openai_provider
+from app.providers.openai import create_openai_provider
 
 logger = logging.getLogger(__name__)
 
 GROQ_MODEL_PREFIXES = ("llama", "mixtral", "gemma", "qwen")
 OPENAI_MODEL_PREFIXES = ("gpt", "o1", "o3", "o4")
+
+
+@dataclass(frozen=True)
+class FallbackTarget:
+    provider: LLMProvider
+    model: str
 
 
 def resolve_provider_name(model: str) -> str:
@@ -57,6 +64,34 @@ class ProviderRouter:
 
         logger.info("Routing model=%s to provider=%s", model, provider.name)
         return provider
+
+    def get_fallback_target(self, model: str) -> FallbackTarget | None:
+        """Return a secondary provider/model when the primary provider fails."""
+        if not settings.provider_fallback_enabled:
+            return None
+
+        try:
+            primary = resolve_provider_name(model)
+        except ValueError:
+            return None
+
+        if primary == "groq" and "openai" in self._providers:
+            return FallbackTarget(
+                self._providers["openai"],
+                settings.provider_fallback_openai_model,
+            )
+        if primary == "openai" and "groq" in self._providers:
+            return FallbackTarget(
+                self._providers["groq"],
+                settings.provider_fallback_groq_model,
+            )
+        if primary == "anthropic" and "openai" in self._providers:
+            return FallbackTarget(
+                self._providers["openai"],
+                settings.provider_fallback_openai_model,
+            )
+
+        return None
 
     async def aclose(self) -> None:
         closed: set[int] = set()

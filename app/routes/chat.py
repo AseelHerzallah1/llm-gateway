@@ -22,8 +22,8 @@ from app.errors import GatewayHTTPException, map_openai_provider_error
 from app.observability.request_log import RequestLogCreate, persist_request_log
 from app.observability.sse_usage import parse_sse_usage
 from app.providers.base import ChatMessage, CompletionRequest
+from app.providers.fallback import complete_with_fallback, stream_with_fallback
 from app.providers.exceptions import AnthropicProviderError, OpenAIProviderError
-from app.providers.retry import complete_with_retry, stream_with_retry
 from app.schemas.chat import (
     ChatChoice,
     ChatCompletionRequest,
@@ -166,8 +166,9 @@ async def create_chat_completion(
     project: Annotated[Project, Depends(get_current_project)],
 ) -> ChatCompletionResponse | StreamingResponse:
     """Proxy a chat completion to the configured LLM provider (JSON or SSE)."""
+    router = request.app.state.provider_router
     try:
-        provider = request.app.state.provider_router.get_provider(body.model)
+        router.get_provider(body.model)
     except GatewayHTTPException:
         raise
 
@@ -184,8 +185,9 @@ async def create_chat_completion(
 
     if body.stream:
         try:
-            stream_iter, first_chunk = await stream_with_retry(
-                provider,
+            stream_iter, first_chunk = await stream_with_fallback(
+                router,
+                body.model,
                 completion_request,
                 max_retries=settings.provider_max_retries,
                 backoff_s=settings.provider_retry_backoff_s,
@@ -221,8 +223,9 @@ async def create_chat_completion(
         return cached
 
     try:
-        result = await complete_with_retry(
-            provider,
+        result = await complete_with_fallback(
+            router,
+            body.model,
             completion_request,
             max_retries=settings.provider_max_retries,
             backoff_s=settings.provider_retry_backoff_s,
