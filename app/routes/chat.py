@@ -12,6 +12,10 @@ from fastapi import APIRouter, Depends, Request
 from starlette.responses import StreamingResponse
 
 from app.auth.dependencies import get_current_project
+from app.cache.chat_integration import (
+    store_non_streaming_completion,
+    try_cached_non_streaming_completion,
+)
 from app.db.models.project import Project
 from app.errors import map_openai_provider_error
 from app.observability.request_log import RequestLogCreate, persist_request_log
@@ -196,12 +200,32 @@ async def create_chat_completion(
             headers=SSE_HEADERS,
         )
 
+    latency_before_provider = _latency_ms(started_at)
+    cached = await try_cached_non_streaming_completion(
+        request,
+        project,
+        body,
+        completion_request.messages,
+        started_at,
+        latency_before_provider,
+    )
+    if cached is not None:
+        return cached
+
     try:
         result = await provider.complete(completion_request)
     except OpenAIProviderError as exc:
         logger.warning("Provider error for project_id=%s: %s", project.id, exc.message)
         await _log_error(project, body.model, started_at, exc.message)
         raise map_openai_provider_error(exc) from exc
+
+    await store_non_streaming_completion(
+        request,
+        project,
+        body.model,
+        completion_request.messages,
+        result,
+    )
 
     await persist_request_log(
         RequestLogCreate(

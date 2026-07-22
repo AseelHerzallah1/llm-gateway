@@ -848,3 +848,29 @@ python scripts/test_chat_completions.py gw-sk-your-key
 > I built an in-memory semantic cache that finds the nearest stored embedding by cosine similarity, scoped per project and model — ready to plug into the chat route so similar prompts skip the provider call.
 
 ---
+
+### Task 6.3 — Wire cache into non-streaming chat
+
+**Date:** 2026-07-22  
+**Commit:** _(pending)_
+
+**What we built:**
+- `app/cache/chat_integration.py` — cache lookup/store helpers for chat route
+- Updated `app/routes/chat.py` — non-streaming path checks cache before provider
+- Updated `app/main.py` — `app.state.embedding_provider` in lifespan
+- `scripts/test_cache_hit.py` — E2E similar-prompt cache hit test
+
+**Decisions:**
+- **Non-streaming only** — streaming still always calls provider (Phase 6 scope)
+- **Graceful degradation** — embedding/cache errors log a warning and fall through to OpenAI
+- **Cache hit logging** — `cache_hit=true`, zero tokens/cost (no provider call)
+- **Cached response id** — `cache-{uuid}` so clients can distinguish from live completions
+- **Cache key uses request model** — `body.model` for store/lookup (not OpenAI's dated model suffix)
+
+**Tests:**
+- `python scripts/test_cache_hit.py gw-sk-...` → Cache hit OK
+
+**Meeting-ready summary:**
+> Non-streaming chat now embeds the prompt, checks the semantic cache, and returns the stored answer on a similarity hit — skipping OpenAI entirely while logging cache_hit for metrics.
+
+---

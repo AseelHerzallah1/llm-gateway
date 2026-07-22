@@ -14,6 +14,7 @@ from app.errors import (
     validation_exception_handler,
 )
 from app.cache.factory import create_semantic_cache
+from app.embeddings.openai import create_openai_embedding_provider
 from app.providers.openai import create_openai_provider
 from app.routes.chat import router as chat_router
 from app.routes.dashboard import router as dashboard_router
@@ -48,8 +49,12 @@ async def lifespan(app: FastAPI):
         app.state.semantic_cache.similarity_threshold,
     )
 
+    app.state.embedding_provider = create_openai_embedding_provider()
+    logger.info("Embedding provider initialized: %s", app.state.embedding_provider.name)
+
     yield
 
+    await app.state.embedding_provider.aclose()
     await app.state.llm_provider.aclose()
     await close_db()
     logger.info("Shutting down LLM Gateway")
