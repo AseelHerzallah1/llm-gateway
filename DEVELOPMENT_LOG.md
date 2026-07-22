@@ -1105,7 +1105,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 8.3 — Latency benchmark
 
 **Date:** 2026-07-22  
-**Commit:** _(pending)_
+**Commit:** `e0f1035`
 
 **What we built:**
 - `scripts/benchmark_latency.py` — compares direct OpenAI vs gateway client-side latency
