@@ -770,6 +770,9 @@ python scripts/test_chat_completions.py gw-sk-your-key
 
 **Date:** 2026-07-22  
 **Commit:** `1a2f48b`
+
+**What we built:**
+- `app/static/dashboard.html` — single-page metrics + recent requests UI
 - `app/routes/dashboard.py` — `GET /dashboard` (no server-side auth; browser calls APIs with user key)
 - `scripts/test_dashboard.py` — verifies HTML page is served
 - Updated `docs/TESTING.md` — Phase 5 test order, checklist, script reference
