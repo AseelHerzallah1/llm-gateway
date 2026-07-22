@@ -41,7 +41,10 @@ async def main() -> None:
                 continue
             if line.startswith("data: "):
                 chunk = json.loads(line[6:])
-                delta = chunk["choices"][0].get("delta", {})
+                choices = chunk.get("choices") or []
+                if not choices:
+                    continue
+                delta = choices[0].get("delta", {})
                 if delta.get("content"):
                     content_parts.append(delta["content"])
     finally:
@@ -50,6 +53,7 @@ async def main() -> None:
     print("-" * 40)
     print(f"Events received: {event_count}")
     print("Assembled content:", "".join(content_parts).strip())
+    print("OpenAI provider stream OK")
 
 
 if __name__ == "__main__":
