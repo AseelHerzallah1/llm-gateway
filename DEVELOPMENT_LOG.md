@@ -1078,7 +1078,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 8.2 — Automated tests
 
 **Date:** 2026-07-22  
-**Commit:** _(pending)_
+**Commit:** `72cd5e5`
 
 **What we built:**
 - `tests/unit/` — auth, routing, retries, fallback, percentiles, cost, cache similarity, error mapping
