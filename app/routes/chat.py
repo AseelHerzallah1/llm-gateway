@@ -17,7 +17,7 @@ from app.cache.chat_integration import (
     try_cached_non_streaming_completion,
 )
 from app.db.models.project import Project
-from app.errors import map_openai_provider_error
+from app.errors import GatewayHTTPException, map_openai_provider_error
 from app.observability.request_log import RequestLogCreate, persist_request_log
 from app.observability.sse_usage import parse_sse_usage
 from app.providers.base import ChatMessage, CompletionRequest
@@ -164,7 +164,11 @@ async def create_chat_completion(
     project: Annotated[Project, Depends(get_current_project)],
 ) -> ChatCompletionResponse | StreamingResponse:
     """Proxy a chat completion to the configured LLM provider (JSON or SSE)."""
-    provider = request.app.state.llm_provider
+    try:
+        provider = request.app.state.provider_router.get_provider(body.model)
+    except GatewayHTTPException:
+        raise
+
     completion_request = _to_completion_request(body)
     started_at = time.perf_counter()
 

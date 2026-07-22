@@ -16,7 +16,7 @@ from app.errors import (
 from app.cache.factory import create_semantic_cache
 from app.cache.persistence import hydrate_semantic_cache
 from app.embeddings.openai import create_openai_embedding_provider
-from app.providers.openai import create_openai_provider
+from app.providers.router import create_provider_router
 from app.routes.chat import router as chat_router
 from app.routes.dashboard import router as dashboard_router
 from app.routes.health import router as health_router
@@ -41,8 +41,11 @@ async def lifespan(app: FastAPI):
     await verify_db_connection()
     logger.info("Database connection verified")
 
-    app.state.llm_provider = create_openai_provider()
-    logger.info("LLM provider initialized: %s", app.state.llm_provider.name)
+    app.state.provider_router = create_provider_router()
+    logger.info(
+        "Provider router initialized: %s",
+        ", ".join(app.state.provider_router.provider_names),
+    )
 
     app.state.semantic_cache = create_semantic_cache()
     loaded = await hydrate_semantic_cache(app.state.semantic_cache)
@@ -58,7 +61,7 @@ async def lifespan(app: FastAPI):
     yield
 
     await app.state.embedding_provider.aclose()
-    await app.state.llm_provider.aclose()
+    await app.state.provider_router.aclose()
     await close_db()
     logger.info("Shutting down LLM Gateway")
 

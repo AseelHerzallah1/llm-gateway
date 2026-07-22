@@ -25,10 +25,12 @@ class OpenAIProvider(LLMProvider):
         stream_idle_timeout: float,
         write_timeout: float,
         pool_timeout: float,
+        provider_name: str = "openai",
     ) -> None:
         if not api_key:
-            raise ValueError("OpenAI API key is required")
+            raise ValueError(f"{provider_name} API key is required")
 
+        self._provider_name = provider_name
         self._stream_idle_timeout = stream_idle_timeout
         self._client = httpx.AsyncClient(
             base_url=base_url.rstrip("/"),
@@ -46,7 +48,7 @@ class OpenAIProvider(LLMProvider):
 
     @property
     def name(self) -> str:
-        return "openai"
+        return self._provider_name
 
     async def complete(self, request: CompletionRequest) -> CompletionResponse:
         payload = _build_payload(request, stream=False)

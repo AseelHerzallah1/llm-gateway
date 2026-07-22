@@ -46,6 +46,15 @@ class Settings(BaseSettings):
     anthropic_write_timeout_s: float = 10.0
     anthropic_pool_timeout_s: float = 10.0
 
+    # Groq provider (OpenAI-compatible API, Phase 7+)
+    groq_api_key: SecretStr = Field(default=SecretStr(""))
+    groq_base_url: str = "https://api.groq.com/openai/v1"
+    groq_connect_timeout_s: float = 10.0
+    groq_read_timeout_s: float = 60.0
+    groq_stream_idle_timeout_s: float = 30.0
+    groq_write_timeout_s: float = 10.0
+    groq_pool_timeout_s: float = 10.0
+
     # Security (used from Phase 3+)
     secret_key: SecretStr = Field(default=SecretStr("change-me"))
 

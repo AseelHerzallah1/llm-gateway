@@ -957,3 +957,36 @@ python scripts/test_chat_completions.py gw-sk-your-key
 > I added Anthropic as a second LLM backend behind the same provider interface — including streaming translated to OpenAI-style SSE so the gateway route can stay unchanged when routing lands next.
 
 ---
+
+### Task 7.2 — Provider routing (OpenAI + Groq)
+
+**Date:** 2026-07-22  
+**Commit:** _(pending)_
+
+**What we built:**
+- `app/providers/router.py` — model prefix routing to providers
+- `app/providers/groq.py` — Groq via OpenAI-compatible client (`provider_name=groq`)
+- Updated `app/routes/chat.py` — uses `provider_router.get_provider(model)`
+- Updated `app/main.py` — initializes router with configured providers
+- Groq settings in `app/config.py` and `.env.example`
+- `scripts/test_provider_routing.py` — offline routing rules
+- `scripts/test_groq_routing.py` — E2E Groq via gateway
+
+**Routing rules:**
+- `gpt-*`, `o1*`, `o3*`, `o4*` → OpenAI
+- `llama-*`, `mixtral-*`, `gemma-*`, `qwen-*` → Groq
+- `claude-*` → Anthropic (when `ANTHROPIC_API_KEY` configured)
+
+**Decisions:**
+- **Groq reuses OpenAIProvider** — same `/v1/chat/completions` shape, different base URL
+- **Optional providers** — only registered when API key is present in env
+- **Anthropic deferred** — code ready; Groq used for live second-provider testing
+
+**Tests:**
+- `python scripts/test_provider_routing.py` → Provider routing rules OK
+- `python scripts/test_groq_routing.py gw-sk-...` → after `GROQ_API_KEY` saved in `.env`
+
+**Meeting-ready summary:**
+> The gateway now routes by model name — GPT models hit OpenAI, Llama/Mixtral hit Groq — through one OpenAI-compatible chat endpoint, with providers registered only when keys are configured.
+
+---
