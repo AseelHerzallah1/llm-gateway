@@ -994,7 +994,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 7.3 — Provider retries
 
 **Date:** 2026-07-22  
-**Commit:** _(pending)_
+**Commit:** `50509d8`
 
 **What we built:**
 - `app/providers/retry.py` — `complete_with_retry()` and `stream_with_retry()`
