@@ -684,3 +684,31 @@ python scripts/test_chat_completions.py gw-sk-your-key
 
 **Meeting-ready summary:**
 > Every chat completion now writes a row to the requests table with latency, tokens, and status. Streaming requests include usage via OpenAI's stream_options, and errors are logged before we return structured error responses to the client.
+
+---
+
+### Task 5.3 — Cost calculation
+
+**Date:** 2026-07-22  
+**Commit:** _(pending push)_
+
+**What we built:**
+- `app/observability/cost.py` — per-model token pricing and `estimate_cost_usd()`
+- Updated `persist_request_log()` — auto-computes cost when tokens are present
+- `scripts/test_cost.py` — offline pricing tests
+- Updated `scripts/test_request_logging.py` — asserts `cost_usd > 0` on success
+
+**Decisions:**
+- **Prefix matching** on model name — `gpt-4o-mini-2024-07-18` maps to `gpt-4o-mini` rates
+- **Rates in code** for v1 — simple and interview-friendly; env/config later if needed
+- **Errors with 0 tokens** → cost 0; successful requests with tokens always get a cost
+- **8 decimal places** — enough precision for micro-cent token costs
+
+**Pricing (gpt-4o-mini):** $0.15 / 1M input, $0.60 / 1M output tokens
+
+**Tests:**
+- `python scripts/test_cost.py` → Cost estimation OK
+- `python scripts/test_request_logging.py gw-sk-...` → Cost USD > 0
+
+**Meeting-ready summary:**
+> I added per-model cost estimation from token counts using published OpenAI rates. Every successful logged request now stores cost_usd, which feeds into the metrics API we'll build next.

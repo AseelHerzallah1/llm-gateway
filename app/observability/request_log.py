@@ -8,6 +8,7 @@ from uuid import UUID
 
 from app.db.models.request import RequestLog
 from app.db.session import async_session_factory
+from app.observability.cost import estimate_cost_usd
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +30,10 @@ class RequestLogCreate:
 
 async def persist_request_log(data: RequestLogCreate) -> None:
     """Write one request log row. Uses its own DB session (safe for streaming)."""
+    cost_usd = data.cost_usd
+    if cost_usd == 0.0 and (data.input_tokens or data.output_tokens):
+        cost_usd = estimate_cost_usd(data.model, data.input_tokens, data.output_tokens)
+
     async with async_session_factory() as db:
         db.add(
             RequestLog(
@@ -38,7 +43,7 @@ async def persist_request_log(data: RequestLogCreate) -> None:
                 latency_ms=data.latency_ms,
                 input_tokens=data.input_tokens,
                 output_tokens=data.output_tokens,
-                cost_usd=data.cost_usd,
+                cost_usd=cost_usd,
                 cache_hit=data.cache_hit,
                 error_reason=data.error_reason,
             )
@@ -46,11 +51,12 @@ async def persist_request_log(data: RequestLogCreate) -> None:
         await db.commit()
 
     logger.info(
-        "Request logged project_id=%s model=%s status=%s latency_ms=%d tokens=%d/%d",
+        "Request logged project_id=%s model=%s status=%s latency_ms=%d tokens=%d/%d cost_usd=%.8f",
         data.project_id,
         data.model,
         data.status,
         data.latency_ms,
         data.input_tokens,
         data.output_tokens,
+        cost_usd,
     )

@@ -83,7 +83,11 @@ async def main() -> None:
     print("Latency ms:", latest.latency_ms)
     print("Input tokens:", latest.input_tokens)
     print("Output tokens:", latest.output_tokens)
-    print("Rows for project:", count_before + 1)
+    print("Cost USD:", latest.cost_usd)
+
+    if latest.status == "success" and latest.cost_usd <= 0:
+        print("Expected cost_usd > 0 for successful request with tokens")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
