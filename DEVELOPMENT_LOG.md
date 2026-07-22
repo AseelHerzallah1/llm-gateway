@@ -715,7 +715,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 5.4 — Metrics endpoint
 
 **Date:** 2026-07-22  
-**Commit:** _(pending)_
+**Commit:** `e41d1df`
 
 **What we built:**
 - `app/observability/metrics.py` — `compute_metrics()` and pure-Python percentile helper
