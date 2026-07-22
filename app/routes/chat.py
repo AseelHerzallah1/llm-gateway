@@ -17,11 +17,13 @@ from app.cache.chat_integration import (
     try_cached_non_streaming_completion,
 )
 from app.db.models.project import Project
+from app.config import settings
 from app.errors import GatewayHTTPException, map_openai_provider_error
 from app.observability.request_log import RequestLogCreate, persist_request_log
 from app.observability.sse_usage import parse_sse_usage
 from app.providers.base import ChatMessage, CompletionRequest
-from app.providers.exceptions import OpenAIProviderError
+from app.providers.exceptions import AnthropicProviderError, OpenAIProviderError
+from app.providers.retry import complete_with_retry, stream_with_retry
 from app.schemas.chat import (
     ChatChoice,
     ChatCompletionRequest,
@@ -118,7 +120,7 @@ async def _sse_event_generator(
             if sse_event.strip() == "data: [DONE]":
                 saw_done = True
             yield sse_event
-    except OpenAIProviderError as exc:
+    except (OpenAIProviderError, AnthropicProviderError) as exc:
         provider_error = exc.message
         logger.warning(
             "Provider stream interrupted for project_id=%s: %s",
@@ -181,12 +183,14 @@ async def create_chat_completion(
     )
 
     if body.stream:
-        stream_iter = provider.stream(completion_request)
         try:
-            first_chunk = await stream_iter.__anext__()
-        except StopAsyncIteration:
-            first_chunk = None
-        except OpenAIProviderError as exc:
+            stream_iter, first_chunk = await stream_with_retry(
+                provider,
+                completion_request,
+                max_retries=settings.provider_max_retries,
+                backoff_s=settings.provider_retry_backoff_s,
+            )
+        except (OpenAIProviderError, AnthropicProviderError) as exc:
             logger.warning("Provider stream error for project_id=%s: %s", project.id, exc.message)
             await _log_error(project, body.model, started_at, exc.message)
             raise map_openai_provider_error(exc) from exc
@@ -217,8 +221,13 @@ async def create_chat_completion(
         return cached
 
     try:
-        result = await provider.complete(completion_request)
-    except OpenAIProviderError as exc:
+        result = await complete_with_retry(
+            provider,
+            completion_request,
+            max_retries=settings.provider_max_retries,
+            backoff_s=settings.provider_retry_backoff_s,
+        )
+    except (OpenAIProviderError, AnthropicProviderError) as exc:
         logger.warning("Provider error for project_id=%s: %s", project.id, exc.message)
         await _log_error(project, body.model, started_at, exc.message)
         raise map_openai_provider_error(exc) from exc

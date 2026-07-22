@@ -990,3 +990,28 @@ python scripts/test_chat_completions.py gw-sk-your-key
 > The gateway now routes by model name — GPT models hit OpenAI, Llama/Mixtral hit Groq — through one OpenAI-compatible chat endpoint, with providers registered only when keys are configured.
 
 ---
+
+### Task 7.3 — Provider retries
+
+**Date:** 2026-07-22  
+**Commit:** _(pending)_
+
+**What we built:**
+- `app/providers/retry.py` — `complete_with_retry()` and `stream_with_retry()`
+- Updated `app/routes/chat.py` — retries before returning errors to clients
+- Config: `PROVIDER_MAX_RETRIES` (default 2), `PROVIDER_RETRY_BACKOFF_S` (default 0.5)
+- `scripts/test_provider_retries.py` — offline retry policy tests
+
+**Decisions:**
+- **Retry only transient errors** — 429, 5xx, timeouts; never 4xx client errors
+- **Exponential backoff** — 0.5s, 1.0s, 2.0s between attempts
+- **Stream retries** — only on opening the stream / first chunk (not mid-stream)
+- **Works for OpenAI + Groq** — shared `OpenAIProviderError` path; Anthropic ready too
+
+**Tests:**
+- `python scripts/test_provider_retries.py` → Provider retry policy OK
+
+**Meeting-ready summary:**
+> Transient provider failures now retry with exponential backoff before the gateway returns an error — covering rate limits, upstream 5xx, and timeouts for both streaming and non-streaming requests.
+
+---

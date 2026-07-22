@@ -61,6 +61,10 @@ class Settings(BaseSettings):
     # Semantic cache (used from Phase 6+)
     cache_similarity_threshold: float = 0.92
 
+    # Provider retries (Phase 7+)
+    provider_max_retries: int = 2
+    provider_retry_backoff_s: float = 0.5
+
 
 @lru_cache
 def get_settings() -> Settings:
