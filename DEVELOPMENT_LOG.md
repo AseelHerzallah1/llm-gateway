@@ -852,7 +852,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 6.3 — Wire cache into non-streaming chat
 
 **Date:** 2026-07-22  
-**Commit:** _(pending)_
+**Commit:** `42305d0`
 
 **What we built:**
 - `app/cache/chat_integration.py` — cache lookup/store helpers for chat route
