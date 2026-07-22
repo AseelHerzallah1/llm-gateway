@@ -961,7 +961,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 7.2 — Provider routing (OpenAI + Groq)
 
 **Date:** 2026-07-22  
-**Commit:** _(pending)_
+**Commit:** `6c6d1b5`
 
 **What we built:**
 - `app/providers/router.py` — model prefix routing to providers
