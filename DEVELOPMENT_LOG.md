@@ -765,3 +765,32 @@ python scripts/test_chat_completions.py gw-sk-your-key
 > I added GET /v1/requests so clients can browse individual request logs with pagination and filters — the drill-down companion to the aggregated metrics endpoint.
 
 ---
+
+## Phase 6 — Semantic cache
+
+### Task 6.1 — OpenAI embedding provider
+
+**Date:** 2026-07-22  
+**Commit:** _(pending)_
+
+**What we built:**
+- `app/embeddings/base.py` — `EmbeddingProvider` interface
+- `app/embeddings/openai.py` — OpenAI `/v1/embeddings` client
+- `app/embeddings/prompt.py` — canonical message text for embedding
+- `scripts/test_embed_prompt.py` — offline serialization test
+- `scripts/test_embeddings.py` — live embedding dimension check
+- Config: `OPENAI_EMBEDDING_MODEL` (default `text-embedding-3-small`)
+
+**Decisions:**
+- **Same httpx pattern** as chat provider — separate client, shared API key
+- **Full message list embedded** — system + user + assistant roles in stable `role: content` format
+- **Not wired into chat yet** — cache lookup lands in Task 6.2–6.3
+
+**Tests:**
+- `python scripts/test_embed_prompt.py` → Prompt serialization OK
+- `python scripts/test_embeddings.py` → Embeddings OK (requires OpenAI key)
+
+**Meeting-ready summary:**
+> I added an embedding client that turns chat messages into vectors via OpenAI's embeddings API — the first building block for semantic cache lookup by cosine similarity.
+
+---

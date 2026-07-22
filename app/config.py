@@ -33,6 +33,7 @@ class Settings(BaseSettings):
     openai_stream_idle_timeout_s: float = 30.0
     openai_write_timeout_s: float = 10.0
     openai_pool_timeout_s: float = 10.0
+    openai_embedding_model: str = "text-embedding-3-small"
 
     # Security (used from Phase 3+)
     secret_key: SecretStr = Field(default=SecretStr("change-me"))
