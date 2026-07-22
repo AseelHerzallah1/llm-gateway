@@ -1019,7 +1019,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 7.4 — Provider fallback
 
 **Date:** 2026-07-22  
-**Commit:** _(pending)_
+**Commit:** `0219209`
 
 **What we built:**
 - `app/providers/fallback.py` — `complete_with_fallback()` and `stream_with_fallback()`
