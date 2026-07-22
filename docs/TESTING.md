@@ -765,6 +765,17 @@ pytest -q
 
 No live PostgreSQL or provider keys required — integration tests mock startup and auth.
 
+### 29. Latency benchmark (gateway vs direct OpenAI)
+
+```powershell
+# Gateway must be running
+uvicorn app.main:app --host 127.0.0.1 --port 8001
+
+python scripts/benchmark_latency.py gw-sk-your-key --iterations 10
+```
+
+Results are printed and saved to `docs/benchmark_results.json`. See `docs/BENCHMARK.md` for methodology and measured overhead.
+
 ---
 
 ## What's next (Phase 8+)

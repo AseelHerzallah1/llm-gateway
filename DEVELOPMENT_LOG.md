@@ -1101,3 +1101,31 @@ python scripts/test_chat_completions.py gw-sk-your-key
 > I added a pytest suite with unit tests for core logic and integration tests for the HTTP routes — all runnable offline with mocked providers and auth, so regressions are caught before manual E2E scripts.
 
 ---
+
+### Task 8.3 — Latency benchmark
+
+**Date:** 2026-07-22  
+**Commit:** _(pending)_
+
+**What we built:**
+- `scripts/benchmark_latency.py` — compares direct OpenAI vs gateway client-side latency
+- `docs/BENCHMARK.md` — methodology, honest limitations, measured results
+- `docs/benchmark_results.json` — raw output from local 5-iteration run
+
+**Measured results (gpt-4o-mini, non-streaming, cache miss path):**
+- Direct OpenAI p50: **791 ms**
+- Gateway p50: **1535 ms**
+- Gateway overhead p50: **+744 ms**
+
+**Decisions:**
+- **Direct OpenAI baseline** — cleaner than LiteLLM for “what does my proxy add?”
+- **Unique prompts per iteration** — avoids semantic cache skewing latency down
+- **Report absolute ms + percent** — percent is misleading when provider dominates total time
+
+**Tests:**
+- `python scripts/benchmark_latency.py gw-sk-... --iterations 5`
+
+**Meeting-ready summary:**
+> I measured real proxy overhead: about 744 ms p50 on non-streaming chat, mainly from embedding-for-cache lookup plus auth/logging — with documented methodology so the numbers are reproducible and honest about trade-offs.
+
+---
