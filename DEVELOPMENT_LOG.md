@@ -1052,7 +1052,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 8.1 — API key hashing audit
 
 **Date:** 2026-07-22  
-**Commit:** _(pending)_
+**Commit:** `df3b4c1`
 
 **What we built:**
 - Upgraded API key storage from SHA-256 to **bcrypt** (12 rounds)
