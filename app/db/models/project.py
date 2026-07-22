@@ -22,6 +22,7 @@ class Project(Base):
         UUID(as_uuid=True), ForeignKey("users.id"), nullable=False
     )
     name: Mapped[str] = mapped_column(String(255), nullable=False)
+    api_key_lookup: Mapped[str | None] = mapped_column(String(16), nullable=True, index=True)
     api_key_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(

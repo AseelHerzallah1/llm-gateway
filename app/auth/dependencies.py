@@ -8,7 +8,12 @@ from fastapi import Header
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth.api_keys import hash_api_key, is_valid_api_key_format
+from app.auth.api_keys import (
+    api_key_lookup_prefix,
+    is_valid_api_key_format,
+    legacy_sha256_hash,
+    verify_api_key,
+)
 from app.db.models.project import Project
 from app.db.session import async_session_factory
 from app.errors import inactive_project_error, invalid_api_key_error
@@ -33,8 +38,21 @@ async def resolve_project(db: AsyncSession, raw_api_key: str | None) -> Project:
     if not raw_api_key or not is_valid_api_key_format(raw_api_key):
         raise invalid_api_key_error()
 
-    key_hash = hash_api_key(raw_api_key)
-    result = await db.execute(select(Project).where(Project.api_key_hash == key_hash))
+    lookup = api_key_lookup_prefix(raw_api_key)
+    result = await db.execute(select(Project).where(Project.api_key_lookup == lookup))
+    for project in result.scalars():
+        if verify_api_key(raw_api_key, project.api_key_hash):
+            if not project.active:
+                raise inactive_project_error()
+            return project
+
+    legacy_hash = legacy_sha256_hash(raw_api_key)
+    result = await db.execute(
+        select(Project).where(
+            Project.api_key_hash == legacy_hash,
+            Project.api_key_lookup.is_(None),
+        )
+    )
     project = result.scalar_one_or_none()
 
     if project is None:

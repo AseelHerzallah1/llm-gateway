@@ -358,8 +358,12 @@ X-API-Key: gw-sk-<project-key>
 ### Validation flow
 
 1. Extract key from `Authorization` or `X-API-Key`
-2. Hash incoming key (SHA-256) and compare against `projects.api_key_hash` in PostgreSQL
-3. Reject if: missing, malformed, not found, or project inactive
+2. Lookup project candidates by `api_key_lookup` prefix (first 12 chars of secret segment)
+3. Verify with **bcrypt** against `projects.api_key_hash`
+4. Legacy rows without `api_key_lookup` fall back to SHA-256 equality match
+5. Reject if: missing, malformed, not found, or project inactive
+
+See `docs/SECURITY.md` for the Phase 8 audit and migration notes.
 
 ### Admin → Gateway (project creation)
 

@@ -701,4 +701,53 @@ See `docs/CACHE_TUNING.md` for measured similarities and threshold trade-offs.
 
 ---
 
-## What's next (Phase 7+)
+## Phase 7 — Multi-provider
+
+### 23. Provider routing (offline)
+
+```powershell
+python scripts/test_provider_routing.py
+```
+
+### 24. Groq routing (E2E)
+
+```powershell
+python scripts/test_groq_routing.py gw-sk-your-key
+```
+
+Requires `GROQ_API_KEY` in `.env`.
+
+### 25. Provider retries (offline)
+
+```powershell
+python scripts/test_provider_retries.py
+```
+
+### 26. Provider fallback (offline)
+
+```powershell
+python scripts/test_provider_fallback.py
+```
+
+---
+
+## Phase 8 — Security and hardening
+
+### 27. API key hashing audit
+
+```powershell
+alembic upgrade head
+python scripts/test_api_key_hashing.py
+```
+
+Re-seed test project for bcrypt keys:
+
+```powershell
+python scripts/seed_test_project.py
+```
+
+See `docs/SECURITY.md`.
+
+---
+
+## What's next (Phase 8+)

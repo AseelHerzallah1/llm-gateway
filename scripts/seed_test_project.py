@@ -15,7 +15,7 @@ from sqlalchemy import select
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from app.auth.api_keys import generate_api_key, hash_api_key
+from app.auth.api_keys import generate_api_key, prepare_stored_api_key
 from app.db.models.project import Project
 from app.db.models.user import User
 from app.db.session import async_session_factory
@@ -35,10 +35,12 @@ async def main() -> None:
         db.add(user)
         await db.flush()
 
+        lookup, key_hash = prepare_stored_api_key(api_key)
         project = Project(
             user_id=user.id,
             name="test-project",
-            api_key_hash=hash_api_key(api_key),
+            api_key_lookup=lookup,
+            api_key_hash=key_hash,
             active=True,
         )
         db.add(project)

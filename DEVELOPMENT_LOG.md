@@ -1046,3 +1046,31 @@ python scripts/test_chat_completions.py gw-sk-your-key
 > If the primary provider still fails after retries, the gateway automatically tries a configured fallback provider and model — so a Groq outage can transparently degrade to OpenAI instead of failing the client request.
 
 ---
+
+## Phase 8 — Security, testing, benchmarks, hardening
+
+### Task 8.1 — API key hashing audit
+
+**Date:** 2026-07-22  
+**Commit:** _(pending)_
+
+**What we built:**
+- Upgraded API key storage from SHA-256 to **bcrypt** (12 rounds)
+- Added `api_key_lookup` column + migration `0004` for indexed auth lookup
+- `verify_api_key()` supports bcrypt and legacy SHA-256 during migration
+- `docs/SECURITY.md` — audit findings and migration steps
+- `scripts/test_api_key_hashing.py` — offline hash/verify tests
+
+**Decisions:**
+- **bcrypt + lookup prefix** — indexed lookup without scanning all projects; slow hashes if DB leaks
+- **Legacy SHA-256 fallback** — existing dev keys keep working until re-seed
+- **Re-seed for new format** — `python scripts/seed_test_project.py` after migration
+
+**Tests:**
+- `python scripts/test_api_key_hashing.py` → API key hashing OK
+- `alembic upgrade head` then re-seed for bcrypt keys in DB
+
+**Meeting-ready summary:**
+> I audited API key storage and upgraded from fast SHA-256 digests to bcrypt with a lookup prefix — so a database leak doesn't enable high-speed offline cracking, while auth stays indexed and fast at request time.
+
+---
