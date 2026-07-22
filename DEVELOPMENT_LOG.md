@@ -929,3 +929,31 @@ python scripts/test_chat_completions.py gw-sk-your-key
 > I measured real embedding similarities for hit/miss pairs and documented why 0.92 avoids false hits like symptoms vs causes, at the cost of missing light paraphrases.
 
 ---
+
+## Phase 7 — Second provider, routing, retries, fallback
+
+### Task 7.1 — Anthropic provider
+
+**Date:** 2026-07-22  
+**Commit:** _(pending)_
+
+**What we built:**
+- `app/providers/anthropic.py` — Messages API client (non-streaming + streaming)
+- `AnthropicProviderError` in `app/providers/exceptions.py`
+- Anthropic settings in `app/config.py` and `.env.example`
+- `scripts/test_anthropic_provider.py` — direct completion test
+- `scripts/test_anthropic_stream.py` — OpenAI-compatible SSE translation test
+
+**Decisions:**
+- **OpenAI-compatible SSE output** — Anthropic events translated to `chat.completion.chunk` for gateway reuse
+- **System prompt split** — `system` role extracted to Anthropic `system` field
+- **Not routed yet** — chat still uses OpenAI only until Task 7.2
+
+**Tests:**
+- `python scripts/test_anthropic_provider.py` → content + tokens (requires `ANTHROPIC_API_KEY`)
+- `python scripts/test_anthropic_stream.py` → stream chunks + `[DONE]`
+
+**Meeting-ready summary:**
+> I added Anthropic as a second LLM backend behind the same provider interface — including streaming translated to OpenAI-style SSE so the gateway route can stay unchanged when routing lands next.
+
+---

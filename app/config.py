@@ -35,6 +35,17 @@ class Settings(BaseSettings):
     openai_pool_timeout_s: float = 10.0
     openai_embedding_model: str = "text-embedding-3-small"
 
+    # Anthropic provider (used from Phase 7+)
+    anthropic_api_key: SecretStr = Field(default=SecretStr(""))
+    anthropic_base_url: str = "https://api.anthropic.com/v1"
+    anthropic_api_version: str = "2023-06-01"
+    anthropic_default_max_tokens: int = 1024
+    anthropic_connect_timeout_s: float = 10.0
+    anthropic_read_timeout_s: float = 60.0
+    anthropic_stream_idle_timeout_s: float = 30.0
+    anthropic_write_timeout_s: float = 10.0
+    anthropic_pool_timeout_s: float = 10.0
+
     # Security (used from Phase 3+)
     secret_key: SecretStr = Field(default=SecretStr("change-me"))
 
