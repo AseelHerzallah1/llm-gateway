@@ -40,3 +40,7 @@ target-version = "py311"
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+markers = [
+    "unit: pure logic tests without HTTP layer",
+    "integration: HTTP tests with mocked startup dependencies",
+]

@@ -1074,3 +1074,30 @@ python scripts/test_chat_completions.py gw-sk-your-key
 > I audited API key storage and upgraded from fast SHA-256 digests to bcrypt with a lookup prefix — so a database leak doesn't enable high-speed offline cracking, while auth stays indexed and fast at request time.
 
 ---
+
+### Task 8.2 — Automated tests
+
+**Date:** 2026-07-22  
+**Commit:** _(pending)_
+
+**What we built:**
+- `tests/unit/` — auth, routing, retries, fallback, percentiles, cost, cache similarity, error mapping
+- `tests/integration/` — health, chat proxy, metrics route (mocked startup — no live DB required)
+- `tests/conftest.py` — shared fixtures with mocked `app.state` and auth override
+- Pytest markers: `unit`, `integration`
+- `pyproject.toml` — pytest config already present; markers added
+
+**Decisions:**
+- **Scripts stay** — manual E2E scripts in `scripts/` remain for live API/DB checks
+- **Integration tests mock startup** — set `app.state` directly; no PostgreSQL or OpenAI needed for CI
+- **41 tests** — covers SCOPE success criteria for auth, proxy, and metrics at unit/integration level
+
+**Tests:**
+- `pip install -e ".[dev]"` then `pytest`
+- `pytest -m unit` — logic only
+- `pytest -m integration` — HTTP layer
+
+**Meeting-ready summary:**
+> I added a pytest suite with unit tests for core logic and integration tests for the HTTP routes — all runnable offline with mocked providers and auth, so regressions are caught before manual E2E scripts.
+
+---

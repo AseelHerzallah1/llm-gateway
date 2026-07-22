@@ -748,6 +748,23 @@ python scripts/seed_test_project.py
 
 See `docs/SECURITY.md`.
 
+### 28. Automated test suite (pytest)
+
+```powershell
+pip install -e ".[dev]"
+pytest
+```
+
+Run subsets:
+
+```powershell
+pytest -m unit
+pytest -m integration
+pytest -q
+```
+
+No live PostgreSQL or provider keys required — integration tests mock startup and auth.
+
 ---
 
 ## What's next (Phase 8+)
