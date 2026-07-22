@@ -59,7 +59,11 @@ class Settings(BaseSettings):
     secret_key: SecretStr = Field(default=SecretStr("change-me"))
 
     # Semantic cache (used from Phase 6+)
+    semantic_cache_enabled: bool = True
     cache_similarity_threshold: float = 0.92
+
+    # Observability (Phase 8 perf)
+    request_log_async: bool = True
 
     # Provider retries (Phase 7+)
     provider_max_retries: int = 2

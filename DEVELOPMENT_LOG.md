@@ -1129,3 +1129,29 @@ python scripts/test_chat_completions.py gw-sk-your-key
 > I measured real proxy overhead: about 744 ms p50 on non-streaming chat, mainly from embedding-for-cache lookup plus auth/logging — with documented methodology so the numbers are reproducible and honest about trade-offs.
 
 ---
+
+### Task 8.3b — Benchmark investigation + miss-path optimization
+
+**Date:** 2026-07-23  
+**Commit:** _(pending)_
+
+**Problem:** Initial benchmark showed +744 ms p50 overhead — too high to hand-wave in interviews.
+
+**Investigation:**
+- Added `scripts/benchmark_decompose.py` — isolates direct chat vs direct embed vs gateway
+- Decompose showed **~260 ms p50 per embedding call**; old miss path did **two embeds**
+
+**Fixes:**
+- Skip cache lookup embed when no entries for project/model (`has_entries`)
+- Reuse lookup embedding on cache store (one embed per miss, not two)
+- Async request logging via `BackgroundTasks` (`REQUEST_LOG_ASYNC=true`)
+- `SEMANTIC_CACHE_ENABLED` config for thin-proxy mode
+
+**Tests:**
+- `pytest` — 43 passed
+- Re-run `benchmark_latency.py` with valid `GATEWAY_TEST_API_KEY` for after numbers
+
+**Meeting-ready summary:**
+> I treated bad benchmark numbers as a debugging task: decomposed latency, found duplicate embedding as the main cost, fixed the miss path, and documented before/after methodology instead of moving on with a checklist tick.
+
+---

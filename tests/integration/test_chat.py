@@ -6,6 +6,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
+from app.cache.chat_integration import NonStreamingCacheCheck
 from app.providers.base import CompletionResponse
 
 
@@ -24,7 +25,10 @@ async def test_chat_completion_returns_provider_response(client, monkeypatch) ->
             created=1234567890,
         )
 
-    monkeypatch.setattr("app.routes.chat.try_cached_non_streaming_completion", AsyncMock(return_value=None))
+    monkeypatch.setattr(
+        "app.routes.chat.try_cached_non_streaming_completion",
+        AsyncMock(return_value=NonStreamingCacheCheck(cached_response=None, embedding=None)),
+    )
     monkeypatch.setattr("app.routes.chat.store_non_streaming_completion", AsyncMock())
     monkeypatch.setattr("app.routes.chat.persist_request_log", AsyncMock())
     monkeypatch.setattr("app.routes.chat.complete_with_fallback", fake_complete)

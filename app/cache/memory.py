@@ -25,6 +25,12 @@ class InMemorySemanticCache:
     def size(self) -> int:
         return len(self._entries)
 
+    def has_entries(self, project_id: UUID, model: str) -> bool:
+        """Return True when lookup could match an existing entry."""
+        return any(
+            entry.project_id == project_id and entry.model == model for entry in self._entries
+        )
+
     def load_entry(self, entry: CacheEntry) -> None:
         """Load one entry from the database without persisting again."""
         self._entries.append(entry)

@@ -1,0 +1,24 @@
+{
+  "model": "gpt-4o-mini",
+  "iterations": 5,
+  "gateway_url": "http://127.0.0.1:8001",
+  "direct": {
+    "target": "direct_openai",
+    "samples": 5,
+    "p50_ms": 791,
+    "p95_ms": 1000,
+    "p99_ms": 1012,
+    "errors": 0
+  },
+  "gateway": {
+    "target": "llm_gateway",
+    "samples": 5,
+    "p50_ms": 1535,
+    "p95_ms": 2248,
+    "p99_ms": 2348,
+    "errors": 0
+  },
+  "overhead_p50_ms": 744,
+  "overhead_p95_ms": 1248,
+  "overhead_p50_pct": 94.06
+}

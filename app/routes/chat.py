@@ -8,7 +8,7 @@ import time
 from collections.abc import AsyncIterator
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, Request
 from starlette.responses import StreamingResponse
 
 from app.auth.dependencies import get_current_project
@@ -56,20 +56,32 @@ def _latency_ms(started_at: float) -> int:
     return int((time.perf_counter() - started_at) * 1000)
 
 
+async def _schedule_request_log(
+    background_tasks: BackgroundTasks,
+    data: RequestLogCreate,
+) -> None:
+    if settings.request_log_async:
+        background_tasks.add_task(persist_request_log, data)
+    else:
+        await persist_request_log(data)
+
+
 async def _log_error(
+    background_tasks: BackgroundTasks,
     project: Project,
     model: str,
     started_at: float,
     error_reason: str,
 ) -> None:
-    await persist_request_log(
+    await _schedule_request_log(
+        background_tasks,
         RequestLogCreate(
             project_id=project.id,
             model=model,
             status="error",
             latency_ms=_latency_ms(started_at),
             error_reason=error_reason[:512],
-        )
+        ),
     )
 
 
@@ -163,6 +175,7 @@ async def _sse_event_generator(
 async def create_chat_completion(
     body: ChatCompletionRequest,
     request: Request,
+    background_tasks: BackgroundTasks,
     project: Annotated[Project, Depends(get_current_project)],
 ) -> ChatCompletionResponse | StreamingResponse:
     """Proxy a chat completion to the configured LLM provider (JSON or SSE)."""
@@ -194,7 +207,7 @@ async def create_chat_completion(
             )
         except (OpenAIProviderError, AnthropicProviderError) as exc:
             logger.warning("Provider stream error for project_id=%s: %s", project.id, exc.message)
-            await _log_error(project, body.model, started_at, exc.message)
+            await _log_error(background_tasks, project, body.model, started_at, exc.message)
             raise map_openai_provider_error(exc) from exc
 
         return StreamingResponse(
@@ -211,7 +224,7 @@ async def create_chat_completion(
         )
 
     latency_before_provider = _latency_ms(started_at)
-    cached = await try_cached_non_streaming_completion(
+    cache_check = await try_cached_non_streaming_completion(
         request,
         project,
         body,
@@ -219,8 +232,8 @@ async def create_chat_completion(
         started_at,
         latency_before_provider,
     )
-    if cached is not None:
-        return cached
+    if cache_check.cached_response is not None:
+        return cache_check.cached_response
 
     try:
         result = await complete_with_fallback(
@@ -232,7 +245,7 @@ async def create_chat_completion(
         )
     except (OpenAIProviderError, AnthropicProviderError) as exc:
         logger.warning("Provider error for project_id=%s: %s", project.id, exc.message)
-        await _log_error(project, body.model, started_at, exc.message)
+        await _log_error(background_tasks, project, body.model, started_at, exc.message)
         raise map_openai_provider_error(exc) from exc
 
     await store_non_streaming_completion(
@@ -241,9 +254,11 @@ async def create_chat_completion(
         body.model,
         completion_request.messages,
         result,
+        embedding=cache_check.embedding,
     )
 
-    await persist_request_log(
+    await _schedule_request_log(
+        background_tasks,
         RequestLogCreate(
             project_id=project.id,
             model=result.model,
@@ -251,7 +266,7 @@ async def create_chat_completion(
             latency_ms=_latency_ms(started_at),
             input_tokens=result.prompt_tokens,
             output_tokens=result.completion_tokens,
-        )
+        ),
     )
 
     return ChatCompletionResponse(

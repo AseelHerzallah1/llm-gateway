@@ -768,13 +768,19 @@ No live PostgreSQL or provider keys required — integration tests mock startup 
 ### 29. Latency benchmark (gateway vs direct OpenAI)
 
 ```powershell
-# Gateway must be running
-uvicorn app.main:app --host 127.0.0.1 --port 8001
-
 python scripts/benchmark_latency.py gw-sk-your-key --iterations 10
+python scripts/benchmark_latency.py gw-sk-your-key --iterations 10 --output docs/benchmark_results_after.json
 ```
 
-Results are printed and saved to `docs/benchmark_results.json`. See `docs/BENCHMARK.md` for methodology and measured overhead.
+Before numbers: `docs/benchmark_results_before.json`. See `docs/BENCHMARK.md`.
+
+### 30. Latency decomposition
+
+```powershell
+python scripts/benchmark_decompose.py gw-sk-your-key --iterations 10
+```
+
+Output: `docs/benchmark_decompose.json`
 
 ---
 

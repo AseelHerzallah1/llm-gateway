@@ -5,11 +5,13 @@ from __future__ import annotations
 import logging
 import time
 import uuid
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from fastapi import Request
 
 from app.cache.persistence import persist_cache_entry, record_cache_use
+from app.config import settings
 from app.db.models.project import Project
 from app.embeddings.prompt import messages_to_embed_text
 from app.observability.request_log import RequestLogCreate, persist_request_log
@@ -27,6 +29,14 @@ if TYPE_CHECKING:
     from app.embeddings.base import EmbeddingProvider
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass(frozen=True)
+class NonStreamingCacheCheck:
+    """Result of a semantic cache lookup attempt."""
+
+    cached_response: ChatCompletionResponse | None
+    embedding: list[float] | None = None
 
 
 def _cached_chat_response(model: str, content: str) -> ChatCompletionResponse:
@@ -52,9 +62,15 @@ async def try_cached_non_streaming_completion(
     messages: list[ChatMessage],
     started_at: float,
     latency_ms: int,
-) -> ChatCompletionResponse | None:
-    """Return a cached completion on semantic cache hit, or None on miss/skip."""
+) -> NonStreamingCacheCheck:
+    """Return a cached completion on semantic cache hit, or embedding for reuse on miss."""
+    if not settings.semantic_cache_enabled:
+        return NonStreamingCacheCheck(cached_response=None, embedding=None)
+
     cache: InMemorySemanticCache = http_request.app.state.semantic_cache
+    if not cache.has_entries(project.id, body.model):
+        return NonStreamingCacheCheck(cached_response=None, embedding=None)
+
     embedding_provider: EmbeddingProvider = http_request.app.state.embedding_provider
     embed_text = messages_to_embed_text(messages)
 
@@ -67,10 +83,10 @@ async def try_cached_non_streaming_completion(
             project.id,
             exc,
         )
-        return None
+        return NonStreamingCacheCheck(cached_response=None, embedding=None)
 
     if hit is None:
-        return None
+        return NonStreamingCacheCheck(cached_response=None, embedding=embedding)
 
     logger.info(
         "Semantic cache hit project_id=%s model=%s similarity=%.4f entry_id=%s",
@@ -100,7 +116,10 @@ async def try_cached_non_streaming_completion(
         )
     )
 
-    return _cached_chat_response(body.model, hit.response)
+    return NonStreamingCacheCheck(
+        cached_response=_cached_chat_response(body.model, hit.response),
+        embedding=embedding,
+    )
 
 
 async def store_non_streaming_completion(
@@ -109,24 +128,32 @@ async def store_non_streaming_completion(
     model: str,
     messages: list[ChatMessage],
     result: CompletionResponse,
+    *,
+    embedding: list[float] | None = None,
 ) -> None:
     """Store a provider completion in the semantic cache."""
+    if not settings.semantic_cache_enabled:
+        return
+
     cache: InMemorySemanticCache = http_request.app.state.semantic_cache
     embedding_provider: EmbeddingProvider = http_request.app.state.embedding_provider
     embed_text = messages_to_embed_text(messages)
 
     try:
-        embedding = await embedding_provider.embed(embed_text)
+        stored_embedding = embedding
+        if stored_embedding is None:
+            stored_embedding = await embedding_provider.embed(embed_text)
+
         entry_id = await persist_cache_entry(
             project.id,
             model,
-            embedding,
+            stored_embedding,
             result.content,
         )
         cache.store(
             project.id,
             model,
-            embedding,
+            stored_embedding,
             result.content,
             entry_id=entry_id,
         )
