@@ -1202,7 +1202,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 8.2d — Streaming disconnect and concurrency E2E (real DB)
 
 **Date:** 2026-07-25  
-**Commit:** *(pending)*
+**Commit:** `88d0e88`
 
 **What we built:**
 - `StreamingProvider` / `SlowStreamProvider` fakes in `tests/fakes/providers.py`
