@@ -1181,7 +1181,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 8.2c — Provider retry/fallback E2E (real DB)
 
 **Date:** 2026-07-25  
-**Commit:** *(pending)*
+**Commit:** `98b2b58`
 
 **What we built:**
 - `tests/fakes/providers.py` — flaky, always-fail, success providers + minimal test routers
