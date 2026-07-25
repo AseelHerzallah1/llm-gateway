@@ -1155,3 +1155,25 @@ python scripts/test_chat_completions.py gw-sk-your-key
 > I treated bad benchmark numbers as a debugging task: decomposed latency, found duplicate embedding as the main cost, fixed the miss path, and documented before/after methodology instead of moving on with a checklist tick.
 
 ---
+
+### Task 8.2b — Heavier DB integration tests
+
+**Date:** 2026-07-25  
+**Commit:** _(pending)_
+
+**What we built:**
+- `tests/integration/conftest.py` — isolated DB fixtures (`db_project`, `db_client`)
+- `tests/integration/test_auth_db.py` — real bcrypt auth + inactive project
+- `tests/integration/test_request_log_db.py` — `persist_request_log` writes rows
+- `tests/integration/test_chat_db.py` — chat with real auth/logging, mocked provider only
+- `@pytest.mark.db` — run with `pytest -m db` (skips when PostgreSQL unavailable)
+- Engine pool reset between integration tests (Windows asyncpg stability)
+
+**Tests:**
+- `pytest -m db` → 7 passed (with PostgreSQL)
+- `pytest` → 50 passed total
+
+**Meeting-ready summary:**
+> Lightweight tests mocked the DB; heavier tests spin up real project rows, exercise bcrypt auth and request logging end-to-end, and verify provider failures land in PostgreSQL — with OpenAI still mocked so CI stays deterministic.
+
+---

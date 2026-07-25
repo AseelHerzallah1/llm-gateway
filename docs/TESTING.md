@@ -753,6 +753,8 @@ See `docs/SECURITY.md`.
 ```powershell
 pip install -e ".[dev]"
 pytest
+pytest -m db          # real PostgreSQL integration tests
+pytest -m "not db"    # offline / mocked tests only
 ```
 
 Run subsets:
@@ -763,7 +765,7 @@ pytest -m integration
 pytest -q
 ```
 
-No live PostgreSQL or provider keys required — integration tests mock startup and auth.
+Mocked integration tests need no live PostgreSQL. DB-marked tests require Docker Postgres + `alembic upgrade head`.
 
 ### 29. Latency benchmark (gateway vs direct OpenAI)
 
@@ -781,6 +783,14 @@ python scripts/benchmark_decompose.py gw-sk-your-key --iterations 10
 ```
 
 Output: `docs/benchmark_decompose.json`
+
+### 31. Heavier DB integration tests
+
+```powershell
+pytest -m db -v
+```
+
+Covers real bcrypt auth, request log persistence, chat route with real auth + DB logging (OpenAI mocked), provider errors logged to DB, and async logging.
 
 ---
 

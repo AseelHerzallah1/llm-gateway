@@ -1,0 +1,25 @@
+{
+  "model": "gpt-4o-mini",
+  "iterations": 10,
+  "gateway_url": "http://127.0.0.1:8001",
+  "direct_chat": {
+    "name": "direct_chat",
+    "p50_ms": 720,
+    "p95_ms": 944,
+    "errors": 0
+  },
+  "direct_embed": {
+    "name": "direct_embed",
+    "p50_ms": 265,
+    "p95_ms": 323,
+    "errors": 0
+  },
+  "gateway_chat": {
+    "name": "gateway_chat",
+    "p50_ms": 1303,
+    "p95_ms": 1577,
+    "errors": 0
+  },
+  "estimated_embed_share_ms": 265,
+  "gateway_overhead_p50_ms": 583
+}

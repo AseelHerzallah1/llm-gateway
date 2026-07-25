@@ -57,6 +57,7 @@ class Settings(BaseSettings):
 
     # Security (used from Phase 3+)
     secret_key: SecretStr = Field(default=SecretStr("change-me"))
+    gateway_test_api_key: SecretStr = Field(default=SecretStr(""))
 
     # Semantic cache (used from Phase 6+)
     semantic_cache_enabled: bool = True

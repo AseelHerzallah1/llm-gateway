@@ -67,7 +67,7 @@ async def stream_with_retry(
     """Open a provider stream and read the first chunk, retrying on transient open failures."""
     attempt = 0
     while True:
-        stream_iter = provider.stream(request)
+        stream_iter = provider.   stream(request)
         try:
             first_chunk = await stream_iter.__anext__()
             return stream_iter, first_chunk
