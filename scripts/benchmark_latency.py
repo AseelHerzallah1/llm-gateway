@@ -36,6 +36,7 @@ DEFAULT_GATEWAY_URL = "http://127.0.0.1:8001"
 DEFAULT_MODEL = "gpt-4o-mini"
 DEFAULT_ITERATIONS = 10
 DEFAULT_MAX_TOKENS = 10
+BYPASS_CACHE_HEADER = "X-Gateway-Bypass-Cache"
 
 
 @dataclass(frozen=True)
@@ -143,7 +144,10 @@ async def run_benchmark(
     gateway_chat_url = f"{gateway_url.rstrip('/')}/v1/chat/completions"
 
     direct_headers = {"Authorization": f"Bearer {openai_api_key}"}
-    gateway_headers = {"Authorization": f"Bearer {gateway_api_key}"}
+    gateway_headers = {
+        "Authorization": f"Bearer {gateway_api_key}",
+        BYPASS_CACHE_HEADER: "true",
+    }
 
     timeout = httpx.Timeout(settings.openai_read_timeout_s)
     direct_samples: list[BenchmarkSample] = []
@@ -220,6 +224,13 @@ def print_report(report: BenchmarkReport) -> None:
     print()
     print(f"Gateway overhead p50: {report.overhead_p50_ms} ms ({report.overhead_p50_pct}%)")
     print(f"Gateway overhead p95: {report.overhead_p95_ms} ms")
+    if report.gateway.p50_ms < report.direct.p50_ms:
+        print()
+        print(
+            "WARNING: Gateway faster than direct — likely semantic cache hits skewing results."
+        )
+        print(f"  Re-run with {BYPASS_CACHE_HEADER}: true on gateway requests (script does this")
+        print("  automatically after the latest fix) or set SEMANTIC_CACHE_ENABLED=false.")
 
 
 def parse_args() -> argparse.Namespace:

@@ -30,6 +30,14 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+BYPASS_SEMANTIC_CACHE_HEADER = "x-gateway-bypass-cache"
+
+
+def bypass_semantic_cache(http_request: Request) -> bool:
+    """True when client asks to skip cache (e.g. latency benchmarks)."""
+    value = http_request.headers.get(BYPASS_SEMANTIC_CACHE_HEADER, "").lower()
+    return value in ("1", "true", "yes")
+
 
 @dataclass(frozen=True)
 class NonStreamingCacheCheck:
@@ -64,7 +72,7 @@ async def try_cached_non_streaming_completion(
     latency_ms: int,
 ) -> NonStreamingCacheCheck:
     """Return a cached completion on semantic cache hit, or embedding for reuse on miss."""
-    if not settings.semantic_cache_enabled:
+    if not settings.semantic_cache_enabled or bypass_semantic_cache(http_request):
         return NonStreamingCacheCheck(cached_response=None, embedding=None)
 
     cache: InMemorySemanticCache = http_request.app.state.semantic_cache
@@ -132,7 +140,7 @@ async def store_non_streaming_completion(
     embedding: list[float] | None = None,
 ) -> None:
     """Store a provider completion in the semantic cache."""
-    if not settings.semantic_cache_enabled:
+    if not settings.semantic_cache_enabled or bypass_semantic_cache(http_request):
         return
 
     cache: InMemorySemanticCache = http_request.app.state.semantic_cache
