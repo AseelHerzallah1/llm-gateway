@@ -790,8 +790,14 @@ Output: `docs/benchmark_decompose.json`
 pytest -m db -v
 ```
 
-Covers real bcrypt auth, request log persistence, chat route with real auth + DB logging (OpenAI mocked), provider errors logged to DB, and async logging.
+Covers real bcrypt auth, request log persistence, chat route with real auth + DB logging (OpenAI mocked), provider errors logged to DB, async logging, and **retry/fallback through the chat route** (stub providers, real `complete_with_fallback` + PostgreSQL rows).
 
----
+Resilience tests (`test_provider_resilience_db.py`):
+
+| Test | What it proves |
+|------|----------------|
+| `test_chat_retries_transient_provider_error` | 503 × 2 then success; 3 provider attempts; success log |
+| `test_chat_falls_back_to_secondary_provider` | Groq primary exhausted → fallback model in response + DB |
+| `test_chat_fails_when_primary_and_fallback_exhausted` | Both sides fail → 502 + error log |
 
 ## What's next (Phase 8+)

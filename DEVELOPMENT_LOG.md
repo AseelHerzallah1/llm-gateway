@@ -1159,7 +1159,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 8.2b — Heavier DB integration tests
 
 **Date:** 2026-07-25  
-**Commit:** _(pending)_
+**Commit:** `a635855`
 
 **What we built:**
 - `tests/integration/conftest.py` — isolated DB fixtures (`db_project`, `db_client`)
@@ -1175,5 +1175,26 @@ python scripts/test_chat_completions.py gw-sk-your-key
 
 **Meeting-ready summary:**
 > Lightweight tests mocked the DB; heavier tests spin up real project rows, exercise bcrypt auth and request logging end-to-end, and verify provider failures land in PostgreSQL — with OpenAI still mocked so CI stays deterministic.
+
+---
+
+### Task 8.2c — Provider retry/fallback E2E (real DB)
+
+**Date:** 2026-07-25  
+**Commit:** *(pending)*
+
+**What we built:**
+- `tests/fakes/providers.py` — flaky, always-fail, success providers + minimal test routers
+- `tests/integration/test_provider_resilience_db.py` — chat route exercises real `complete_with_fallback` (not mocked)
+- Retry test: primary fails twice with 503, succeeds on third attempt; success row logged
+- Fallback test: Groq primary exhausted → OpenAI fallback model in response + DB
+- Failure test: both primary and fallback exhausted → HTTP 502 + error row logged
+
+**Tests:**
+- `pytest -m db` → 10 passed (with PostgreSQL)
+- `pytest` → 53 passed total
+
+**Meeting-ready summary:**
+> Unit tests proved retry/fallback logic in isolation; these integration tests wire stub providers into the real chat route with bcrypt auth and PostgreSQL logging, so we know the full request path behaves correctly when upstream is flaky or a secondary provider takes over.
 
 ---
