@@ -810,6 +810,20 @@ pytest tests/integration/test_streaming_db.py -v
 |------|----------------|
 | `test_stream_success_persists_request_log` | SSE completes with `[DONE]`; usage tokens logged |
 | `test_stream_client_disconnect_logs_error` | Mid-stream disconnect → upstream closed + `client_disconnected` row |
-| `test_concurrent_streams_all_complete` | 5 parallel streams all succeed independently |
+| `test_concurrent_streams_all_complete` | 20 and 40 parallel streams all succeed (parametrized) |
+| `test_concurrent_mixed_stream_and_non_stream` | 20 streams + 3 non-stream requests in parallel (like manual script) |
+
+### 33. Semantic cache (DB integration)
+
+```powershell
+pytest tests/integration/test_cache_db.py -v
+```
+
+| Test | What it proves |
+|------|----------------|
+| `test_cache_miss_calls_provider_and_persists_entry` | Miss calls provider; row in `cache_entries`; `cache_hit=false` |
+| `test_cache_hit_skips_provider_and_increments_use_count` | Hit returns cached text; provider not called; `use_count` bumps |
+| `test_cache_similarity_below_threshold_is_miss` | Orthogonal embedding → miss despite existing entries |
+| `test_empty_cache_skips_embed_on_lookup` | First request embeds once (store only); second hit embeds once (lookup) |
 
 ---

@@ -11,6 +11,9 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy import delete
 
 from app.auth.api_keys import generate_api_key, prepare_stored_api_key
+from app.cache.memory import InMemorySemanticCache
+from app.config import settings
+from app.db.models.cache_entry import CacheEntryRecord
 from app.db.models.project import Project
 from app.db.models.request import RequestLog
 from app.db.models.user import User
@@ -18,6 +21,8 @@ from app.db.session import async_session_factory, engine, verify_db_connection
 from app.errors import invalid_request_error
 from app.main import app
 from app.providers.router import resolve_provider_name
+from tests.fakes.embeddings import DeterministicEmbeddingProvider
+from tests.fakes.providers import RetryOnlyRouter, SuccessProvider
 from tests.helpers import mock_app_state
 
 _postgres_checked = False
@@ -75,6 +80,9 @@ async def db_project(postgres_available) -> AsyncIterator[tuple[Project, str]]:
     finally:
         async with async_session_factory() as db:
             await db.execute(delete(RequestLog).where(RequestLog.project_id == project.id))
+            await db.execute(
+                delete(CacheEntryRecord).where(CacheEntryRecord.project_id == project.id)
+            )
             await db.execute(delete(Project).where(Project.id == project.id))
             await db.execute(delete(User).where(User.id == project.user_id))
             await db.commit()
@@ -89,5 +97,33 @@ async def db_client(db_project, monkeypatch) -> AsyncIterator[tuple[AsyncClient,
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         yield client, project, api_key
+
+    app.dependency_overrides.clear()
+
+
+@pytest.fixture
+async def db_cache_client(
+    db_project, monkeypatch
+) -> AsyncIterator[
+    tuple[AsyncClient, Project, str, InMemorySemanticCache, SuccessProvider, DeterministicEmbeddingProvider]
+]:
+    """HTTP client with real semantic cache, deterministic embeddings, stub provider."""
+    project, api_key = db_project
+    mock_app_state(app, monkeypatch, resolve_provider_name=resolve_provider_name)
+
+    cache = InMemorySemanticCache(similarity_threshold=settings.cache_similarity_threshold)
+    embedding_provider = DeterministicEmbeddingProvider()
+    provider = SuccessProvider("openai", content="from-provider")
+
+    app.state.semantic_cache = cache
+    app.state.embedding_provider = embedding_provider
+    app.state.provider_router = RetryOnlyRouter(provider)
+
+    monkeypatch.setattr("app.config.settings.semantic_cache_enabled", True)
+    monkeypatch.setattr("app.config.settings.request_log_async", False)
+
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        yield client, project, api_key, cache, provider, embedding_provider
 
     app.dependency_overrides.clear()

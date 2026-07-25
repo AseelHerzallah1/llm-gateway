@@ -1209,13 +1209,36 @@ python scripts/test_chat_completions.py gw-sk-your-key
 - `tests/integration/test_streaming_db.py`:
   - Full SSE stream completes → success row with parsed token usage
   - Simulated client disconnect mid-stream → `client_disconnected` error row + upstream closed
-  - 5 parallel streams → all complete with `[DONE]`, 5 success rows in DB
+  - 20 and 40 parallel streams (parametrized) + mixed 20 stream / 3 non-stream batch
 
 **Tests:**
-- `pytest -m db` → 13 passed (with PostgreSQL)
-- `pytest` → 56 passed total
+- `pytest -m db` → 17 passed (with PostgreSQL)
+- `pytest` → 62 passed total
 
 **Meeting-ready summary:**
 > Streaming is harder to test than JSON because the client can drop mid-flight. These tests exercise the real SSE generator and verify we close the upstream iterator and log `client_disconnected`, plus that parallel streams do not interfere with each other.
+
+---
+
+### Task 8.2e — Semantic cache hit/miss E2E (real DB)
+
+**Date:** 2026-07-25  
+**Commit:** *(pending)*
+
+**What we built:**
+- `tests/fakes/embeddings.py` — deterministic vectors by prompt keyword (no OpenAI)
+- `db_cache_client` fixture — real `InMemorySemanticCache` + PostgreSQL persistence
+- `tests/integration/test_cache_db.py`:
+  - Miss → provider called, cache row persisted, `cache_hit=false`
+  - Hit → provider skipped, cached content returned, `use_count` incremented
+  - Below-threshold similarity → miss even when cache has entries
+  - Empty cache → skip embed on lookup (only embed once on store)
+
+**Tests:**
+- `pytest -m db` → 17 passed (with PostgreSQL)
+- `pytest` → 62 passed total
+
+**Meeting-ready summary:**
+> Cache logic had unit tests on cosine similarity and memory store; these integration tests run the full chat route with real cache persistence and request logging, proving hits skip the provider and misses store embeddings without duplicate lookup work on an empty cache.
 
 ---
