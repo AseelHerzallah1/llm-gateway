@@ -1223,7 +1223,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 8.2e — Semantic cache hit/miss E2E (real DB)
 
 **Date:** 2026-07-25  
-**Commit:** *(pending)*
+**Commit:** `1442fb5`
 
 **What we built:**
 - `tests/fakes/embeddings.py` — deterministic vectors by prompt keyword (no OpenAI)
