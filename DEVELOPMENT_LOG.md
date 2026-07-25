@@ -1252,6 +1252,9 @@ python scripts/test_chat_completions.py gw-sk-your-key
 
 **Date:** 2026-07-25  
 **Commit:** `dbeaaca`
+
+**What we built:**
+- `docs/DESIGN.md` — interview-oriented **why** document covering:
   - Stack choices and rejected alternatives
   - Streaming, cache, observability, multi-provider resilience, security
   - Benchmark numbers and honest limitations
