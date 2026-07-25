@@ -1251,10 +1251,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 8.4 — Design document (`docs/DESIGN.md`)
 
 **Date:** 2026-07-25  
-**Commit:** *(pending)*
-
-**What we built:**
-- `docs/DESIGN.md` — interview-oriented **why** document covering:
+**Commit:** `dbeaaca`
   - Stack choices and rejected alternatives
   - Streaming, cache, observability, multi-provider resilience, security
   - Benchmark numbers and honest limitations
@@ -1268,7 +1265,7 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 8.5 — README and demo script
 
 **Date:** 2026-07-25  
-**Commit:** *(pending)*
+**Commit:** `dbeaaca`
 
 **What we built:**
 - Rewrote root `README.md` — features, quick start, doc index, test commands, local URLs
