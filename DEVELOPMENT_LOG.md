@@ -1198,3 +1198,24 @@ python scripts/test_chat_completions.py gw-sk-your-key
 > Unit tests proved retry/fallback logic in isolation; these integration tests wire stub providers into the real chat route with bcrypt auth and PostgreSQL logging, so we know the full request path behaves correctly when upstream is flaky or a secondary provider takes over.
 
 ---
+
+### Task 8.2d — Streaming disconnect and concurrency E2E (real DB)
+
+**Date:** 2026-07-25  
+**Commit:** *(pending)*
+
+**What we built:**
+- `StreamingProvider` / `SlowStreamProvider` fakes in `tests/fakes/providers.py`
+- `tests/integration/test_streaming_db.py`:
+  - Full SSE stream completes → success row with parsed token usage
+  - Simulated client disconnect mid-stream → `client_disconnected` error row + upstream closed
+  - 5 parallel streams → all complete with `[DONE]`, 5 success rows in DB
+
+**Tests:**
+- `pytest -m db` → 13 passed (with PostgreSQL)
+- `pytest` → 56 passed total
+
+**Meeting-ready summary:**
+> Streaming is harder to test than JSON because the client can drop mid-flight. These tests exercise the real SSE generator and verify we close the upstream iterator and log `client_disconnected`, plus that parallel streams do not interfere with each other.
+
+---

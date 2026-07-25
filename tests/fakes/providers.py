@@ -2,10 +2,81 @@
 
 from __future__ import annotations
 
+import asyncio
+import json
+from collections.abc import AsyncIterator
+
 from app.config import settings
 from app.providers.base import CompletionRequest, CompletionResponse, LLMProvider
 from app.providers.exceptions import OpenAIProviderError
 from app.providers.router import FallbackTarget
+
+
+def sse_data(payload: dict | str) -> str:
+    if isinstance(payload, str):
+        return f"data: {payload}\n\n"
+    return f"data: {json.dumps(payload)}\n\n"
+
+
+class StreamingProvider(LLMProvider):
+    """Yield OpenAI-compatible SSE chunks including usage and [DONE]."""
+
+    def __init__(self, *, name: str = "streaming-openai") -> None:
+        self._name = name
+        self.streams_started = 0
+        self.stream_closed = False
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    async def complete(self, request: CompletionRequest) -> CompletionResponse:
+        text = request.messages[-1].content if request.messages else "ok"
+        return CompletionResponse(
+            id="stream-complete",
+            model=request.model,
+            content=text,
+            finish_reason="stop",
+            prompt_tokens=1,
+            completion_tokens=1,
+            total_tokens=2,
+            created=123,
+        )
+
+    async def stream(self, request: CompletionRequest) -> AsyncIterator[str]:
+        self.streams_started += 1
+        self.stream_closed = False
+        marker = request.messages[-1].content if request.messages else "chunk"
+        try:
+            yield sse_data({"choices": [{"delta": {"content": marker}}]})
+            yield sse_data({"usage": {"prompt_tokens": 4, "completion_tokens": 6}})
+            yield sse_data("[DONE]")
+        finally:
+            self.stream_closed = True
+
+    async def aclose(self) -> None:
+        return None
+
+
+class SlowStreamProvider(StreamingProvider):
+    """Stream many chunks with a small delay so clients can disconnect mid-flight."""
+
+    def __init__(self, *, chunk_count: int = 12, delay_s: float = 0.03) -> None:
+        super().__init__(name="slow-stream")
+        self.chunk_count = chunk_count
+        self.delay_s = delay_s
+
+    async def stream(self, request: CompletionRequest) -> AsyncIterator[str]:
+        self.streams_started += 1
+        self.stream_closed = False
+        try:
+            for index in range(self.chunk_count):
+                await asyncio.sleep(self.delay_s)
+                yield sse_data({"choices": [{"delta": {"content": str(index)}}]})
+            yield sse_data({"usage": {"prompt_tokens": 2, "completion_tokens": 3}})
+            yield sse_data("[DONE]")
+        finally:
+            self.stream_closed = True
 
 
 class FlakyProvider(LLMProvider):

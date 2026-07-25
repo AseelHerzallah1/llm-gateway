@@ -800,4 +800,16 @@ Resilience tests (`test_provider_resilience_db.py`):
 | `test_chat_falls_back_to_secondary_provider` | Groq primary exhausted → fallback model in response + DB |
 | `test_chat_fails_when_primary_and_fallback_exhausted` | Both sides fail → 502 + error log |
 
-## What's next (Phase 8+)
+### 32. Streaming and concurrency (DB integration)
+
+```powershell
+pytest tests/integration/test_streaming_db.py -v
+```
+
+| Test | What it proves |
+|------|----------------|
+| `test_stream_success_persists_request_log` | SSE completes with `[DONE]`; usage tokens logged |
+| `test_stream_client_disconnect_logs_error` | Mid-stream disconnect → upstream closed + `client_disconnected` row |
+| `test_concurrent_streams_all_complete` | 5 parallel streams all succeed independently |
+
+---
