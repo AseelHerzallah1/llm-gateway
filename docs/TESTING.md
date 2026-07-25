@@ -654,6 +654,7 @@ The API key stays in browser `sessionStorage` only — it is not sent to any rou
 | `scripts/test_metrics.py` | Gateway + PostgreSQL | Gateway key + running uvicorn |
 | `scripts/test_requests.py` | Gateway + PostgreSQL | Gateway key + running uvicorn |
 | `scripts/test_dashboard.py` | Gateway | Running uvicorn |
+| `scripts/demo.py` | Gateway + OpenAI + PostgreSQL | Gateway key + running uvicorn |
 | `scripts/test_cache_similarity.py` | None (offline) | None |
 | `scripts/test_semantic_cache.py` | None (offline) | None |
 | `scripts/test_embeddings.py` | OpenAI | `OPENAI_API_KEY` |
@@ -826,4 +827,12 @@ pytest tests/integration/test_cache_db.py -v
 | `test_cache_similarity_below_threshold_is_miss` | Orthogonal embedding → miss despite existing entries |
 | `test_empty_cache_skips_embed_on_lookup` | First request embeds once (store only); second hit embeds once (lookup) |
 
----
+### 34. Portfolio demo
+
+```powershell
+python scripts/demo.py gw-sk-your-key
+```
+
+Five-step walkthrough: health → chat → stream → cache hit → metrics. See [`docs/DESIGN.md`](DESIGN.md) for decision trade-offs.
+
+## What's next (Phase 9+)

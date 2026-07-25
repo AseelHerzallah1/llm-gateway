@@ -1173,6 +1173,8 @@ python scripts/test_chat_completions.py gw-sk-your-key
 - `pytest -m db` → 7 passed (with PostgreSQL)
 - `pytest` → 50 passed total
 
+**Later sub-tasks (8.2c–8.2e):** retry/fallback E2E, streaming at 20/40 concurrency, semantic cache hit/miss — see below and [`docs/DESIGN.md`](docs/DESIGN.md) §9.
+
 **Meeting-ready summary:**
 > Lightweight tests mocked the DB; heavier tests spin up real project rows, exercise bcrypt auth and request logging end-to-end, and verify provider failures land in PostgreSQL — with OpenAI still mocked so CI stays deterministic.
 
@@ -1202,21 +1204,24 @@ python scripts/test_chat_completions.py gw-sk-your-key
 ### Task 8.2d — Streaming disconnect and concurrency E2E (real DB)
 
 **Date:** 2026-07-25  
-**Commit:** `88d0e88`
+**Commits:** `88d0e88` (initial), expanded in `1442fb5`
 
 **What we built:**
 - `StreamingProvider` / `SlowStreamProvider` fakes in `tests/fakes/providers.py`
 - `tests/integration/test_streaming_db.py`:
   - Full SSE stream completes → success row with parsed token usage
   - Simulated client disconnect mid-stream → `client_disconnected` error row + upstream closed
-  - 20 and 40 parallel streams (parametrized) + mixed 20 stream / 3 non-stream batch
+  - **20 and 40 parallel streams** (parametrized) — all must see `[DONE]` + success rows
+  - **Mixed batch:** 20 concurrent streams + 3 concurrent non-streaming requests (mirrors `scripts/test_concurrent_streams.py`)
+- `tests/integration/conftest.py` — teardown deletes `cache_entries` (needed for mixed non-stream requests)
 
-**Tests:**
-- `pytest -m db` → 17 passed (with PostgreSQL)
-- `pytest` → 62 passed total
+**Tests (after expansion):**
+- Streaming file alone: 5 passed
+- Full `pytest -m db`: 17 passed (with PostgreSQL)
+- Full `pytest`: 62 passed total
 
 **Meeting-ready summary:**
-> Streaming is harder to test than JSON because the client can drop mid-flight. These tests exercise the real SSE generator and verify we close the upstream iterator and log `client_disconnected`, plus that parallel streams do not interfere with each other.
+> Streaming is harder to test than JSON because the client can drop mid-flight. These tests exercise the real SSE generator, verify upstream cancellation, and stress **40 parallel streams** in-process with stub providers — proving concurrent requests do not corrupt auth, logging, or stream state.
 
 ---
 
@@ -1240,5 +1245,45 @@ python scripts/test_chat_completions.py gw-sk-your-key
 
 **Meeting-ready summary:**
 > Cache logic had unit tests on cosine similarity and memory store; these integration tests run the full chat route with real cache persistence and request logging, proving hits skip the provider and misses store embeddings without duplicate lookup work on an empty cache.
+
+---
+
+### Task 8.4 — Design document (`docs/DESIGN.md`)
+
+**Date:** 2026-07-25  
+**Commit:** *(pending)*
+
+**What we built:**
+- `docs/DESIGN.md` — interview-oriented **why** document covering:
+  - Stack choices and rejected alternatives
+  - Streaming, cache, observability, multi-provider resilience, security
+  - Benchmark numbers and honest limitations
+  - Testing pyramid + table of all 8.2b–8.2e DB integration tests
+
+**Meeting-ready summary:**
+> ARCHITECTURE.md shows what connects to what; DESIGN.md explains every major trade-off — duplicate embed overhead, 0.92 threshold false-hit risk, async logging, fallback model swap — so I can defend decisions in a systems interview, not just demo endpoints.
+
+---
+
+### Task 8.5 — README and demo script
+
+**Date:** 2026-07-25  
+**Commit:** *(pending)*
+
+**What we built:**
+- Rewrote root `README.md` — features, quick start, doc index, test commands, local URLs
+- `scripts/demo.py` — single walkthrough: health → chat → stream → cache hit → metrics → dashboard link
+
+**Tests:**
+- `python scripts/demo.py gw-sk-...` — requires live uvicorn + OpenAI key
+
+**Meeting-ready summary:**
+> The README is the front door for recruiters; the demo script is a five-step live narrative that hits every pillar in under a minute — proxy, streaming, semantic cache, and percentile metrics.
+
+---
+
+## Phase 8 complete
+
+All Phase 8 tasks (8.1–8.5) delivered. Next phase per scope: **Phase 9 — PII protection (v2)**.
 
 ---
