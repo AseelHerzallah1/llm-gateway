@@ -49,6 +49,9 @@ class InMemorySemanticCache:
             if entry.project_id != project_id or entry.model != model:
                 continue
 
+            if len(entry.embedding) != len(embedding):
+                continue
+
             similarity = cosine_similarity(embedding, entry.embedding)
             if similarity > best_similarity:
                 best_similarity = similarity

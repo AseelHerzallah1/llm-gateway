@@ -47,11 +47,26 @@ GATEWAY_TEST_API_KEY=gw-sk-your-key-here
 
 ### Start the gateway
 
+**Terminal 1** — server (restart with this block if port 8001 is busy):
+
 ```powershell
 .venv\Scripts\Activate.ps1
 docker compose up db -d
+
+Get-NetTCPConnection -LocalPort 8001 -ErrorAction SilentlyContinue |
+  ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }
+
 uvicorn app.main:app --host 127.0.0.1 --port 8001
 ```
+
+**Terminal 2** — client scripts (`demo.py`, `test_chat_completions.py`, etc.):
+
+```powershell
+.venv\Scripts\Activate.ps1
+python scripts/demo.py
+```
+
+Use your real `gw-sk-...` key from `seed_test_project.py` or `GATEWAY_TEST_API_KEY` in `.env`. Do not use the placeholder text `gw-sk-your-key`.
 
 If you use `--reload`, limit watch scope to avoid OneDrive loops:
 
@@ -475,6 +490,7 @@ Concurrent streams OK
 | Some streams FAIL with 401 | Invalid gateway key |
 | Timeouts under load | OpenAI rate limits or slow network — retry with lower concurrency |
 | Stream hangs | Check `OPENAI_STREAM_IDLE_TIMEOUT_S` in `.env` (default 30s) |
+| Cache never hits / `test_cache_hit.py` fails | Stale 3D test vectors in DB — run `python scripts/cleanup_invalid_cache_entries.py`, restart uvicorn |
 
 ---
 

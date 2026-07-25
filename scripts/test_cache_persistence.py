@@ -12,7 +12,7 @@ import asyncio
 import sys
 from pathlib import Path
 
-from sqlalchemy import func, select
+from sqlalchemy import delete, select
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -64,6 +64,10 @@ async def main() -> None:
     if use_count != 1:
         print("Expected use_count=1 after cache hit, got", use_count)
         sys.exit(1)
+
+    async with async_session_factory() as db:
+        await db.execute(delete(CacheEntryRecord).where(CacheEntryRecord.id == entry_id))
+        await db.commit()
 
     print("Cache persistence OK")
     print("Entry id:", entry_id)
