@@ -1154,6 +1154,74 @@ python scripts/test_chat_completions.py gw-sk-your-key
 **Meeting-ready summary:**
 > I treated bad benchmark numbers as a debugging task: decomposed latency, found duplicate embedding as the main cost, fixed the miss path, and documented before/after methodology instead of moving on with a checklist tick.
 
+**After numbers (cache enabled, miss path, 10 iterations):** see `docs/benchmark_results_after.json` — overhead p50 **+620 ms**, p95 **+556 ms**.
+
+---
+
+### Task 8.3c — Live benchmark re-test, cache fixes, and measurement clarity
+
+**Date:** 2026-07-26  
+**Commits:** `3cd5194` (cache dimension skip), `ae87cf3` (benchmark bypass header)
+
+**Context:** After Phase 8 “complete”, live E2E testing exposed issues that unit/DB tests did not catch.
+
+#### 1. Semantic cache not hitting in production (`test_cache_hit.py` failed)
+
+**Symptom:** Second identical request returned `chatcmpl-...` instead of `cache-...`.
+
+**Root cause:** PostgreSQL had stale **3-dimensional** test vectors (from pytest / `test_cache_persistence.py`) mixed with real **1536-dimensional** OpenAI embeddings. Lookup compared 1536 vs 3, threw `ValueError`, and **skipped the entire cache lookup** (always miss).
+
+**Fixes:**
+- `app/cache/memory.py` — skip entries with dimension mismatch instead of aborting lookup
+- `scripts/cleanup_invalid_cache_entries.py` — remove bad rows from DB
+- `scripts/test_cache_persistence.py` — delete its test row after run
+
+**Verified:** `python scripts/test_cache_hit.py` → `Cache hit OK`, id `cache-...`.
+
+#### 2. Benchmark showed gateway *faster* than OpenAI (−248 ms overhead)
+
+**Symptom:** `benchmark_results_after_fix.json` (first run) had gateway p50 **269 ms** vs direct **517 ms**.
+
+**Root cause:** **False semantic cache hits** (~0.98 similarity). Prompts like “Reply with one short greeting word. benchmark-…” matched cached “Hello!” / greeting responses in a warm DB (~50+ entries). Gateway returned cache hits (embed only, no chat call); direct OpenAI always called chat.
+
+**Fix:** Benchmark sends `X-Gateway-Bypass-Cache: true` so latency measures **proxy cost**, not cache hits.
+
+#### 3. Re-measure after bypass (valid thin-proxy numbers)
+
+**File:** `docs/benchmark_results_after_fix.json` (second run, after bypass + server restart)
+
+| Target | p50 | p95 |
+|--------|-----|-----|
+| Direct OpenAI | 510 ms | 677 ms |
+| Gateway | 598 ms | 1002 ms |
+| **Overhead** | **+88 ms (+17%)** | **+325 ms** |
+
+#### Important: three different overhead numbers (do not mix them up)
+
+| Measurement | Overhead p50 | Overhead p95 | What it measures |
+|-------------|--------------|--------------|------------------|
+| Before 8.3b (`benchmark_results_before.json`) | +744 ms | +1248 ms | Cache on, duplicate embed + sync log |
+| Cache-on miss (`benchmark_results_after.json`) | +620 ms | +556 ms | Auth + **one embed** + chat + async log |
+| **Thin proxy bypass** (`benchmark_results_after_fix.json`) | **+88 ms** | **+325 ms** | Auth + chat + async log (**no embed**) |
+
+**Is +88 ms “better” than +620 ms?** Only because it measures a **different path** (semantic cache disabled for that request via bypass header). The gateway did not magically get 7× faster — we stopped counting the ~260 ms embedding step in the benchmark. For interviews:
+
+- **“Thin proxy overhead”** → cite **+88 ms p50**
+- **“Semantic cache enabled, cache miss”** → cite **~+460–620 ms p50**
+
+#### p95 overhead +325 ms — optimize more?
+
+**Decision: no further optimization for v1.** Reasons:
+
+- p95 tail includes normal variance (network, OpenAI, PostgreSQL) on a small 10-iteration sample
+- Async logging already moved DB off the p50 critical path; shaving p95 further needs batching, connection pooling tuning, or dropping features — not worth it for a portfolio MVP
+- **+325 ms p95 on thin proxy** is honest and defensible; chasing lower p95 without production load data would be premature
+
+**Move on:** Phase 8 goals are met (security, tests, benchmarks documented honestly, DESIGN.md, demo). **Next: Phase 9 — PII protection (v2)** per `docs/SCOPE.md`.
+
+**Meeting-ready summary:**
+> Live testing caught real bugs: polluted cache embeddings broke hits, and warm-cache false positives made the gateway look faster than OpenAI. I fixed both, re-ran benchmarks with clear labels for thin-proxy (+88 ms p50) vs cache-miss (+620 ms p50) paths, and stopped optimizing p95 for v1 — the numbers are good enough and the story is honest.
+
 ---
 
 ### Task 8.2b — Heavier DB integration tests
@@ -1284,6 +1352,6 @@ python scripts/test_chat_completions.py gw-sk-your-key
 
 ## Phase 8 complete
 
-All Phase 8 tasks (8.1–8.5) delivered. Next phase per scope: **Phase 9 — PII protection (v2)**.
+All Phase 8 tasks (8.1–8.5) delivered, plus post-ship live validation in **8.3c** (cache hit fix, benchmark bypass, re-measure). Next phase per scope: **Phase 9 — PII protection (v2)**.
 
 ---
