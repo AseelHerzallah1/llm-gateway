@@ -105,10 +105,20 @@ Compare `benchmark_results_before.json` vs `benchmark_results_after.json`.
 
 ## Config knobs
 
-| Env var | Default | Purpose |
-|---------|---------|---------|
+| Env var / header | Default | Purpose |
+|------------------|---------|---------|
 | `SEMANTIC_CACHE_ENABLED` | `true` | Set `false` to measure thin-proxy latency (no embed on miss) |
 | `REQUEST_LOG_ASYNC` | `true` | Set `false` to restore synchronous DB logging |
+| `X-Gateway-Bypass-Cache: true` | off | Benchmark script sends this — skips embed lookup/store for that request |
+
+### Two valid overhead measurements
+
+| Mode | Typical p50 overhead | When to cite |
+|------|----------------------|--------------|
+| **Thin proxy** (bypass header or cache disabled) | ~+88 ms | Minimum auth + logging cost |
+| **Cache-on miss** (semantic cache enabled, warm DB) | ~+460–620 ms | Realistic miss path including one embed |
+
+Do not compare these as “before/after optimizations” — they measure different code paths. See `docs/benchmark_results_after_fix.json` vs `docs/benchmark_results_after.json`.
 
 ---
 
