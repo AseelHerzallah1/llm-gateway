@@ -1361,7 +1361,7 @@ All Phase 8 tasks (8.1–8.5) delivered, plus post-ship live validation in **8.3
 ### Task 9.1 — PII scope and design (`docs/PII.md`)
 
 **Date:** 2026-07-27  
-**Commit:** *(pending)*
+**Commit:** `5a1160b`
 
 **What we built:**
 - `docs/PII.md` — problem statement, pipeline diagram, detection strategy (Latin + Arabic/Hebrew), token format, config flags, task map 9.2–9.6, success criteria
