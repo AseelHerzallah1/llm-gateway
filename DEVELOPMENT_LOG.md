@@ -1355,3 +1355,19 @@ python scripts/test_chat_completions.py gw-sk-your-key
 All Phase 8 tasks (8.1–8.5) delivered, plus post-ship live validation in **8.3c** (cache hit fix, benchmark bypass, re-measure). Next phase per scope: **Phase 9 — PII protection (v2)**.
 
 ---
+
+## Phase 9 — PII protection (v2)
+
+### Task 9.1 — PII scope and design (`docs/PII.md`)
+
+**Date:** 2026-07-27  
+**Commit:** *(pending)*
+
+**What we built:**
+- `docs/PII.md` — problem statement, pipeline diagram, detection strategy (Latin + Arabic/Hebrew), token format, config flags, task map 9.2–9.6, success criteria
+- Explicit non-goals: regex prompt-injection, pgvector (separate track), persisting token maps
+
+**Meeting-ready summary:**
+> Phase 9 redacts PII at the gateway choke point before provider and semantic cache — Unicode-aware for Arabic/Hebrew, not English-only regex — so compliance is a real pipeline, not a checkbox feature.
+
+---
