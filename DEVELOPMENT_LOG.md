@@ -1371,3 +1371,23 @@ All Phase 8 tasks (8.1–8.5) delivered, plus post-ship live validation in **8.3
 > Phase 9 redacts PII at the gateway choke point before provider and semantic cache — Unicode-aware for Arabic/Hebrew, not English-only regex — so compliance is a real pipeline, not a checkbox feature.
 
 ---
+
+### Task 9.2 — Latin PII redaction module
+
+**Date:** 2026-07-27  
+**Commit:** *(pending)*
+
+**What we built:**
+- `app/security/pii.py` — email, phone, optional credit-card (Luhn) detection; stable per-request tokens (`[EMAIL_1]`, etc.)
+- `redact_text()` and `redact_messages()` with shared token map across messages
+- Overlap handling: email wins over phone/credit-card spans
+- `tests/unit/test_pii.py` — 11 unit tests (email reuse, US phone formats, Luhn gating, selective config)
+
+**Tests:**
+- `pytest tests/unit/test_pii.py -v` → 11 passed
+- `pytest` → 74 passed total
+
+**Meeting-ready summary:**
+> Task 9.2 is a standalone redaction engine — regex plus Luhn for cards, stable tokens within a request — ready to wire into the chat route in 9.4 without touching provider code.
+
+---
