@@ -168,7 +168,10 @@ async def main() -> None:
             await step_cache(client, headers)
             await step_metrics(client, headers)
     except httpx.ConnectError:
-        print("\nERROR: Could not connect. Start the gateway:")
+        print("\nERROR: Could not connect to the gateway.")
+        print("Start (or restart) the server in a separate terminal:")
+        print('  Get-NetTCPConnection -LocalPort 8001 -ErrorAction SilentlyContinue |')
+        print('    ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }')
         print("  uvicorn app.main:app --host 127.0.0.1 --port 8001")
         sys.exit(1)
     except httpx.HTTPStatusError as exc:

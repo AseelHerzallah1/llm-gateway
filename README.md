@@ -47,6 +47,39 @@ python scripts/seed_test_project.py   # save the gw-sk-... key
 uvicorn app.main:app --host 127.0.0.1 --port 8001
 ```
 
+### Two terminals (server + client)
+
+**Do not** run uvicorn and `demo.py` in the same terminal — uvicorn blocks until you stop it.
+
+**Terminal 1 — restart server** (run this whenever you see port busy / connection errors):
+
+```powershell
+cd "c:\Users\Aseel Herzallah\OneDrive\Desktop\LLM-Gateway"
+.venv\Scripts\Activate.ps1
+docker compose up db -d
+
+# Free port 8001 if a stale uvicorn is still running
+Get-NetTCPConnection -LocalPort 8001 -ErrorAction SilentlyContinue |
+  ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }
+
+uvicorn app.main:app --host 127.0.0.1 --port 8001
+```
+
+Leave this terminal open. Wait for `Application startup complete.`
+
+**Terminal 2 — run client** (demo, chat test, etc.):
+
+```powershell
+cd "c:\Users\Aseel Herzallah\OneDrive\Desktop\LLM-Gateway"
+.venv\Scripts\Activate.ps1
+
+# Use your real key from seed_test_project.py or .env — NOT the literal "gw-sk-your-key"
+python scripts/demo.py
+# or: python scripts/demo.py gw-sk-PASTE-YOUR-REAL-KEY-HERE
+```
+
+If `.env` has `GATEWAY_TEST_API_KEY=gw-sk-...`, you can omit the key argument.
+
 ### Run the demo
 
 ```powershell

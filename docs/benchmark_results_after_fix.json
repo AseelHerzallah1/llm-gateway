@@ -5,20 +5,20 @@
   "direct": {
     "target": "direct_openai",
     "samples": 10,
-    "p50_ms": 577,
-    "p95_ms": 779,
-    "p99_ms": 813,
+    "p50_ms": 510,
+    "p95_ms": 677,
+    "p99_ms": 684,
     "errors": 0
   },
   "gateway": {
     "target": "llm_gateway",
     "samples": 10,
-    "p50_ms": 1040,
-    "p95_ms": 1223,
-    "p99_ms": 1266,
+    "p50_ms": 598,
+    "p95_ms": 1002,
+    "p99_ms": 1139,
     "errors": 0
   },
-  "overhead_p50_ms": 463,
-  "overhead_p95_ms": 444,
-  "overhead_p50_pct": 80.24
+  "overhead_p50_ms": 88,
+  "overhead_p95_ms": 325,
+  "overhead_p50_pct": 17.25
 }
