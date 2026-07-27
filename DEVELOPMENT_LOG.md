@@ -1375,7 +1375,7 @@ All Phase 8 tasks (8.1–8.5) delivered, plus post-ship live validation in **8.3
 ### Task 9.2 — Latin PII redaction module
 
 **Date:** 2026-07-27  
-**Commit:** *(pending)*
+**Commit:** `8c858b1`
 
 **What we built:**
 - `app/security/pii.py` — email, phone, optional credit-card (Luhn) detection; stable per-request tokens (`[EMAIL_1]`, etc.)
