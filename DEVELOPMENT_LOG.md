@@ -1395,7 +1395,7 @@ All Phase 8 tasks (8.1–8.5) delivered, plus post-ship live validation in **8.3
 ### Task 9.3 — Arabic / Hebrew PII patterns
 
 **Date:** 2026-07-29  
-**Commit:** *(pending)*
+**Commit:** `5a5200d`
 
 **What we built:**
 - Arabic-Indic and Extended Arabic-Indic digit normalization (same-length index mapping)
@@ -1414,7 +1414,7 @@ All Phase 8 tasks (8.1–8.5) delivered, plus post-ship live validation in **8.3
 ### Task 9.4 — Wire PII into chat route
 
 **Date:** 2026-07-29  
-**Commit:** *(pending)*
+**Commit:** `5a5200d`
 
 **What we built:**
 - `PII_REDACTION_ENABLED` and per-type flags in `app/config.py`
@@ -1432,7 +1432,7 @@ All Phase 8 tasks (8.1–8.5) delivered, plus post-ship live validation in **8.3
 ### Task 9.5 — PII manual test script
 
 **Date:** 2026-07-29  
-**Commit:** *(pending)*
+**Commit:** `5a5200d`
 
 **What we built:**
 - `scripts/test_pii_redaction.py` — offline Arabic/Hebrew demo + optional live gateway test
@@ -1446,7 +1446,7 @@ All Phase 8 tasks (8.1–8.5) delivered, plus post-ship live validation in **8.3
 ### Task 9.6 — Response detokenization
 
 **Date:** 2026-07-29  
-**Commit:** *(pending)*
+**Commit:** `5a5200d`
 
 **What we built:**
 - `detokenize_text()` in `app/security/pii.py`
