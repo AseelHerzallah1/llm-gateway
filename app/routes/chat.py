@@ -24,6 +24,7 @@ from app.observability.sse_usage import parse_sse_usage
 from app.providers.base import ChatMessage, CompletionRequest
 from app.providers.fallback import complete_with_fallback, stream_with_fallback
 from app.providers.exceptions import AnthropicProviderError, OpenAIProviderError
+from app.security.pii import PiiRedactionConfig, detokenize_text, redact_messages
 from app.schemas.chat import (
     ChatChoice,
     ChatCompletionRequest,
@@ -50,6 +51,37 @@ def _to_completion_request(body: ChatCompletionRequest) -> CompletionRequest:
         temperature=body.temperature,
         max_tokens=body.max_tokens,
     )
+
+
+def _pii_redaction_config() -> PiiRedactionConfig:
+    return PiiRedactionConfig(
+        redact_email=settings.pii_redact_email,
+        redact_phone=settings.pii_redact_phone,
+        redact_credit_card=settings.pii_redact_credit_card,
+    )
+
+
+def _build_completion_request(
+    body: ChatCompletionRequest,
+) -> tuple[CompletionRequest, dict[str, str]]:
+    """Build provider request; redact PII for non-streaming when enabled."""
+    if settings.pii_redaction_enabled and not body.stream:
+        message_dicts = [{"role": m.role, "content": m.content} for m in body.messages]
+        redacted, token_map = redact_messages(message_dicts, _pii_redaction_config())
+        return (
+            CompletionRequest(
+                model=body.model,
+                messages=[
+                    ChatMessage(role=message["role"], content=message["content"])
+                    for message in redacted
+                ],
+                temperature=body.temperature,
+                max_tokens=body.max_tokens,
+            ),
+            token_map,
+        )
+
+    return _to_completion_request(body), {}
 
 
 def _latency_ms(started_at: float) -> int:
@@ -185,7 +217,7 @@ async def create_chat_completion(
     except GatewayHTTPException:
         raise
 
-    completion_request = _to_completion_request(body)
+    completion_request, pii_token_map = _build_completion_request(body)
     started_at = time.perf_counter()
 
     logger.info(
@@ -269,6 +301,10 @@ async def create_chat_completion(
         ),
     )
 
+    response_content = result.content
+    if pii_token_map and settings.pii_detokenize_responses:
+        response_content = detokenize_text(response_content, pii_token_map)
+
     return ChatCompletionResponse(
         id=result.id,
         created=result.created,
@@ -276,7 +312,7 @@ async def create_chat_completion(
         choices=[
             ChatChoice(
                 index=0,
-                message=ChatMessageResponse(content=result.content),
+                message=ChatMessageResponse(content=response_content),
                 finish_reason=result.finish_reason,
             )
         ],

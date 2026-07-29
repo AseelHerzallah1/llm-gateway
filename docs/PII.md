@@ -128,12 +128,12 @@ sequenceDiagram
 
 ## Success criteria
 
-- [ ] Prompt `Contact me at aseel@example.com` → provider receives `Contact me at [EMAIL_1]`
-- [ ] Same email twice in one request → same token
-- [ ] Arabic prompt with embedded email/phone → redacted
-- [ ] With `PII_REDACTION_ENABLED=false`, text unchanged
-- [ ] Unit tests cover Latin + at least one Arabic/Hebrew case
-- [ ] No raw PII in semantic cache when redaction enabled
+- [x] Prompt `Contact me at aseel@example.com` → provider receives `Contact me at [EMAIL_1]`
+- [x] Same email twice in one request → same token
+- [x] Arabic prompt with embedded email/phone → redacted
+- [x] With `PII_REDACTION_ENABLED=false`, text unchanged
+- [x] Unit tests cover Latin + at least one Arabic/Hebrew case
+- [x] No raw PII in semantic cache when redaction enabled (non-streaming path redacts before cache)
 
 ---
 

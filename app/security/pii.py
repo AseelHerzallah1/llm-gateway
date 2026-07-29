@@ -1,4 +1,4 @@
-"""PII detection and redaction for chat prompts (Latin script — Phase 9.2)."""
+"""PII detection and redaction for chat prompts."""
 
 from __future__ import annotations
 
@@ -8,24 +8,29 @@ from typing import Literal
 
 PiiType = Literal["EMAIL", "PHONE", "CREDIT_CARD"]
 
-# Simplified RFC5322 — covers typical user-facing emails without full spec complexity.
+# Simplified RFC5322 — works inside RTL/LTR mixed text (Unicode).
 _EMAIL_RE = re.compile(
     r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}",
     re.UNICODE,
 )
 
-# E.164-style (+country, separators allowed) and common US local formats.
+# E.164-style, US local, and Israeli mobile/landline formats.
 _PHONE_RES = (
     re.compile(r"\+[1-9](?:[\s.\-()]*\d){6,14}\d"),
     re.compile(
         r"(?<!\d)(?:\([0-9]{3}\)|[0-9]{3})[\s.\-][0-9]{3}[\s.\-][0-9]{4}(?!\d)",
     ),
+    re.compile(r"(?<!\d)\+972[\s.\-]?\d{1,2}[\s.\-]?\d{3}[\s.\-]?\d{4}(?!\d)"),
+    re.compile(r"(?<!\d)0\d{1,2}[\s.\-]?\d{3}[\s.\-]?\d{4}(?!\d)"),
 )
 
 # Digit groups with optional separators; Luhn validation filters false positives.
 _CREDIT_CARD_CANDIDATE_RE = re.compile(
     r"(?<!\d)(?:\d[\s\-]?){12,18}\d(?!\d)",
 )
+
+_ARABIC_INDIC_ZERO = ord("٠")
+_EXTENDED_ARABIC_INDIC_ZERO = ord("۰")
 
 
 @dataclass(frozen=True)
@@ -89,6 +94,7 @@ class _PiiRedactor:
 
     def _find_spans(self, text: str) -> list[_Span]:
         candidates: list[_Span] = []
+        normalized = _normalize_unicode_digits(text)
 
         if self._config.redact_email:
             for match in _EMAIL_RE.finditer(text):
@@ -97,8 +103,8 @@ class _PiiRedactor:
                 )
 
         if self._config.redact_credit_card:
-            for match in _CREDIT_CARD_CANDIDATE_RE.finditer(text):
-                value = match.group()
+            for match in _CREDIT_CARD_CANDIDATE_RE.finditer(normalized):
+                value = text[match.start() : match.end()]
                 if _luhn_valid(value):
                     candidates.append(
                         _Span(match.start(), match.end(), "CREDIT_CARD", value),
@@ -106,9 +112,9 @@ class _PiiRedactor:
 
         if self._config.redact_phone:
             for pattern in _PHONE_RES:
-                for match in pattern.finditer(text):
-                    value = match.group()
-                    if _digit_count(value) < 10:
+                for match in pattern.finditer(normalized):
+                    value = text[match.start() : match.end()]
+                    if _digit_count(_normalize_unicode_digits(value)) < 10:
                         continue
                     candidates.append(
                         _Span(match.start(), match.end(), "PHONE", value),
@@ -153,11 +159,36 @@ def redact_messages(
     return redacted, redactor.token_map
 
 
+def detokenize_text(text: str, token_map: dict[str, str]) -> str:
+    """Replace redaction tokens with original values (longest tokens first)."""
+    if not text or not token_map:
+        return text
+
+    result = text
+    for token in sorted(token_map, key=len, reverse=True):
+        result = result.replace(token, token_map[token])
+    return result
+
+
+def _normalize_unicode_digits(text: str) -> str:
+    """Map Arabic-Indic and Extended Arabic-Indic digits to ASCII (same length)."""
+    chars: list[str] = []
+    for char in text:
+        code = ord(char)
+        if 0x0660 <= code <= 0x0669:
+            chars.append(chr(code - _ARABIC_INDIC_ZERO + ord("0")))
+        elif 0x06F0 <= code <= 0x06F9:
+            chars.append(chr(code - _EXTENDED_ARABIC_INDIC_ZERO + ord("0")))
+        else:
+            chars.append(char)
+    return "".join(chars)
+
+
 def _normalize_value(pii_type: PiiType, value: str) -> str:
     if pii_type == "EMAIL":
         return value.lower()
     if pii_type in ("PHONE", "CREDIT_CARD"):
-        return re.sub(r"\D", "", value)
+        return re.sub(r"\D", "", _normalize_unicode_digits(value))
     return value
 
 
@@ -166,7 +197,7 @@ def _digit_count(value: str) -> int:
 
 
 def _luhn_valid(value: str) -> bool:
-    digits = [int(ch) for ch in value if ch.isdigit()]
+    digits = [int(ch) for ch in _normalize_unicode_digits(value) if ch.isdigit()]
     if len(digits) < 13 or len(digits) > 19:
         return False
 

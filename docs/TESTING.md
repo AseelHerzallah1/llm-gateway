@@ -851,4 +851,53 @@ python scripts/demo.py gw-sk-your-key
 
 Five-step walkthrough: health → chat → stream → cache hit → metrics. See [`docs/DESIGN.md`](DESIGN.md) for decision trade-offs.
 
-## What's next (Phase 9+)
+## Phase 9 — PII redaction
+
+### 35. Unit tests
+
+```powershell
+pytest tests/unit/test_pii.py -v
+```
+
+Covers Latin email/phone, Arabic/Hebrew mixed text, Arabic-Indic digit phones, Luhn credit cards, and detokenization.
+
+### 36. Enable redaction locally
+
+Add to `.env`:
+
+```env
+PII_REDACTION_ENABLED=true
+PII_REDACT_EMAIL=true
+PII_REDACT_PHONE=true
+PII_DETOKENIZE_RESPONSES=true
+```
+
+Restart uvicorn (Terminal 1):
+
+```powershell
+Get-NetTCPConnection -LocalPort 8001 -ErrorAction SilentlyContinue |
+  ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }
+uvicorn app.main:app --host 127.0.0.1 --port 8001
+```
+
+### 37. Offline + live PII demo
+
+Terminal 2:
+
+```powershell
+python scripts/test_pii_redaction.py gw-sk-your-key
+```
+
+Offline section prints redacted Arabic/Hebrew samples. Live section sends a chat request when the gateway is running with `PII_REDACTION_ENABLED=true`.
+
+### 38. Integration tests
+
+```powershell
+pytest tests/integration/test_chat.py -k pii -v
+```
+
+Verifies non-streaming chat forwards redacted prompts to the provider when enabled, and leaves text unchanged when disabled.
+
+## Project complete (Phases 0–9)
+
+Core v1 (Phases 1–8) plus Phase 9 PII protection are implemented. Optional future work: pgvector/FAISS cache scale-up (see `docs/SCOPE.md`).

@@ -3,6 +3,7 @@
 from app.security.pii import (
     PiiRedactionConfig,
     PiiRedactionResult,
+    detokenize_text,
     redact_messages,
     redact_text,
 )
@@ -10,6 +11,7 @@ from app.security.pii import (
 __all__ = [
     "PiiRedactionConfig",
     "PiiRedactionResult",
+    "detokenize_text",
     "redact_messages",
     "redact_text",
 ]

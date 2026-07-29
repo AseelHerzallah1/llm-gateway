@@ -17,6 +17,7 @@ Built as a portfolio project with phased commits, automated tests, and documente
 | **Retries + fallback** | Transient 429/5xx/timeout retry; optional cross-provider fallback |
 | **Observability** | Request logs, p50/p95/p99 latency, cost, cache hit rate, dashboard |
 | **Security** | bcrypt API key storage with indexed lookup prefix |
+| **PII redaction (v2)** | Optional email/phone tokenization — Latin, Arabic, Hebrew (`docs/PII.md`) |
 
 ---
 
@@ -110,6 +111,7 @@ pytest -m db -v         # 17 PostgreSQL integration tests
 | [`docs/BENCHMARK.md`](docs/BENCHMARK.md) | Gateway vs direct OpenAI latency |
 | [`docs/CACHE_TUNING.md`](docs/CACHE_TUNING.md) | Similarity threshold measurements |
 | [`docs/SECURITY.md`](docs/SECURITY.md) | API key hashing audit |
+| [`docs/PII.md`](docs/PII.md) | PII redaction pipeline (Phase 9) |
 | [`DEVELOPMENT_LOG.md`](DEVELOPMENT_LOG.md) | Phase-by-phase build log for interviews |
 
 ---
@@ -125,6 +127,7 @@ app/
   observability/  Request logs, cost, percentiles, SSE usage
   providers/      OpenAI, Groq, Anthropic + router, retry, fallback
   routes/         chat, health, metrics, requests, dashboard
+  security/       PII detection and redaction
 tests/
   unit/           Pure logic tests
   integration/    HTTP + DB integration (pytest -m db)

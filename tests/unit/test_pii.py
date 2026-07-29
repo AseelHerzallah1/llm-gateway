@@ -1,10 +1,15 @@
-"""Unit tests for PII redaction (Latin script)."""
+"""Unit tests for PII redaction."""
 
 from __future__ import annotations
 
 import pytest
 
-from app.security.pii import PiiRedactionConfig, redact_messages, redact_text
+from app.security.pii import (
+    PiiRedactionConfig,
+    detokenize_text,
+    redact_messages,
+    redact_text,
+)
 
 VISA_TEST_CARD = "4111 1111 1111 1111"
 
@@ -118,3 +123,46 @@ def test_mixed_pii_in_one_string() -> None:
     assert "[PHONE_1]" in result.text
     assert "[EMAIL_1]" in result.text
     assert len(result.token_map) == 2
+
+
+@pytest.mark.unit
+def test_arabic_sentence_with_email() -> None:
+    result = redact_text("راسلني على user@example.com من فضلك")
+
+    assert "[EMAIL_1]" in result.text
+    assert "user@example.com" not in result.text
+    assert result.token_map["[EMAIL_1]"] == "user@example.com"
+
+
+@pytest.mark.unit
+def test_hebrew_sentence_with_israeli_phone() -> None:
+    result = redact_text("הטלפון שלי הוא 050-1234567")
+
+    assert "[PHONE_1]" in result.text
+    assert "050-1234567" not in result.text
+    assert result.token_map["[PHONE_1]"] == "050-1234567"
+
+
+@pytest.mark.unit
+def test_arabic_indic_digit_phone() -> None:
+    result = redact_text("اتصل على ٠٥٠-١٢٣٤٥٦٧")
+
+    assert "[PHONE_1]" in result.text
+    assert "٠٥٠" not in result.text
+    assert result.token_map["[PHONE_1]"] == "٠٥٠-١٢٣٤٥٦٧"
+
+
+@pytest.mark.unit
+def test_israeli_international_phone() -> None:
+    result = redact_text("Call +972 50-123-4567 anytime")
+
+    assert result.text == "Call [PHONE_1] anytime"
+    assert result.token_map["[PHONE_1]"] == "+972 50-123-4567"
+
+
+@pytest.mark.unit
+def test_detokenize_text() -> None:
+    token_map = {"[EMAIL_1]": "help@example.com"}
+    restored = detokenize_text("Please write to [EMAIL_1] today.", token_map)
+
+    assert restored == "Please write to help@example.com today."

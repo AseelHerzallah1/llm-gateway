@@ -73,6 +73,13 @@ class Settings(BaseSettings):
     provider_fallback_openai_model: str = "gpt-4o-mini"
     provider_fallback_groq_model: str = "llama-3.3-70b-versatile"
 
+    # PII redaction (Phase 9+)
+    pii_redaction_enabled: bool = False
+    pii_redact_email: bool = True
+    pii_redact_phone: bool = True
+    pii_redact_credit_card: bool = False
+    pii_detokenize_responses: bool = True
+
 
 @lru_cache
 def get_settings() -> Settings:

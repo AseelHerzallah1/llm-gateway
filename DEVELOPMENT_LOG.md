@@ -1391,3 +1391,78 @@ All Phase 8 tasks (8.1–8.5) delivered, plus post-ship live validation in **8.3
 > Task 9.2 is a standalone redaction engine — regex plus Luhn for cards, stable tokens within a request — ready to wire into the chat route in 9.4 without touching provider code.
 
 ---
+
+### Task 9.3 — Arabic / Hebrew PII patterns
+
+**Date:** 2026-07-29  
+**Commit:** *(pending)*
+
+**What we built:**
+- Arabic-Indic and Extended Arabic-Indic digit normalization (same-length index mapping)
+- Israeli phone formats: `050-1234567`, `+972 50-123-4567`
+- Phone/credit-card matching on normalized digits; replacements use original RTL substrings
+- Unit tests: Arabic email sentence, Hebrew phone, Arabic-Indic digit phone
+
+**Tests:**
+- `pytest tests/unit/test_pii.py -v` → 16 passed
+
+**Meeting-ready summary:**
+> Arabic and Hebrew prompts are first-class — we normalize Unicode digits before matching, so `٠٥٠-١٢٣٤٥٦٧` redacts correctly without breaking RTL layout.
+
+---
+
+### Task 9.4 — Wire PII into chat route
+
+**Date:** 2026-07-29  
+**Commit:** *(pending)*
+
+**What we built:**
+- `PII_REDACTION_ENABLED` and per-type flags in `app/config.py`
+- `_build_completion_request()` redacts non-streaming messages before cache lookup and provider call
+- Integration tests: provider sees `[EMAIL_1]` when enabled; raw text when disabled
+
+**Tests:**
+- `pytest tests/integration/test_chat.py -k pii -v` → 2 passed
+
+**Meeting-ready summary:**
+> Redaction runs at the choke point — before semantic cache and provider — so PII never enters embeddings or upstream logs when the flag is on.
+
+---
+
+### Task 9.5 — PII manual test script
+
+**Date:** 2026-07-29  
+**Commit:** *(pending)*
+
+**What we built:**
+- `scripts/test_pii_redaction.py` — offline Arabic/Hebrew demo + optional live gateway test
+- `docs/TESTING.md` sections 35–38 (unit, env flags, script, integration)
+
+**Meeting-ready summary:**
+> Recruiters can run one script to see offline redaction samples and optionally hit the live gateway with PII enabled.
+
+---
+
+### Task 9.6 — Response detokenization
+
+**Date:** 2026-07-29  
+**Commit:** *(pending)*
+
+**What we built:**
+- `detokenize_text()` in `app/security/pii.py`
+- `PII_DETOKENIZE_RESPONSES` config; chat route restores originals in non-streaming responses when provider echoes tokens
+
+**Tests:**
+- `test_detokenize_text` unit test
+- Full suite → 81 passed
+
+**Meeting-ready summary:**
+> Providers work on tokens; clients can still get human-readable replies when detokenization is enabled — without persisting the token map.
+
+---
+
+## Phase 9 complete
+
+All Phase 9 tasks (9.1–9.6) delivered. **Project Phases 0–9 complete** per `docs/SCOPE.md`. Optional future: pgvector/FAISS cache scale-up.
+
+---
