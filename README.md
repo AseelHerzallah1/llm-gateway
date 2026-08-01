@@ -112,7 +112,6 @@ pytest -m db -v         # 17 PostgreSQL integration tests
 | [`docs/CACHE_TUNING.md`](docs/CACHE_TUNING.md) | Similarity threshold measurements |
 | [`docs/SECURITY.md`](docs/SECURITY.md) | API key hashing audit |
 | [`docs/PII.md`](docs/PII.md) | PII redaction pipeline (Phase 9) |
-| [`DEVELOPMENT_LOG.md`](DEVELOPMENT_LOG.md) | Phase-by-phase build log for interviews |
 
 ---
 

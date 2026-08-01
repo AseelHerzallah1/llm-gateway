@@ -117,7 +117,7 @@ sequenceDiagram
 
 | Task | Deliverable |
 |------|-------------|
-| **9.1** | This document + DEVELOPMENT_LOG entry |
+| **9.1** | This document (`docs/PII.md`) |
 | **9.2** | `app/security/pii.py` — Latin detect + redact + unit tests |
 | **9.3** | Arabic/Hebrew patterns + tests |
 | **9.4** | Wire into `chat.py` (non-streaming first) |

@@ -57,6 +57,7 @@ Thumbs.db
 # Logs and local data
 *.log
 logs/
+DEVELOPMENT_LOG.md
 
 # Database (local dev artifacts)
 *.db
