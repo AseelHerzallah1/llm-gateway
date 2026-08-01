@@ -1,23 +1,179 @@
 # LLM Gateway
 
-A production-style **LLM Gateway** — middleware between your applications and LLM providers (OpenAI, Groq, Anthropic). Clients use an OpenAI-compatible API; the gateway handles auth, streaming, semantic caching, retries, fallback, and observability.
+**OpenAI-compatible middleware** for production LLM apps — one API in front of OpenAI, Groq, and Anthropic, with streaming, semantic cache, retries, observability, and optional PII redaction.
 
-Built as a portfolio project with phased commits, automated tests, and documented trade-offs.
+> Drop-in proxy: clients change only `base_url` and `api_key`. Everything else is gateway policy.
+
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-async-009688.svg)](https://fastapi.tiangolo.com/)
+[![Tests](https://img.shields.io/badge/tests-81%20passed-brightgreen.svg)](#run-tests)
 
 ---
 
-## Features
+## Why this exists
 
-| Capability | Details |
-|------------|---------|
-| **OpenAI-compatible API** | `POST /v1/chat/completions` — change `base_url` + `api_key` only |
-| **Streaming proxy** | SSE forwarded chunk-by-chunk; upstream cancelled on client disconnect |
-| **Semantic cache** | Embedding similarity (cosine ≥ 0.92); persisted to PostgreSQL |
-| **Multi-provider routing** | GPT → OpenAI, Llama/Mixtral → Groq, Claude → Anthropic |
-| **Retries + fallback** | Transient 429/5xx/timeout retry; optional cross-provider fallback |
-| **Observability** | Request logs, p50/p95/p99 latency, cost, cache hit rate, dashboard |
-| **Security** | bcrypt API key storage with indexed lookup prefix |
-| **PII redaction (v2)** | Optional email/phone tokenization — Latin, Arabic, Hebrew (`docs/PII.md`) |
+Calling an LLM API directly works until you need **auth**, **streaming that cancels on disconnect**, **cache hits on similar prompts**, **p95 latency you can defend in an interview**, and **PII that never reaches the provider**.
+
+This project is a **portfolio-grade gateway** — not a chat UI — built in phased commits with measured trade-offs documented in [`docs/DESIGN.md`](docs/DESIGN.md).
+
+---
+
+## At a glance
+
+| | |
+|---|---|
+| **Thin-proxy overhead** | **+88 ms p50** vs direct OpenAI (cache bypass mode) — [`docs/BENCHMARK.md`](docs/BENCHMARK.md) |
+| **Semantic cache** | Cosine similarity ≥ 0.92, persisted to PostgreSQL |
+| **Providers** | OpenAI · Groq · Anthropic with retries + cross-provider fallback |
+| **PII (optional)** | Email/phone tokenization — Latin, Arabic, Hebrew |
+| **Test coverage** | 81 automated tests (unit + HTTP + PostgreSQL integration) |
+
+---
+
+## How it works
+
+```mermaid
+flowchart LR
+    Client["Client app\n(OpenAI SDK)"]
+    GW["LLM Gateway\nFastAPI + asyncio"]
+    Auth["Auth\nbcrypt API keys"]
+    PII["PII redaction\noptional"]
+    Cache["Semantic cache\nembed + cosine"]
+    Router["Provider router\nretry + fallback"]
+    OAI["OpenAI"]
+    Groq["Groq"]
+    Anthropic["Anthropic"]
+    PG[("PostgreSQL\nlogs + cache")]
+
+    Client -->|"POST /v1/chat/completions"| GW
+    GW --> Auth --> PII --> Cache
+    Cache -->|miss| Router
+    Cache -->|hit| Client
+    Router --> OAI & Groq & Anthropic
+    GW --> PG
+    Router --> GW --> Client
+```
+
+**Streaming path:** SSE chunks forwarded immediately; upstream cancelled when the client disconnects — no full-response buffering.
+
+**Cache path:** Non-streaming prompts embed once; similar prompts skip the provider. Threshold tuning and false-hit analysis in [`docs/CACHE_TUNING.md`](docs/CACHE_TUNING.md).
+
+---
+
+## What you get
+
+### Core proxy
+- OpenAI-compatible `POST /v1/chat/completions` (JSON + SSE)
+- Model-based routing: GPT → OpenAI, Llama/Mixtral → Groq, Claude → Anthropic
+- Transient error retries and optional fallback model swap
+
+### Production concerns
+- **Observability** — per-request latency, tokens, cost; p50/p95/p99 metrics API + dashboard
+- **Security** — bcrypt-hashed API keys with indexed lookup prefix ([`docs/SECURITY.md`](docs/SECURITY.md))
+- **PII** — redact before provider and cache; optional detokenize on response ([`docs/PII.md`](docs/PII.md))
+
+### Evidence, not hand-waving
+- Benchmark scripts with before/after numbers in `docs/benchmark_*.json`
+- Design doc with rejected alternatives and honest limitations
+- Integration tests for auth, streaming concurrency, cache hits, provider resilience
+
+---
+
+## Quick start
+
+**Prerequisites:** Python 3.11+, Docker (PostgreSQL), OpenAI API key
+
+```powershell
+git clone https://github.com/AseelHerzallah1/llm-gateway.git
+cd llm-gateway
+
+python -m venv .venv
+.venv\Scripts\Activate.ps1          # Windows
+# source .venv/bin/activate         # macOS/Linux
+
+pip install -r requirements.txt
+pip install -e ".[dev]"
+
+copy .env.example .env              # set OPENAI_API_KEY, DATABASE_URL
+
+docker compose up db -d
+alembic upgrade head
+python scripts/seed_test_project.py # save the gw-sk-... key
+
+uvicorn app.main:app --host 127.0.0.1 --port 8001
+```
+
+### Try it in one minute
+
+**Terminal 1** — keep the server running:
+
+```powershell
+uvicorn app.main:app --host 127.0.0.1 --port 8001
+```
+
+**Terminal 2** — five-step live demo (health → chat → stream → cache → metrics):
+
+```powershell
+python scripts/demo.py gw-sk-your-key
+```
+
+Optional PII demo (set `PII_REDACTION_ENABLED=true` in `.env`, restart server):
+
+```powershell
+python scripts/test_pii_redaction.py gw-sk-your-key
+```
+
+Full manual matrix: [`docs/TESTING.md`](docs/TESTING.md)
+
+### Run tests
+
+```powershell
+pytest                  # full suite (81 tests)
+pytest -m db -v         # PostgreSQL integration only
+```
+
+---
+
+## Documentation
+
+| Doc | Read this for… |
+|-----|----------------|
+| [`docs/DESIGN.md`](docs/DESIGN.md) | **Why** — streaming, cache, fallback trade-offs |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Component map and data flow |
+| [`docs/API.md`](docs/API.md) | Endpoints, schemas, error codes |
+| [`docs/BENCHMARK.md`](docs/BENCHMARK.md) | Measured gateway latency overhead |
+| [`docs/CACHE_TUNING.md`](docs/CACHE_TUNING.md) | Similarity threshold experiments |
+| [`docs/SECURITY.md`](docs/SECURITY.md) | API key hashing audit |
+| [`docs/PII.md`](docs/PII.md) | PII redaction pipeline |
+| [`docs/TESTING.md`](docs/TESTING.md) | Manual + automated test guide |
+
+---
+
+## Project layout
+
+```
+app/
+  auth/           API keys (bcrypt)
+  cache/          Semantic cache + PostgreSQL persistence
+  providers/      OpenAI, Groq, Anthropic — router, retry, fallback
+  observability/  Request logs, percentiles, cost
+  security/       PII detection and redaction
+  routes/         chat, metrics, dashboard, health
+tests/            unit + integration (pytest -m db)
+scripts/          demo.py, benchmarks, E2E helpers
+docs/             design decisions and measured results
+```
+
+---
+
+## Local endpoints
+
+| URL | Description |
+|-----|-------------|
+| http://127.0.0.1:8001/health | Liveness |
+| http://127.0.0.1:8001/v1/chat/completions | Chat proxy |
+| http://127.0.0.1:8001/v1/metrics | Latency percentiles + cost |
+| http://127.0.0.1:8001/dashboard | Minimal metrics UI |
 
 ---
 
@@ -27,121 +183,4 @@ Python 3.11 · FastAPI · httpx · asyncio · PostgreSQL · SQLAlchemy async · 
 
 ---
 
-## Quick start
-
-```powershell
-git clone https://github.com/AseelHerzallah1/llm-gateway.git
-cd llm-gateway
-
-python -m venv .venv
-.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-pip install -e ".[dev]"
-
-copy .env.example .env
-# Edit .env: OPENAI_API_KEY, DATABASE_URL
-
-docker compose up db -d
-alembic upgrade head
-python scripts/seed_test_project.py   # save the gw-sk-... key
-
-uvicorn app.main:app --host 127.0.0.1 --port 8001
-```
-
-### Two terminals (server + client)
-
-**Do not** run uvicorn and `demo.py` in the same terminal — uvicorn blocks until you stop it.
-
-**Terminal 1 — restart server** (run this whenever you see port busy / connection errors):
-
-```powershell
-cd "c:\Users\Aseel Herzallah\OneDrive\Desktop\LLM-Gateway"
-.venv\Scripts\Activate.ps1
-docker compose up db -d
-
-# Free port 8001 if a stale uvicorn is still running
-Get-NetTCPConnection -LocalPort 8001 -ErrorAction SilentlyContinue |
-  ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }
-
-uvicorn app.main:app --host 127.0.0.1 --port 8001
-```
-
-Leave this terminal open. Wait for `Application startup complete.`
-
-**Terminal 2 — run client** (demo, chat test, etc.):
-
-```powershell
-cd "c:\Users\Aseel Herzallah\OneDrive\Desktop\LLM-Gateway"
-.venv\Scripts\Activate.ps1
-
-# Use your real key from seed_test_project.py or .env — NOT the literal "gw-sk-your-key"
-python scripts/demo.py
-# or: python scripts/demo.py gw-sk-PASTE-YOUR-REAL-KEY-HERE
-```
-
-If `.env` has `GATEWAY_TEST_API_KEY=gw-sk-...`, you can omit the key argument.
-
-### Run the demo
-
-```powershell
-# Add to .env: GATEWAY_TEST_API_KEY=gw-sk-...
-python scripts/demo.py
-```
-
-Walks through health → chat → stream → cache hit → metrics. See [`docs/TESTING.md`](docs/TESTING.md) for the full manual test matrix.
-
-### Run tests
-
-```powershell
-pytest                  # 62 tests (mocked + unit)
-pytest -m db -v         # 17 PostgreSQL integration tests
-```
-
----
-
-## Documentation
-
-| Doc | Purpose |
-|-----|---------|
-| [`docs/DESIGN.md`](docs/DESIGN.md) | **Why** — decisions, trade-offs, limitations |
-| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Diagrams and component map |
-| [`docs/API.md`](docs/API.md) | Endpoints, schemas, error codes |
-| [`docs/SCOPE.md`](docs/SCOPE.md) | v1 in/out of scope |
-| [`docs/TESTING.md`](docs/TESTING.md) | Manual + automated test guide |
-| [`docs/BENCHMARK.md`](docs/BENCHMARK.md) | Gateway vs direct OpenAI latency |
-| [`docs/CACHE_TUNING.md`](docs/CACHE_TUNING.md) | Similarity threshold measurements |
-| [`docs/SECURITY.md`](docs/SECURITY.md) | API key hashing audit |
-| [`docs/PII.md`](docs/PII.md) | PII redaction pipeline (Phase 9) |
-
----
-
-## Project structure
-
-```
-app/
-  auth/           API key generation, bcrypt verify
-  cache/          Semantic cache + PostgreSQL persistence
-  db/             SQLAlchemy models, session
-  embeddings/     OpenAI embedding provider
-  observability/  Request logs, cost, percentiles, SSE usage
-  providers/      OpenAI, Groq, Anthropic + router, retry, fallback
-  routes/         chat, health, metrics, requests, dashboard
-  security/       PII detection and redaction
-tests/
-  unit/           Pure logic tests
-  integration/    HTTP + DB integration (pytest -m db)
-  fakes/          Stub providers for resilience/stream/cache tests
-scripts/          Manual E2E scripts + demo.py
-docs/             Design, API, benchmarks
-```
-
----
-
-## Local URLs
-
-| URL | Description |
-|-----|-------------|
-| `http://127.0.0.1:8001/health` | Liveness |
-| `http://127.0.0.1:8001/v1/chat/completions` | Chat proxy |
-| `http://127.0.0.1:8001/v1/metrics` | Latency percentiles + cost |
-| `http://127.0.0.1:8001/dashboard` | Minimal metrics UI |
+Built by [AseelHerzallah1](https://github.com/AseelHerzallah1) — feedback and issues welcome.
