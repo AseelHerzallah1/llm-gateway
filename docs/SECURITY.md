@@ -66,9 +66,26 @@ New seeds store bcrypt hashes + lookup prefix.
 
 ---
 
+## PII redaction (Phase 9 — implemented, limited)
+
+Optional regex-based redaction before provider and semantic cache on **non-streaming** requests. See [`PII.md`](PII.md).
+
+| Property | Status |
+|----------|--------|
+| Master switch (`PII_REDACTION_ENABLED`) | Off by default |
+| Supported types | Email, phone; opt-in credit card (Luhn), IBAN (MOD-97) |
+| Token map | In-memory per request; not persisted |
+| Request logs / dashboard | No prompt or response bodies stored |
+| Streaming | Not redacted |
+| Detokenize responses | Optional — restores values to **client** when enabled |
+
+**Not in scope:** names, addresses, SSNs, passports, NER/ML, compliance-grade DLP.
+
+---
+
 ## Out of scope (v1)
 
 - Rate limiting per project
 - Key rotation API
-- Argon2 (bcrypt is sufficient for portfolio v1)
-- PII tokenization (Phase 9)
+- Argon2 (bcrypt is sufficient for this project)
+- Full PII / DLP suite (see limited Phase 9 above)

@@ -1,6 +1,6 @@
 # Design Decisions — LLM Gateway v1
 
-This document explains **why** the gateway is built the way it is — for code reviews and interviews. Diagrams live in [`ARCHITECTURE.md`](ARCHITECTURE.md); API contracts in [`API.md`](API.md).
+This document explains **why** the gateway is built the way it is — for design reviews and technical walkthroughs. Diagrams live in [`ARCHITECTURE.md`](ARCHITECTURE.md); API contracts in [`API.md`](API.md).
 
 ---
 
@@ -8,7 +8,7 @@ This document explains **why** the gateway is built the way it is — for code r
 
 | Priority | Rationale |
 |----------|-----------|
-| **Interview depth over feature count** | Three strong pillars (streaming, cache, observability) beat eleven shallow admin screens |
+| **Depth over feature count** | Three strong pillars (streaming, cache, observability) beat eleven shallow admin screens |
 | **OpenAI compatibility** | Clients change only `base_url` + `api_key` — no SDK fork |
 | **Evidence-based trade-offs** | Thresholds, benchmarks, and security choices are measured or audited, not assumed |
 | **Incremental phases** | Each phase ships, tests, and commits before the next layer of complexity |
@@ -25,7 +25,7 @@ This document explains **why** the gateway is built the way it is — for code r
 | **SQLAlchemy async + asyncpg** | Typed models, migrations via Alembic | More boilerplate than raw SQL |
 | **In-memory semantic cache + PG persistence** | Fast lookup at runtime; survives restarts | Not shared across gateway replicas without redesign |
 
-**Not chosen (v1):** LangChain in the core (hides control flow), Kubernetes (portfolio scope), pgvector/FAISS (add when in-memory tuning is understood — see [`CACHE_TUNING.md`](CACHE_TUNING.md)).
+**Not chosen (v1):** LangChain in the core (hides control flow), Kubernetes (single-node MVP scope), pgvector/FAISS (add when in-memory tuning is understood — see [`CACHE_TUNING.md`](CACHE_TUNING.md)).
 
 ---
 
@@ -215,7 +215,7 @@ Run: `pytest`, `pytest -m db`, or `python scripts/demo.py` for a live walkthroug
 |------------|---------------------------|
 | In-memory cache not shared across replicas | pgvector + shared index, or sticky sessions |
 | Semantic cache on non-stream only | Stream cache needs design (partial response matching) |
-| No PII tokenization | Phase 9 (v2) |
+| PII redaction limited to supported patterns | Regex email/phone + opt-in card/IBAN; non-streaming only; not DLP — see [`PII.md`](PII.md) |
 | Benchmark sample size | Run 20+ iterations for stable p95 |
 | Anthropic routed but optional | Enable when `ANTHROPIC_API_KEY` set |
 | Groq/OpenAI fallback changes model id | Document in client integration guides |
@@ -237,6 +237,6 @@ Run: `pytest`, `pytest -m db`, or `python scripts/demo.py` for a live walkthroug
 
 ---
 
-## Meeting-ready summary
+## Summary
 
-> I built a gateway around three systems problems — **streaming without buffering**, **semantic cache with measured false-hit trade-offs**, and **percentile observability** — and documented every major choice with benchmarks, security audit, and a pytest pyramid that goes from mocked unit tests to real PostgreSQL integration at 40 parallel streams.
+The gateway focuses on three systems problems — **streaming without buffering**, **semantic cache with measured false-hit trade-offs**, and **percentile observability** — with optional **pattern-based PII redaction** on non-streaming requests. Major choices are documented with benchmarks, a security audit, and tests from mocked unit tests through PostgreSQL integration (including parallel streaming).

@@ -6,7 +6,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Literal
 
-PiiType = Literal["EMAIL", "PHONE", "CREDIT_CARD"]
+PiiType = Literal["EMAIL", "PHONE", "CREDIT_CARD", "IBAN"]
 
 # Simplified RFC5322 — works inside RTL/LTR mixed text (Unicode).
 _EMAIL_RE = re.compile(
@@ -29,6 +29,12 @@ _CREDIT_CARD_CANDIDATE_RE = re.compile(
     r"(?<!\d)(?:\d[\s\-]?){12,18}\d(?!\d)",
 )
 
+# ISO 13616 IBAN — country + check digits + BBAN groups; MOD-97 filters false positives.
+_IBAN_CANDIDATE_RE = re.compile(
+    r"(?<![A-Z0-9])[A-Z]{2}[ \-]?[0-9]{2}(?:[ \-][A-Z0-9]{4})*(?:[ \-][A-Z0-9]{1,4})?(?![A-Z0-9])",
+    re.IGNORECASE,
+)
+
 _ARABIC_INDIC_ZERO = ord("٠")
 _EXTENDED_ARABIC_INDIC_ZERO = ord("۰")
 
@@ -40,6 +46,7 @@ class PiiRedactionConfig:
     redact_email: bool = True
     redact_phone: bool = True
     redact_credit_card: bool = False
+    redact_iban: bool = False
 
 
 @dataclass
@@ -69,7 +76,12 @@ class _PiiRedactor:
         self._config = config
         self._token_map: dict[str, str] = {}
         self._value_tokens: dict[tuple[PiiType, str], str] = {}
-        self._counters: dict[PiiType, int] = {"EMAIL": 0, "PHONE": 0, "CREDIT_CARD": 0}
+        self._counters: dict[PiiType, int] = {
+            "EMAIL": 0,
+            "PHONE": 0,
+            "CREDIT_CARD": 0,
+            "IBAN": 0,
+        }
 
     @property
     def token_map(self) -> dict[str, str]:
@@ -108,6 +120,14 @@ class _PiiRedactor:
                 if _luhn_valid(value):
                     candidates.append(
                         _Span(match.start(), match.end(), "CREDIT_CARD", value),
+                    )
+
+        if self._config.redact_iban:
+            for match in _IBAN_CANDIDATE_RE.finditer(text):
+                value = text[match.start() : match.end()]
+                if _iban_valid(value):
+                    candidates.append(
+                        _Span(match.start(), match.end(), "IBAN", value),
                     )
 
         if self._config.redact_phone:
@@ -189,11 +209,32 @@ def _normalize_value(pii_type: PiiType, value: str) -> str:
         return value.lower()
     if pii_type in ("PHONE", "CREDIT_CARD"):
         return re.sub(r"\D", "", _normalize_unicode_digits(value))
+    if pii_type == "IBAN":
+        return re.sub(r"[\s\-]", "", value).upper()
     return value
 
 
 def _digit_count(value: str) -> int:
     return sum(ch.isdigit() for ch in value)
+
+
+def _iban_valid(value: str) -> bool:
+    normalized = re.sub(r"[\s\-]", "", value).upper()
+    if len(normalized) < 15 or len(normalized) > 34:
+        return False
+    if not re.fullmatch(r"[A-Z]{2}\d{2}[A-Z0-9]+", normalized):
+        return False
+
+    rearranged = normalized[4:] + normalized[:4]
+    numeric = "".join(
+        char if char.isdigit() else str(ord(char) - ord("A") + 10)
+        for char in rearranged
+    )
+
+    remainder = 0
+    for index in range(0, len(numeric), 7):
+        remainder = int(str(remainder) + numeric[index : index + 7]) % 97
+    return remainder == 1
 
 
 def _luhn_valid(value: str) -> bool:
@@ -217,7 +258,7 @@ def _merge_non_overlapping(spans: list[_Span]) -> list[_Span]:
     if not spans:
         return []
 
-    priority = {"EMAIL": 0, "CREDIT_CARD": 1, "PHONE": 2}
+    priority = {"EMAIL": 0, "CREDIT_CARD": 1, "IBAN": 2, "PHONE": 3}
     ordered = sorted(
         spans,
         key=lambda span: (span.start, priority[span.pii_type], -span.length),

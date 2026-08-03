@@ -58,6 +58,8 @@ Thumbs.db
 *.log
 logs/
 DEVELOPMENT_LOG.md
+CLEANUP_PLAN.md
+pii_output.txt
 
 # Database (local dev artifacts)
 *.db

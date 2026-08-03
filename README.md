@@ -6,15 +6,15 @@
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-async-009688.svg)](https://fastapi.tiangolo.com/)
-[![Tests](https://img.shields.io/badge/tests-81%20passed-brightgreen.svg)](#run-tests)
+[![Tests](https://img.shields.io/badge/tests-92%20collected-brightgreen.svg)](#run-tests)
 
 ---
 
 ## Why this exists
 
-Calling an LLM API directly works until you need **auth**, **streaming that cancels on disconnect**, **cache hits on similar prompts**, **p95 latency you can defend in an interview**, and **PII that never reaches the provider**.
+Calling an LLM API directly works until you need **auth**, **streaming that cancels on disconnect**, **cache hits on similar prompts**, **p95 latency you can explain with measured benchmarks**, and **optional tokenization of email/phone (and opt-in card/IBAN) before the provider**.
 
-This project is a **portfolio-grade gateway** — not a chat UI — built in phased commits with measured trade-offs documented in [`docs/DESIGN.md`](docs/DESIGN.md).
+This project is a **production-style gateway** — not a chat UI — built in phased commits with measured trade-offs documented in [`docs/DESIGN.md`](docs/DESIGN.md).
 
 ---
 
@@ -25,8 +25,19 @@ This project is a **portfolio-grade gateway** — not a chat UI — built in pha
 | **Thin-proxy overhead** | **+88 ms p50** vs direct OpenAI (cache bypass mode) — [`docs/BENCHMARK.md`](docs/BENCHMARK.md) |
 | **Semantic cache** | Cosine similarity ≥ 0.92, persisted to PostgreSQL |
 | **Providers** | OpenAI · Groq · Anthropic with retries + cross-provider fallback |
-| **PII (optional)** | Email/phone tokenization — Latin, Arabic, Hebrew |
-| **Test coverage** | 81 automated tests (unit + HTTP + PostgreSQL integration) |
+| **PII (optional)** | Email & phone tokenization (Latin + RTL); opt-in credit card (Luhn) & IBAN (MOD-97) |
+| **Test coverage** | 92 automated tests (unit + HTTP + PostgreSQL integration) |
+
+---
+
+## Screenshots and demo report
+
+Portfolio visuals are generated locally — PNG files are not checked in by default.
+
+1. **PII + streaming + cache sample report** — run `python scripts/generate_screenshot_report.py`, then open [`docs/portfolio/report.html`](docs/portfolio/report.html) and screenshot sections as needed.
+2. **Dashboard** — with the server running, open http://127.0.0.1:8001/dashboard (mask/blur your API key before sharing).
+
+Optional: save PNGs under [`docs/portfolio/screenshots/`](docs/portfolio/screenshots/) and embed them in your fork’s README.
 
 ---
 
@@ -70,7 +81,7 @@ flowchart LR
 ### Production concerns
 - **Observability** — per-request latency, tokens, cost; p50/p95/p99 metrics API + dashboard
 - **Security** — bcrypt-hashed API keys with indexed lookup prefix ([`docs/SECURITY.md`](docs/SECURITY.md))
-- **PII** — redact before provider and cache; optional detokenize on response ([`docs/PII.md`](docs/PII.md))
+- **PII** — optional regex redaction for email/phone (non-streaming); opt-in credit card & IBAN ([`docs/PII.md`](docs/PII.md))
 
 ### Evidence, not hand-waving
 - Benchmark scripts with before/after numbers in `docs/benchmark_*.json`
@@ -117,7 +128,7 @@ uvicorn app.main:app --host 127.0.0.1 --port 8001
 python scripts/demo.py gw-sk-your-key
 ```
 
-Optional PII demo (set `PII_REDACTION_ENABLED=true` in `.env`, restart server):
+Optional PII demo (set `PII_REDACTION_ENABLED=true` in `.env`; add `PII_REDACT_CREDIT_CARD=true` / `PII_REDACT_IBAN=true` for opt-in types; restart server):
 
 ```powershell
 python scripts/test_pii_redaction.py gw-sk-your-key
@@ -128,7 +139,7 @@ Full manual matrix: [`docs/TESTING.md`](docs/TESTING.md)
 ### Run tests
 
 ```powershell
-pytest                  # full suite (81 tests)
+pytest                  # full suite (92 tests; 19 db tests skipped without PostgreSQL)
 pytest -m db -v         # PostgreSQL integration only
 ```
 
@@ -144,7 +155,7 @@ pytest -m db -v         # PostgreSQL integration only
 | [`docs/BENCHMARK.md`](docs/BENCHMARK.md) | Measured gateway latency overhead |
 | [`docs/CACHE_TUNING.md`](docs/CACHE_TUNING.md) | Similarity threshold experiments |
 | [`docs/SECURITY.md`](docs/SECURITY.md) | API key hashing audit |
-| [`docs/PII.md`](docs/PII.md) | PII redaction pipeline |
+| [`docs/PII.md`](docs/PII.md) | Supported PII types, config, limitations |
 | [`docs/TESTING.md`](docs/TESTING.md) | Manual + automated test guide |
 
 ---

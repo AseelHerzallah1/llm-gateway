@@ -859,7 +859,7 @@ Five-step walkthrough: health → chat → stream → cache hit → metrics. See
 pytest tests/unit/test_pii.py -v
 ```
 
-Covers Latin email/phone, Arabic/Hebrew mixed text, Arabic-Indic digit phones, Luhn credit cards, and detokenization.
+Covers Latin email/phone, Arabic/Hebrew mixed text, Arabic-Indic digit phones, Luhn credit cards, MOD-97 IBANs, and detokenization.
 
 ### 36. Enable redaction locally
 
@@ -869,8 +869,12 @@ Add to `.env`:
 PII_REDACTION_ENABLED=true
 PII_REDACT_EMAIL=true
 PII_REDACT_PHONE=true
+PII_REDACT_CREDIT_CARD=false
+PII_REDACT_IBAN=false
 PII_DETOKENIZE_RESPONSES=true
 ```
+
+Opt-in types: set `PII_REDACT_CREDIT_CARD=true` and/or `PII_REDACT_IBAN=true` to redact Luhn-valid cards and MOD-97-valid IBANs.
 
 Restart uvicorn (Terminal 1):
 
@@ -896,8 +900,21 @@ Offline section prints redacted Arabic/Hebrew samples. Live section sends a chat
 pytest tests/integration/test_chat.py -k pii -v
 ```
 
-Verifies non-streaming chat forwards redacted prompts to the provider when enabled, and leaves text unchanged when disabled.
+Verifies non-streaming chat forwards redacted prompts to the provider and cache/store when enabled, credit card and IBAN opt-in paths, detokenization, and unchanged text when disabled.
+
+### 39. Clean demo state (cache + request logs)
+
+Before portfolio screenshots or a fresh dashboard demo:
+
+```powershell
+python scripts/reset_demo_state.py
+# restart uvicorn, then:
+python scripts/demo.py gw-sk-your-key
+python scripts/generate_screenshot_report.py
+```
+
+Clears `cache_entries` and `requests` so cache hit rate and latency metrics reflect a new run.
 
 ## Project complete (Phases 0–9)
 
-Core v1 (Phases 1–8) plus Phase 9 PII protection are implemented. Optional future work: pgvector/FAISS cache scale-up (see `docs/SCOPE.md`).
+Core v1 (Phases 1–8) plus Phase 9 optional PII redaction (email, phone, opt-in card/IBAN) are implemented. Optional future work: pgvector/FAISS cache scale-up (see `docs/SCOPE.md`).

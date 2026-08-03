@@ -147,3 +147,184 @@ async def test_chat_skips_pii_when_disabled(client, monkeypatch) -> None:
 
     assert response.status_code == 200
     assert seen_messages[0].content == "Contact aseel@example.com"
+
+
+VISA_TEST_CARD = "4111 1111 1111 1111"
+GB_IBAN = "GB82 WEST 1234 5698 7654 32"
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_chat_redacts_credit_card_before_provider(client, monkeypatch) -> None:
+    seen_messages: list = []
+
+    async def fake_complete(_router, _model, request, **kwargs):
+        seen_messages.extend(request.messages)
+        return CompletionResponse(
+            id="chatcmpl-card",
+            model="gpt-4o-mini",
+            content="Acknowledged",
+            finish_reason="stop",
+            prompt_tokens=5,
+            completion_tokens=2,
+            total_tokens=7,
+            created=1234567890,
+        )
+
+    monkeypatch.setattr(
+        "app.routes.chat.try_cached_non_streaming_completion",
+        AsyncMock(return_value=NonStreamingCacheCheck(cached_response=None, embedding=None)),
+    )
+    monkeypatch.setattr("app.routes.chat.store_non_streaming_completion", AsyncMock())
+    monkeypatch.setattr("app.routes.chat.persist_request_log", AsyncMock())
+    monkeypatch.setattr("app.routes.chat.complete_with_fallback", fake_complete)
+    monkeypatch.setattr("app.config.settings.pii_redaction_enabled", True)
+    monkeypatch.setattr("app.config.settings.pii_redact_credit_card", True)
+
+    response = await client.post(
+        "/v1/chat/completions",
+        headers={"Authorization": "Bearer gw-sk-test-key"},
+        json={
+            "model": "gpt-4o-mini",
+            "messages": [{"role": "user", "content": f"Charge {VISA_TEST_CARD}"}],
+            "stream": False,
+        },
+    )
+
+    assert response.status_code == 200
+    assert seen_messages[0].content == "Charge [CREDIT_CARD_1]"
+    assert VISA_TEST_CARD not in seen_messages[0].content
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_chat_detokenizes_credit_card_in_response(client, monkeypatch) -> None:
+    async def fake_complete(_router, _model, request, **kwargs):
+        return CompletionResponse(
+            id="chatcmpl-card-detok",
+            model="gpt-4o-mini",
+            content="Card on file: [CREDIT_CARD_1]",
+            finish_reason="stop",
+            prompt_tokens=5,
+            completion_tokens=4,
+            total_tokens=9,
+            created=1234567890,
+        )
+
+    monkeypatch.setattr(
+        "app.routes.chat.try_cached_non_streaming_completion",
+        AsyncMock(return_value=NonStreamingCacheCheck(cached_response=None, embedding=None)),
+    )
+    monkeypatch.setattr("app.routes.chat.store_non_streaming_completion", AsyncMock())
+    monkeypatch.setattr("app.routes.chat.persist_request_log", AsyncMock())
+    monkeypatch.setattr("app.routes.chat.complete_with_fallback", fake_complete)
+    monkeypatch.setattr("app.config.settings.pii_redaction_enabled", True)
+    monkeypatch.setattr("app.config.settings.pii_redact_credit_card", True)
+    monkeypatch.setattr("app.config.settings.pii_detokenize_responses", True)
+
+    response = await client.post(
+        "/v1/chat/completions",
+        headers={"Authorization": "Bearer gw-sk-test-key"},
+        json={
+            "model": "gpt-4o-mini",
+            "messages": [{"role": "user", "content": f"Card {VISA_TEST_CARD}"}],
+            "stream": False,
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["choices"][0]["message"]["content"] == f"Card on file: {VISA_TEST_CARD}"
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_chat_redacts_iban_before_provider(client, monkeypatch) -> None:
+    seen_messages: list = []
+
+    async def fake_complete(_router, _model, request, **kwargs):
+        seen_messages.extend(request.messages)
+        return CompletionResponse(
+            id="chatcmpl-iban",
+            model="gpt-4o-mini",
+            content="Acknowledged",
+            finish_reason="stop",
+            prompt_tokens=5,
+            completion_tokens=2,
+            total_tokens=7,
+            created=1234567890,
+        )
+
+    monkeypatch.setattr(
+        "app.routes.chat.try_cached_non_streaming_completion",
+        AsyncMock(return_value=NonStreamingCacheCheck(cached_response=None, embedding=None)),
+    )
+    monkeypatch.setattr("app.routes.chat.store_non_streaming_completion", AsyncMock())
+    monkeypatch.setattr("app.routes.chat.persist_request_log", AsyncMock())
+    monkeypatch.setattr("app.routes.chat.complete_with_fallback", fake_complete)
+    monkeypatch.setattr("app.config.settings.pii_redaction_enabled", True)
+    monkeypatch.setattr("app.config.settings.pii_redact_iban", True)
+
+    response = await client.post(
+        "/v1/chat/completions",
+        headers={"Authorization": "Bearer gw-sk-test-key"},
+        json={
+            "model": "gpt-4o-mini",
+            "messages": [{"role": "user", "content": f"Wire to {GB_IBAN}"}],
+            "stream": False,
+        },
+    )
+
+    assert response.status_code == 200
+    assert seen_messages[0].content == "Wire to [IBAN_1]"
+    assert GB_IBAN not in seen_messages[0].content
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_chat_redacted_prompt_reaches_cache_and_store(client, monkeypatch) -> None:
+    cache_messages: list = []
+    stored_messages: list = []
+
+    async def fake_cache(_http_request, _project, _body, messages, *_args, **_kwargs):
+        cache_messages.extend(messages)
+        return NonStreamingCacheCheck(cached_response=None, embedding=None)
+
+    async def fake_store(_request, _project, _model, messages, *_args, **_kwargs):
+        stored_messages.extend(messages)
+
+    async def fake_complete(_router, _model, request, **kwargs):
+        return CompletionResponse(
+            id="chatcmpl-cache-pii",
+            model="gpt-4o-mini",
+            content="OK",
+            finish_reason="stop",
+            prompt_tokens=5,
+            completion_tokens=1,
+            total_tokens=6,
+            created=1234567890,
+        )
+
+    monkeypatch.setattr("app.routes.chat.try_cached_non_streaming_completion", fake_cache)
+    monkeypatch.setattr("app.routes.chat.store_non_streaming_completion", fake_store)
+    monkeypatch.setattr("app.routes.chat.persist_request_log", AsyncMock())
+    monkeypatch.setattr("app.routes.chat.complete_with_fallback", fake_complete)
+    monkeypatch.setattr("app.config.settings.pii_redaction_enabled", True)
+
+    raw_email = "aseel@example.com"
+    response = await client.post(
+        "/v1/chat/completions",
+        headers={"Authorization": "Bearer gw-sk-test-key"},
+        json={
+            "model": "gpt-4o-mini",
+            "messages": [{"role": "user", "content": f"Contact {raw_email}"}],
+            "stream": False,
+        },
+    )
+
+    assert response.status_code == 200
+    assert len(cache_messages) == 1
+    assert cache_messages[0].content == "Contact [EMAIL_1]"
+    assert raw_email not in cache_messages[0].content
+    assert len(stored_messages) == 1
+    assert stored_messages[0].content == "Contact [EMAIL_1]"
+    assert raw_email not in stored_messages[0].content

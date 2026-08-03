@@ -1,49 +1,40 @@
-# PII Protection — Phase 9 (v2)
+# PII Redaction — Phase 9
 
-Redact personally identifiable information (PII) from prompts **before** they leave the gateway to third-party LLM providers, and optionally restore tokens in responses for the client.
+Optional regex-based redaction for **non-streaming** chat prompts before they reach third-party LLM providers or the semantic cache. Responses can optionally be detokenized for the client.
 
----
-
-## Problem
-
-Clients may send emails, phone numbers, national IDs, or names in chat messages. Without a gateway layer:
-
-- PII is stored in provider logs (OpenAI, Groq, etc.)
-- PII may appear in our `requests` table and semantic cache
-- Compliance risk (GDPR-style data minimization)
-
-The gateway is the **right place** to intercept: one choke point before any provider or cache.
+This is **not** a DLP or compliance suite. It does not detect names, addresses, SSNs, passports, or generic bank account numbers.
 
 ---
 
-## Goals (Phase 9)
+## Supported types
 
-| Goal | Priority |
-|------|----------|
-| Detect common PII in **English (Latin script)** | Must have |
-| Replace with stable placeholders (`[EMAIL_1]`, `[PHONE_1]`) | Must have |
-| Per-request token map (in-memory, not persisted by default) | Must have |
-| Wire into non-streaming chat path behind a config flag | Must have |
-| **Arabic / Hebrew script** patterns (emails, phones, IDs in RTL text) | Should have |
-| Unit tests with realistic examples | Must have |
-| Detokenize provider **responses** before returning to client | Nice to have (9.x) |
-| Streaming PII redaction | Deferred (chunk boundaries are hard) |
-| ML-based NER classifier | Deferred (regex + script-aware rules first) |
+| Type | Token | Detection | Default |
+|------|-------|-----------|---------|
+| Email | `[EMAIL_N]` | RFC5322-simplified regex | On when PII enabled |
+| Phone | `[PHONE_N]` | E.164 / US / Israeli formats; Arabic-Indic digit normalization | On when PII enabled |
+| Credit card | `[CREDIT_CARD_N]` | Digit groups + **Luhn** validation | **Off** (opt-in) |
+| IBAN | `[IBAN_N]` | ISO 13616 pattern + **MOD-97-10** validation | **Off** (opt-in) |
+
+**Overlap priority:** EMAIL > CREDIT_CARD > IBAN > PHONE
 
 ---
 
-## Non-goals (stay out of Phase 9)
+## Unsupported (future work)
 
-| Item | Reason |
+| Type | Reason |
 |------|--------|
-| Regex-only “prompt injection detection” | Easily bypassed; not real security |
-| Persisting token maps in PostgreSQL | Scope creep; session-only unless required |
-| pgvector / FAISS upgrade | Separate track (cache scale), not PII |
-| Redacting request logs after the fact | Prevent at ingress instead |
+| Names | Requires NER/ML |
+| Addresses | Unstructured; no reliable regex |
+| US SSN | No public checksum; high false positives |
+| Passport numbers | No universal format or checksum |
+| Generic bank account numbers | Prefer IBAN only (structured + checksum) |
+| Israeli Teudat Zehut | Checksum exists; deferred |
+| Streaming redaction | Chunk boundary complexity |
+| ML / NER classifier | Explicit non-goal for Phase 9 |
 
 ---
 
-## Pipeline (target architecture)
+## Pipeline
 
 ```mermaid
 sequenceDiagram
@@ -53,90 +44,93 @@ sequenceDiagram
     participant Cache as Semantic cache
     participant O as LLM provider
 
-    C->>G: POST /v1/chat/completions
+    C->>G: POST /v1/chat/completions (stream=false)
     G->>G: Auth
-    G->>PII: scan(messages)
-    PII-->>G: redacted messages + token map
-    G->>Cache: lookup/store (redacted text only)
+    G->>PII: scan(messages) when PII_REDACTION_ENABLED=true
+    PII-->>G: redacted messages + token map (in-memory)
+    G->>Cache: lookup/store (redacted prompt text only)
     G->>O: forward redacted prompt
     O-->>G: response
     G->>PII: optional detokenize(response)
-    G-->>C: client-safe response
+    G-->>C: response
 ```
 
-**Order matters:** redact **before** cache embed/store so raw PII never enters `cache_entries` or embeddings.
+**Order matters:** redact **before** cache embed/store so raw prompt PII does not enter embeddings.
+
+**Streaming:** `stream=true` bypasses redaction entirely (deferred).
 
 ---
 
-## Detection strategy
+## Arabic / Hebrew
 
-### Phase 9.1 — Latin patterns (Task 9.2 implementation)
+Unicode-aware for **email and phone only**:
 
-| Type | Approach |
-|------|----------|
-| Email | RFC5322-simplified regex |
-| Phone | E.164-ish / common US/international formats |
-| Credit card | Luhn + 13–19 digit groups (optional, high false-positive risk — config off by default) |
+- Emails in RTL sentences (Latin `@` pattern on original text)
+- Israeli phones in Hebrew text
+- Arabic-Indic digits normalized to ASCII before phone matching
 
-### Phase 9.2 — Arabic / Hebrew (Task 9.3)
-
-| Type | Approach |
-|------|----------|
-| Arabic / Hebrew digits | Normalize `٠-٩` / `0-9` before phone matching |
-| RTL emails | Same email regex on Unicode text |
-| Arabic labels | Context patterns (e.g. `البريد`, `جوال`, `טלפון`) — assist boundaries only |
-
-**Why not English-only:** Portfolio differentiator for MENA markets; proves Unicode-aware parsing, not just `re.search` on ASCII.
+No Arabic/Hebrew keyword context patterns. No RTL name or address detection.
 
 ---
 
 ## Token format
 
 ```
-[EMAIL_1]  [PHONE_1]  [ID_1]
+[EMAIL_1]  [PHONE_1]  [CREDIT_CARD_1]  [IBAN_1]
 ```
 
-- Stable within a **single request** (same email twice → same token)
+- Stable within a **single request** (same value twice → same token)
 - Counter per type per request
-- Map discarded after response (default) — no PII at rest in map
+- Map discarded after response — not persisted
 
 ---
 
-## Configuration (planned)
+## Configuration
 
 | Env var | Default | Purpose |
 |---------|---------|---------|
 | `PII_REDACTION_ENABLED` | `false` | Master switch |
 | `PII_REDACT_EMAIL` | `true` | Redact emails |
 | `PII_REDACT_PHONE` | `true` | Redact phone numbers |
-| `PII_REDACT_CREDIT_CARD` | `false` | Off by default (false positives) |
+| `PII_REDACT_CREDIT_CARD` | `false` | Opt-in; Luhn-validated cards only |
+| `PII_REDACT_IBAN` | `false` | Opt-in; MOD-97-validated IBANs only |
+| `PII_DETOKENIZE_RESPONSES` | `true` | Restore tokens in client response |
+
+Restart uvicorn after changing `.env`.
 
 ---
 
-## Phase 9 task map
+## What is stored
 
-| Task | Deliverable |
-|------|-------------|
-| **9.1** | This document (`docs/PII.md`) |
-| **9.2** | `app/security/pii.py` — Latin detect + redact + unit tests |
-| **9.3** | Arabic/Hebrew patterns + tests |
-| **9.4** | Wire into `chat.py` (non-streaming first) |
-| **9.5** | Manual test script + `docs/TESTING.md` section |
-| **9.6** | Optional: detokenize responses |
+| Store | Raw prompt PII? |
+|-------|-----------------|
+| `requests` table | No message bodies (metadata only) |
+| `cache_entries.embedding` | Built from redacted prompt when PII on |
+| `cache_entries.cached_response` | Provider reply (may echo tokens) |
+| Token map | In-memory per request only |
+| Dashboard / app logs | No prompt content |
+
+---
+
+## Tests
+
+```powershell
+pytest tests/unit/test_pii.py -v
+pytest tests/integration/test_chat.py -k pii -v
+```
+
+Unit tests cover email, phone, credit card (Luhn), IBAN (MOD-97), Arabic/Hebrew contexts, and detokenization.
+
+Integration tests verify provider and cache/store receive redacted prompts when enabled.
 
 ---
 
 ## Success criteria
 
-- [x] Prompt `Contact me at aseel@example.com` → provider receives `Contact me at [EMAIL_1]`
-- [x] Same email twice in one request → same token
-- [x] Arabic prompt with embedded email/phone → redacted
+- [x] Email and phone redacted on non-streaming path when enabled
+- [x] Credit card and IBAN redacted when opt-in flags set
+- [x] Arabic/Hebrew email and phone cases covered
+- [x] Provider receives tokens, not raw values (integration tests)
+- [x] Cache lookup/store receives redacted prompt text (integration test)
+- [x] Detokenize restores values in client response when enabled
 - [x] With `PII_REDACTION_ENABLED=false`, text unchanged
-- [x] Unit tests cover Latin + at least one Arabic/Hebrew case
-- [x] No raw PII in semantic cache when redaction enabled (non-streaming path redacts before cache)
-
----
-
-## Meeting-ready summary
-
-> Phase 9 adds a **PII redaction pipeline** at the gateway choke point — tokenize sensitive fields before provider and cache, with Unicode-aware rules for Arabic and Hebrew, because regex-only English filters miss real MENA user data and don’t belong in a serious compliance story.

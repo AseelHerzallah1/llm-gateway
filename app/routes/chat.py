@@ -58,6 +58,7 @@ def _pii_redaction_config() -> PiiRedactionConfig:
         redact_email=settings.pii_redact_email,
         redact_phone=settings.pii_redact_phone,
         redact_credit_card=settings.pii_redact_credit_card,
+        redact_iban=settings.pii_redact_iban,
     )
 
 

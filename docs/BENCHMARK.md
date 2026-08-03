@@ -131,3 +131,8 @@ Do not compare these as “before/after optimizations” — they measure differ
 | Non-streaming only | Streaming profile differs |
 | Client-side timing | Includes network variance |
 
+---
+
+## Summary
+
+Gateway overhead was decomposed (not just “gateway is slower”): duplicate embedding on cache miss was the dominant waste (~520 ms of ~744 ms before optimization). Fixes — reuse lookup embedding, skip lookup when cache empty, async logging — are documented with before/after JSON in this folder. Cite **+88 ms p50** only for thin-proxy / bypass mode (`benchmark_results_after_fix.json`); cache-on miss overhead is higher (~+460–620 ms).

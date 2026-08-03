@@ -78,6 +78,7 @@ class Settings(BaseSettings):
     pii_redact_email: bool = True
     pii_redact_phone: bool = True
     pii_redact_credit_card: bool = False
+    pii_redact_iban: bool = False
     pii_detokenize_responses: bool = True
 
 

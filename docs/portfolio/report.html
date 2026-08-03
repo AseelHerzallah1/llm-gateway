@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LLM Gateway — Portfolio Report</title>
+  <style>
+    :root {
+      --bg: #0f1419; --panel: #1a2332; --text: #e7ecf3; --muted: #8b98a8;
+      --accent: #3b82f6; --border: #2a3544; --ok: #22c55e; --warn: #f59e0b;
+    }
+    body { margin: 0; font-family: ui-sans-serif, system-ui, sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.5; }
+    main { max-width: 960px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+    h1 { margin: 0 0 0.25rem; font-size: 1.75rem; }
+    h2 { margin: 2rem 0 0.75rem; font-size: 1.15rem; color: var(--accent); }
+    .subtitle { color: var(--muted); margin-bottom: 1.5rem; }
+    .panel { background: var(--panel); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+    th, td { border: 1px solid var(--border); padding: 0.55rem 0.65rem; vertical-align: top; }
+    th { text-align: left; background: #121a26; }
+    pre { background: #121a26; border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.75rem; overflow-x: auto; font-size: 0.82rem; white-space: pre-wrap; }
+    code { font-family: ui-monospace, monospace; font-size: 0.85em; }
+    .muted { color: var(--muted); }
+    .ok { color: var(--ok); }
+    .warn { color: var(--warn); }
+    .rtl { direction: rtl; text-align: right; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>LLM Gateway — Portfolio Report</h1>
+    <p class="subtitle">Generated 2026-08-03 20:38 UTC · Sample demo report — metrics reflect one local run</p>
+    <p class='warn'>PII section is offline. Start server for streaming/cache/metrics.</p>
+
+    <h2>Phase 9 — PII redaction (Arabic / Hebrew / Latin)</h2>
+    <div class="panel">
+      <p>When <code>PII_REDACTION_ENABLED=true</code> (non-streaming), supported patterns become tokens like <code>[EMAIL_1]</code> before the provider and cache. Streaming is not redacted; optional detokenize restores values to the client.</p>
+      <table>
+        <thead>
+          <tr><th>Case</th><th>Client sends</th><th>Gateway forwards</th><th>Token map</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>English email</td><td dir="ltr">Contact me at user@example.com</td><td dir="ltr">Contact me at [EMAIL_1]</td><td><code>{&#x27;[EMAIL_1]&#x27;: &#x27;user@example.com&#x27;}</code></td></tr>
+<tr><td>Arabic + email</td><td dir="rtl">راسلني على user@example.com من فضلك</td><td dir="rtl">راسلني على [EMAIL_1] من فضلك</td><td><code>{&#x27;[EMAIL_1]&#x27;: &#x27;user@example.com&#x27;}</code></td></tr>
+<tr><td>Hebrew + phone</td><td dir="rtl">הטלפון שלי הוא 050-1234567</td><td dir="rtl">הטלפון שלי הוא [PHONE_1]</td><td><code>{&#x27;[PHONE_1]&#x27;: &#x27;050-1234567&#x27;}</code></td></tr>
+<tr><td>Arabic-Indic phone</td><td dir="rtl">اتصل على ٠٥٠-١٢٣٤٥٦٧</td><td dir="rtl">اتصل على [PHONE_1]</td><td><code>{&#x27;[PHONE_1]&#x27;: &#x27;٠٥٠-١٢٣٤٥٦٧&#x27;}</code></td></tr>
+<tr><td>Credit card (opt-in)</td><td dir="ltr">Charge 4111 1111 1111 1111</td><td dir="ltr">Charge [CREDIT_CARD_1]</td><td><code>{&#x27;[CREDIT_CARD_1]&#x27;: &#x27;4111 1111 1111 1111&#x27;}</code></td></tr>
+<tr><td>IBAN (opt-in)</td><td dir="ltr">Wire to GB82 WEST 1234 5698 7654 32</td><td dir="ltr">Wire to [IBAN_1]</td><td><code>{&#x27;[IBAN_1]&#x27;: &#x27;GB82 WEST 1234 5698 7654 32&#x27;}</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Streaming proxy (SSE chunks)</h2>
+    <div class="panel">
+      <p class="muted">offline</p>
+      <p class='muted'>Start uvicorn and re-run to capture live SSE chunks.</p>
+    </div>
+
+    <h2>Semantic cache (same prompt twice)</h2>
+    <div class="panel">
+      <p class='muted'>Start uvicorn and re-run to capture cache timings.</p>
+    </div>
+
+    <h2>Observability snapshot</h2>
+    <div class="panel">
+      <p class='muted'>Metrics unavailable — run with server up.</p>
+    </div>
+  </main>
+</body>
+</html>

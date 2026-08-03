@@ -12,6 +12,8 @@ from app.security.pii import (
 )
 
 VISA_TEST_CARD = "4111 1111 1111 1111"
+GB_IBAN = "GB82 WEST 1234 5698 7654 32"
+DE_IBAN = "DE89 3704 0044 0532 0130 00"
 
 
 @pytest.mark.unit
@@ -166,3 +168,75 @@ def test_detokenize_text() -> None:
     restored = detokenize_text("Please write to [EMAIL_1] today.", token_map)
 
     assert restored == "Please write to help@example.com today."
+
+
+@pytest.mark.unit
+def test_detokenize_credit_card() -> None:
+    token_map = {"[CREDIT_CARD_1]": VISA_TEST_CARD}
+    restored = detokenize_text(f"Card on file: [CREDIT_CARD_1]", token_map)
+
+    assert restored == f"Card on file: {VISA_TEST_CARD}"
+
+
+@pytest.mark.unit
+def test_iban_redacted_when_enabled() -> None:
+    config = PiiRedactionConfig(redact_iban=True)
+    result = redact_text(f"Pay to {GB_IBAN}", config=config)
+
+    assert result.text == "Pay to [IBAN_1]"
+    assert result.token_map["[IBAN_1]"] == GB_IBAN
+
+
+@pytest.mark.unit
+def test_iban_skipped_when_disabled() -> None:
+    result = redact_text(f"Pay to {GB_IBAN}")
+
+    assert GB_IBAN in result.text
+    assert result.token_map == {}
+
+
+@pytest.mark.unit
+def test_iban_invalid_checksum_not_redacted() -> None:
+    config = PiiRedactionConfig(redact_iban=True)
+    invalid = "GB82 WEST 1234 5698 7654 33"
+    result = redact_text(f"Pay to {invalid}", config=config)
+
+    assert invalid in result.text
+    assert result.token_map == {}
+
+
+@pytest.mark.unit
+def test_iban_normalizes_spaces_and_dashes() -> None:
+    config = PiiRedactionConfig(redact_iban=True)
+    dashed = "DE89-3704-0044-0532-0130-00"
+    result = redact_text(f"Account {dashed}", config=config)
+
+    assert result.text == "Account [IBAN_1]"
+    assert result.token_map["[IBAN_1]"] == dashed
+
+
+@pytest.mark.unit
+def test_iban_same_value_reuses_token() -> None:
+    config = PiiRedactionConfig(redact_iban=True)
+    result = redact_text(f"{GB_IBAN} and {GB_IBAN}", config=config)
+
+    assert result.text == "[IBAN_1] and [IBAN_1]"
+    assert len(result.token_map) == 1
+
+
+@pytest.mark.unit
+def test_mixed_email_phone_iban_and_credit_card() -> None:
+    config = PiiRedactionConfig(redact_credit_card=True, redact_iban=True)
+    text = (
+        f"Email help@example.com, phone 555-123-4567, "
+        f"card {VISA_TEST_CARD}, iban {DE_IBAN}"
+    )
+    result = redact_text(text, config=config)
+
+    assert "[EMAIL_1]" in result.text
+    assert "[PHONE_1]" in result.text
+    assert "[CREDIT_CARD_1]" in result.text
+    assert "[IBAN_1]" in result.text
+    assert "help@example.com" not in result.text
+    assert VISA_TEST_CARD not in result.text
+    assert DE_IBAN not in result.text

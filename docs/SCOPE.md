@@ -1,6 +1,18 @@
-# Scope — LLM Gateway v1
+# Scope — LLM Gateway
 
-## Problem statement
+> **Note:** This document describes the original v1 planning scope (Phases 1–8). Phases **7–9 are implemented** — see [`README.md`](../README.md), [`ARCHITECTURE.md`](ARCHITECTURE.md), and [`PII.md`](PII.md) for current behavior.
+
+## Current status (implemented)
+
+| Phase | Deliverable | Status |
+|-------|-------------|--------|
+| 7 | Groq + Anthropic providers, routing, retries, fallback | Done |
+| 8 | Security audit, benchmarks, pytest pyramid, README | Done |
+| 9 | Optional PII redaction (email, phone, opt-in card/IBAN) | Done |
+
+---
+
+## Problem statement (original)
 
 Applications that use large language models (LLMs) need more than a direct API call to a provider. In production, teams require:
 
@@ -9,13 +21,13 @@ Applications that use large language models (LLMs) need more than a direct API c
 - Cost and latency visibility (percentiles, not averages)
 - Optional cache hits for semantically similar prompts
 
-This project builds a **middleware gateway** — not a chat application — that sits between client applications and LLM providers (starting with OpenAI). Clients call the gateway; the gateway proxies, measures, and optionally caches.
+This project builds a **middleware gateway** — not a chat application — that sits between client applications and LLM providers. Clients call the gateway; the gateway proxies, measures, routes, and optionally caches.
 
-## Design philosophy
+## Design philosophy (original)
 
 > **3 deeply engineered components > 11 shallow features.**
 
-The goal is interview depth: explain streaming, cache trade-offs, and percentile metrics — not ship a bloated admin CRUD app.
+The goal is technical depth: explain streaming, cache trade-offs, and percentile metrics — not ship a bloated admin CRUD app.
 
 ## v1 in-scope
 
@@ -105,7 +117,7 @@ Mapped to development Phases 1–8:
 | 6 | Semantic cache + threshold tuning |
 | 7 | Second provider, routing, retries, fallback |
 | 8 | Security audit, tests, benchmarks, README |
-| 9 (v2) | PII protection, pgvector/FAISS |
+| 9 (v2) | PII protection (pattern-based), pgvector/FAISS upgrade path |
 
 ## Commit convention
 

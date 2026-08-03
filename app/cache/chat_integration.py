@@ -119,7 +119,7 @@ async def try_cached_non_streaming_completion(
             project_id=project.id,
             model=body.model,
             status="success",
-            latency_ms=latency_ms,
+            latency_ms=int((time.perf_counter() - started_at) * 1000),
             cache_hit=True,
         )
     )

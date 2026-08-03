@@ -67,7 +67,7 @@ After tuning threshold, compare `cache_hit_rate` and review request logs for wro
 
 ## Recommendations
 
-1. **Keep 0.92 for demos/interviews** — easy to explain: "only near-duplicates hit; different questions on the same topic do not."
+1. **Keep 0.92 for demos and documentation** — easy to explain: "only near-duplicates hit; different questions on the same topic do not."
 2. **Lower to ~0.80–0.85** if paraphrase hits matter more than false-hit safety — re-run `test_cache_thresholds.py` and spot-check answers.
 3. **Never go below ~0.58** with this embedding model if you must keep symptoms/causes distinct (measured gap was 0.57).
 4. **Future:** pgvector index + per-project thresholds; classifier-based cache gate for high-stakes domains.

@@ -1,4 +1,4 @@
-# Architecture — LLM Gateway v1
+# Architecture — LLM Gateway
 
 ## System context
 
@@ -6,105 +6,100 @@
 flowchart LR
     Client[ClientApp] --> Gateway[LLMGateway]
     Gateway --> DB[(PostgreSQL)]
-    Gateway --> OpenAI[OpenAIAPI]
-    Admin[AdminUser] --> Gateway
+    Gateway --> Router[ProviderRouter]
+    Router --> OpenAI[OpenAI]
+    Router --> Groq[Groq]
+    Router --> Anthropic[Anthropic]
 ```
 
-The gateway is the only component clients talk to. It owns auth, logging, caching, and proxy logic. PostgreSQL stores projects, request logs, and cache entries. OpenAI is the sole LLM provider in v1.
+The gateway is the only component clients talk to. It owns auth, optional PII redaction, semantic cache, observability, and provider routing. PostgreSQL stores projects, request logs, and cache entries. The **provider router** selects OpenAI, Groq, or Anthropic by model name, with retries and cross-provider fallback.
 
 ---
 
-## Request flow — non-streaming (Phase 3)
+## Request flow — non-streaming (with cache + optional PII)
 
 ```mermaid
 sequenceDiagram
     participant C as Client
     participant G as Gateway
-    participant DB as PostgreSQL
-    participant O as OpenAI
+    participant PII as PII module
+    participant Cache as Semantic cache
+    participant E as Embeddings API
+    participant R as Provider router
+    participant P as LLM provider
 
     C->>G: POST /v1/chat/completions
     G->>G: Validate API key
-    G->>DB: Lookup project by key hash
-    DB-->>G: Project record
-    G->>O: POST /v1/chat/completions
-    O-->>G: Full JSON response
-    G->>DB: Log request metrics
-    G-->>C: OpenAI-shaped response
+    opt PII_REDACTION_ENABLED
+        G->>PII: Redact prompt (non-stream only)
+        PII-->>G: Redacted messages + token map
+    end
+    G->>E: Embed prompt (if cache may hit)
+    G->>Cache: Lookup by cosine similarity
+    alt Cache hit
+        Cache-->>G: Cached response
+        G-->>C: Response (cache_hit logged)
+    else Cache miss
+        G->>R: Route by model + retry/fallback
+        R->>P: Forward redacted prompt
+        P-->>G: Response
+        G->>Cache: Store embedding + response
+        opt Detokenize enabled
+            G->>PII: Restore tokens in response
+        end
+        G-->>C: Response
+    end
+    G->>G: Log metrics (async by default)
 ```
+
+**Streaming:** Same auth and routing, but **no PII redaction** and **no semantic cache** on the hot path — SSE chunks forward immediately; upstream cancels on client disconnect.
 
 ---
 
-## Request flow — streaming (Phase 4)
+## Request flow — streaming
 
 ```mermaid
 sequenceDiagram
     participant C as Client
     participant G as Gateway
-    participant O as OpenAI
+    participant R as Provider router
+    participant P as LLM provider
 
-    C->>G: POST /v1/chat/completions stream=true
+    C->>G: POST stream=true
     G->>G: Validate API key
-    G->>O: POST stream=true
-    loop Each token chunk
-        O-->>G: SSE chunk
-        G-->>C: Forward SSE chunk immediately
+    G->>R: Route + retry on stream open
+    R->>P: POST stream=true
+    loop Each chunk
+        P-->>G: SSE chunk
+        G-->>C: Forward immediately
     end
-    Note over C,G: If client disconnects, G cancels upstream
+    Note over C,G: Client disconnect cancels upstream
     G->>G: Log metrics after stream ends
 ```
 
-**Key constraint:** Gateway forwards chunks as they arrive. It does **not** accumulate the full response in memory before sending.
+---
+
+## Component map
+
+| Component | Directory | Role |
+|-----------|-----------|------|
+| FastAPI app | `app/main.py` | App factory, lifespan, cache hydration |
+| Config | `app/config.py` | Env-driven settings (providers, cache, PII) |
+| Database | `app/db/` | SQLAlchemy models + async sessions |
+| Auth | `app/auth/` | bcrypt API keys, lookup prefix |
+| PII redaction | `app/security/pii.py` | Regex detect/redact; optional detokenize |
+| Chat route | `app/routes/chat.py` | JSON + SSE completions |
+| Semantic cache | `app/cache/` | In-memory index + PostgreSQL persistence |
+| Embeddings | `app/embeddings/` | OpenAI embeddings for cache |
+| Provider interface | `app/providers/base.py` | Shared `LLMProvider` contract |
+| OpenAI / Groq / Anthropic | `app/providers/*.py` | Provider adapters |
+| Router + retry + fallback | `app/providers/router.py`, `retry.py`, `fallback.py` | Model routing, resilience |
+| Observability | `app/observability/` | Request logs, percentiles, cost |
+| Metrics / dashboard | `app/routes/metrics.py`, `app/static/dashboard.html` | `/v1/metrics`, minimal UI |
 
 ---
 
-## Request flow — with semantic cache (Phase 6)
-
-```mermaid
-sequenceDiagram
-    participant C as Client
-    participant G as Gateway
-    participant Cache as SemanticCache
-    participant E as EmbeddingsAPI
-    participant O as OpenAI
-
-    C->>G: POST /v1/chat/completions
-    G->>G: Validate API key
-    G->>E: Compute prompt embedding
-    G->>Cache: Find nearest neighbor
-    alt Similarity above threshold
-        Cache-->>G: Cached response
-        G-->>C: Cached response
-        Note over G: cache_hit=true, no provider call
-    else Cache miss
-        G->>O: Forward to provider
-        O-->>G: Response
-        G->>Cache: Store embedding + response
-        G-->>C: Response
-    end
-```
-
----
-
-## Component map (by phase)
-
-| Component | Directory (planned) | Phase |
-|-----------|---------------------|-------|
-| FastAPI app | `app/main.py` | 2 |
-| Config | `app/config.py` | 2 |
-| Database | `app/db/` | 2 |
-| Auth middleware | `app/auth/` | 3 |
-| Provider interface | `app/providers/base.py` | 3 |
-| OpenAI provider | `app/providers/openai.py` | 3–4 |
-| Chat route | `app/routes/chat.py` | 3–4 |
-| Observability | `app/observability/` | 5 |
-| Metrics route | `app/routes/metrics.py` | 5 |
-| Semantic cache | `app/cache/` | 6 |
-| Embeddings | `app/embeddings/` | 6 |
-
----
-
-## Database tables (v1)
+## Database tables
 
 ```mermaid
 erDiagram
@@ -153,7 +148,7 @@ erDiagram
     }
 ```
 
-`cache_entries` added in Phase 6. `users` and `projects` in Phase 2. `requests` in Phase 5.
+`requests` stores **metadata only** — not prompt or response bodies. When PII redaction is enabled on non-streaming requests, embeddings are built from **redacted** prompt text.
 
 ---
 
@@ -162,18 +157,21 @@ erDiagram
 | Decision | Choice | Trade-off |
 |----------|--------|-----------|
 | OpenAI-compatible API | Yes | Easy client adoption; locked to their schema |
-| Non-streaming before streaming | Yes | Slower progress, but isolates proxy bugs |
-| Observability before cache | Yes | Can measure cache impact when it ships |
-| In-memory cache first | Yes | Simple; lost on restart — acceptable for v1 |
-| Single provider v1 | Yes | Less routing complexity; prove proxy first |
-| Percentiles over averages | Yes | Harder to compute; much more meaningful |
+| Multi-provider router | OpenAI + Groq + Anthropic | More moving parts; better availability story |
+| Retries + cross-provider fallback | Yes | Model id may change on fallback |
+| Non-streaming before streaming | Yes | Isolates proxy bugs incrementally |
+| Observability before cache | Yes | Measure cache impact when it ships |
+| In-memory cache + PG persistence | Yes | Fast lookup; not shared across replicas |
+| Optional PII redaction (Phase 9) | Regex, non-streaming | Not DLP/NER; streaming bypasses redaction |
+| Percentiles over averages | Yes | More meaningful tail latency |
 
 ---
 
-## What is intentionally not in v1 architecture
+## What is intentionally not in architecture (yet)
 
-- Load balancer / multiple gateway instances
+- Load balancer / multiple gateway replicas with shared cache index
 - Redis or message queue
-- Kubernetes
-- LangChain orchestration layer
-- PII detection pipeline (Phase 9)
+- Kubernetes deployment manifests
+- LangChain orchestration in the core
+- NER/ML-based PII or prompt-injection classifiers
+- pgvector / FAISS (in-memory cache first — see [`CACHE_TUNING.md`](CACHE_TUNING.md))

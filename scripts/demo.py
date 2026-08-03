@@ -25,6 +25,7 @@ import httpx
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 BASE_URL = "http://127.0.0.1:8001"
+BYPASS_CACHE_HEADER = "x-gateway-bypass-cache"
 
 
 def _resolve_api_key() -> str:
@@ -54,6 +55,8 @@ async def step_health(client: httpx.AsyncClient) -> None:
 
 async def step_chat(client: httpx.AsyncClient, headers: dict[str, str]) -> None:
     print("\n[2/5] Non-streaming chat")
+    # Bypass cache so this step always hits the provider (real latency/tokens in dashboard).
+    chat_headers = {**headers, BYPASS_CACHE_HEADER: "true"}
     start = time.perf_counter()
     response = await client.post(
         "/v1/chat/completions",
@@ -63,7 +66,7 @@ async def step_chat(client: httpx.AsyncClient, headers: dict[str, str]) -> None:
             "stream": False,
             "max_tokens": 10,
         },
-        headers=headers,
+        headers=chat_headers,
         timeout=60.0,
     )
     elapsed_ms = int((time.perf_counter() - start) * 1000)
@@ -104,8 +107,9 @@ async def step_stream(client: httpx.AsyncClient, headers: dict[str, str]) -> Non
 
 async def step_cache(client: httpx.AsyncClient, headers: dict[str, str]) -> None:
     print("\n[4/5] Semantic cache (identical prompt twice)")
-    token = uuid.uuid4().hex[:8]
-    prompt = f"What is 2+2? Reply with the digit only. ({token})"
+    token = uuid.uuid4().hex
+    a, b = uuid.uuid4().int % 90 + 10, uuid.uuid4().int % 90 + 10
+    prompt = f"[demo-{token}] What is {a}+{b}? Reply with the number only."
     payload = {
         "model": "gpt-4o-mini",
         "messages": [{"role": "user", "content": prompt}],
@@ -135,6 +139,10 @@ async def step_cache(client: httpx.AsyncClient, headers: dict[str, str]) -> None
     print(f"  same_content={first_content == second_content}")
     if len(cache_hits) >= 2:
         print(f"  recent_cache_hit flags (newest first): {cache_hits[0]}, {cache_hits[1]}")
+        if cache_hits[0] is True and cache_hits[1] is True:
+            print(
+                "  tip: both hit — run scripts/reset_demo_state.py for a clean cache, then retry"
+            )
 
 
 async def step_metrics(client: httpx.AsyncClient, headers: dict[str, str]) -> None:
