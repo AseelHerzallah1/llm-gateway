@@ -1,8 +1,8 @@
 # LLM Gateway
 
-**OpenAI-compatible middleware** for production LLM apps — one API in front of OpenAI, Groq, and Anthropic, with streaming, semantic cache, retries, observability, and optional PII redaction.
+**OpenAI-compatible Chat Completions gateway** for production LLM apps — one API in front of OpenAI, Groq, and Anthropic, with streaming, semantic cache, retries, observability, and optional PII redaction.
 
-> Drop-in proxy: clients change only `base_url` and `api_key`. Everything else is gateway policy.
+> Drop-in proxy: clients change only `base_url` and `api_key`; gateway policy handles auth, routing, streaming, caching, retries, metrics, and privacy controls.
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-async-009688.svg)](https://fastapi.tiangolo.com/)
