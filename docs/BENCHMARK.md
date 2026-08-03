@@ -131,8 +131,3 @@ Do not compare these as “before/after optimizations” — they measure differ
 | Non-streaming only | Streaming profile differs |
 | Client-side timing | Includes network variance |
 
----
-
-## Meeting-ready summary
-
-> I didn’t stop at “gateway is 744 ms slower.” I decomposed the path, found **duplicate embedding calls** eating ~520 ms, fixed reuse + skip-when-empty + async logging, and documented before/after methodology so the overhead story is evidence-based — not checklist-driven.
