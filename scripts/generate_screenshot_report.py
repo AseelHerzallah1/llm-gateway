@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import asyncio
 import html
+import json
 import sys
 import time
 import uuid
@@ -29,6 +30,16 @@ from app.security.pii import PiiRedactionConfig, redact_text
 
 BASE_URL = "http://127.0.0.1:8001"
 REPORT_PATH = Path(__file__).resolve().parent.parent / "docs" / "portfolio" / "report.html"
+BENCHMARK_VALIDATION_PATH = (
+    Path(__file__).resolve().parent.parent / "docs" / "benchmark_validation_4path.json"
+)
+
+_BENCHMARK_PATHS: list[tuple[str, str]] = [
+    ("Direct OpenAI", "1_direct_openai"),
+    ("Gateway thin proxy", "2_gateway_thin_proxy_bypass"),
+    ("Semantic cache miss", "3_gateway_cache_miss"),
+    ("Semantic cache hit", "4_gateway_cache_hit"),
+]
 
 _PII_SAMPLES: list[tuple[str, str, str, PiiRedactionConfig | None]] = [
     ("English email", "ltr", "Contact me at user@example.com", None),
@@ -104,7 +115,9 @@ async def _capture_stream(headers: dict[str, str]) -> tuple[list[str], int, bool
     return lines, event_count, saw_done
 
 
-async def _capture_cache(headers: dict[str, str]) -> tuple[str, str, int, int, bool]:
+async def _capture_cache(
+    headers: dict[str, str],
+) -> tuple[str, str, int, int, bool, bool | None]:
     token = uuid.uuid4().hex[:8]
     prompt = f"What is 2+2? Reply with the digit only. ({token})"
     payload = {
@@ -114,6 +127,16 @@ async def _capture_cache(headers: dict[str, str]) -> tuple[str, str, int, int, b
         "max_tokens": 5,
     }
     async with httpx.AsyncClient(base_url=BASE_URL, timeout=60.0) as client:
+        baseline = await client.get("/v1/requests", headers=headers, params={"limit": 1})
+        baseline_id: str | None = None
+        baseline_total: int | None = None
+        if baseline.status_code == 200:
+            baseline_body = baseline.json()
+            baseline_total = baseline_body.get("total")
+            baseline_items = baseline_body.get("items", [])
+            if baseline_items:
+                baseline_id = str(baseline_items[0].get("id"))
+
         started = time.perf_counter()
         first = await client.post("/v1/chat/completions", json=payload, headers=headers)
         first_ms = int((time.perf_counter() - started) * 1000)
@@ -126,7 +149,36 @@ async def _capture_cache(headers: dict[str, str]) -> tuple[str, str, int, int, b
         second.raise_for_status()
         second_text = second.json()["choices"][0]["message"]["content"]
 
-    return first_text, second_text, first_ms, second_ms, first_text == second_text
+        verified_cache_hit: bool | None = None
+        for _ in range(15):
+            logs = await client.get("/v1/requests", headers=headers, params={"limit": 10})
+            if logs.status_code != 200:
+                break
+            log_body = logs.json()
+            recent = log_body.get("items", [])
+            if baseline_total is not None and log_body.get("total", 0) < baseline_total + 2:
+                await asyncio.sleep(0.2)
+                continue
+            new_items: list[dict] = []
+            if baseline_id is not None:
+                for item in recent:
+                    if str(item.get("id")) == baseline_id:
+                        break
+                    new_items.append(item)
+            else:
+                new_items = recent[:2]
+            if len(new_items) >= 2:
+                second_hit = new_items[0].get("cache_hit")
+                first_hit = new_items[1].get("cache_hit")
+                if second_hit is True and first_hit is False:
+                    verified_cache_hit = True
+                    break
+                if second_hit is False:
+                    verified_cache_hit = False
+                    break
+            await asyncio.sleep(0.2)
+
+    return first_text, second_text, first_ms, second_ms, first_text == second_text, verified_cache_hit
 
 
 async def _capture_metrics(headers: dict[str, str]) -> dict | None:
@@ -135,6 +187,109 @@ async def _capture_metrics(headers: dict[str, str]) -> dict | None:
         if response.status_code != 200:
             return None
         return response.json()
+
+
+def _format_rate(value: object) -> str:
+    if value is None:
+        return "—"
+    return f"{round(float(value) * 100)}%"
+
+
+def _format_speedup(first_ms: int, second_ms: int) -> str | None:
+    if second_ms <= 0:
+        return None
+    return f"{first_ms / second_ms:.1f}×"
+
+
+def _load_benchmark_validation() -> dict | None:
+    """Read saved 4-path benchmark JSON; return None if missing or invalid."""
+    if not BENCHMARK_VALIDATION_PATH.is_file():
+        return None
+    try:
+        data = json.loads(BENCHMARK_VALIDATION_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    if not isinstance(data, dict):
+        return None
+    return data
+
+
+def _latency_cell(path_data: dict | None, key: str) -> str:
+    if not path_data or path_data.get(key) is None:
+        return "—"
+    return f"{path_data[key]} ms"
+
+
+def _render_latency_validation_block(benchmark: dict | None) -> str:
+    if benchmark is None:
+        return (
+            "<p class='muted'>Controlled benchmark results not found — "
+            f"add <code>{BENCHMARK_VALIDATION_PATH.name}</code> under docs/.</p>"
+        )
+
+    rows: list[str] = []
+    for label, json_key in _BENCHMARK_PATHS:
+        path_data = benchmark.get(json_key)
+        if not isinstance(path_data, dict):
+            rows.append(
+                "<tr>"
+                f"<td>{html.escape(label)}</td>"
+                "<td>—</td><td>—</td><td>—</td>"
+                "</tr>"
+            )
+            continue
+        rows.append(
+            "<tr>"
+            f"<td>{html.escape(label)}</td>"
+            f"<td>{html.escape(_latency_cell(path_data, 'p50_ms'))}</td>"
+            f"<td>{html.escape(_latency_cell(path_data, 'p95_ms'))}</td>"
+            f"<td>{html.escape(_latency_cell(path_data, 'p99_ms'))}</td>"
+            "</tr>"
+        )
+
+    thin_proxy = benchmark.get("2_gateway_thin_proxy_bypass", {})
+    cache_hit = benchmark.get("4_gateway_cache_hit", {})
+    thin_overhead = None
+    if isinstance(thin_proxy, dict):
+        overhead = thin_proxy.get("gateway_overhead_ms", {})
+        if isinstance(overhead, dict) and overhead.get("p50") is not None:
+            thin_overhead = overhead["p50"]
+
+    highlights: list[str] = []
+    if thin_overhead is not None:
+        sign = "+" if thin_overhead >= 0 else ""
+        highlights.append(
+            f"<li>Thin-proxy p50 overhead: <strong>{sign}{thin_overhead} ms</strong> vs direct OpenAI</li>"
+        )
+    if isinstance(cache_hit, dict) and cache_hit.get("p50_ms") is not None:
+        highlights.append(
+            f"<li>Semantic cache hit p50: <strong>{cache_hit['p50_ms']} ms</strong></li>"
+        )
+    if isinstance(cache_hit, dict) and cache_hit.get("p99_ms") is not None:
+        highlights.append(
+            f"<li>Semantic cache hit p99: <strong>{cache_hit['p99_ms']} ms</strong></li>"
+        )
+    highlights.append("<li>Cache hits skip the chat-provider request</li>")
+
+    iteration_note = ""
+    direct = benchmark.get("1_direct_openai", {})
+    if isinstance(direct, dict) and direct.get("n"):
+        iteration_note = (
+            f"<p class='muted'>30-iteration controlled run · source: "
+            f"<code>{html.escape(BENCHMARK_VALIDATION_PATH.name)}</code></p>"
+        )
+
+    return (
+        iteration_note
+        + "<table><thead><tr><th>Path</th><th>p50</th><th>p95</th><th>p99</th></tr></thead><tbody>"
+        + "\n".join(rows)
+        + "</tbody></table>"
+        + "<ul>"
+        + "\n".join(highlights)
+        + "</ul>"
+        + "<p class='muted'>Provider and cache-miss tail latency includes external API/network variance. "
+        "Paths are shown separately to avoid mixing provider latency with gateway overhead.</p>"
+    )
 
 
 def _render_html(
@@ -149,6 +304,8 @@ def _render_html(
     cache_first_ms: int,
     cache_second_ms: int,
     cache_same: bool,
+    verified_cache_hit: bool | None,
+    latency_validation_block: str,
     metrics: dict | None,
 ) -> str:
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
@@ -164,12 +321,26 @@ def _render_html(
     )
 
     if cache_first:
+        speedup = _format_speedup(cache_first_ms, cache_second_ms)
+        speedup_line = (
+            f"<p>Speedup: <strong>{html.escape(speedup)}</strong></p>"
+            if speedup
+            else ""
+        )
+        if verified_cache_hit is True:
+            verified_line = "<p>Verified cache hit: <strong class='ok'>Yes</strong></p>"
+        elif verified_cache_hit is False:
+            verified_line = "<p>Verified cache hit: <strong class='warn'>No</strong></p>"
+        else:
+            verified_line = "<p class='muted'>Verified cache hit: unavailable</p>"
         cache_block = (
-            f"<p><strong>First request (miss):</strong> {html.escape(cache_first)!s} "
-            f"— <code>{cache_first_ms} ms</code></p>"
-            f"<p><strong>Second request (hit):</strong> {html.escape(cache_second)!s} "
-            f"— <code>{cache_second_ms} ms</code></p>"
+            f"<p>First request: <code>{cache_first_ms} ms</code> "
+            f"— {html.escape(cache_first)}</p>"
+            f"<p>Cached request: <code>{cache_second_ms} ms</code> "
+            f"— {html.escape(cache_second)}</p>"
+            f"{speedup_line}"
             f"<p>Same content: <strong>{cache_same}</strong></p>"
+            f"{verified_line}"
         )
     else:
         cache_block = "<p class='muted'>Start uvicorn and re-run to capture cache timings.</p>"
@@ -179,8 +350,8 @@ def _render_html(
         metrics_block = (
             "<ul>"
             f"<li>Total requests: <strong>{metrics.get('total_requests')}</strong></li>"
-            f"<li>Success rate: <strong>{metrics.get('success_rate')}</strong></li>"
-            f"<li>Cache hit rate: <strong>{metrics.get('cache_hit_rate')}</strong></li>"
+            f"<li>Success rate: <strong>{_format_rate(metrics.get('success_rate'))}</strong></li>"
+            f"<li>Cache hit rate: <strong>{_format_rate(metrics.get('cache_hit_rate'))}</strong></li>"
             f"<li>P50 / P95 / P99: "
             f"<strong>{latency.get('p50')}</strong> / "
             f"<strong>{latency.get('p95')}</strong> / "
@@ -236,7 +407,8 @@ def _render_html(
 
     <h2>Phase 9 — PII redaction (Arabic / Hebrew / Latin)</h2>
     <div class="panel">
-      <p>When <code>PII_REDACTION_ENABLED=true</code> (non-streaming), supported patterns become tokens like <code>[EMAIL_1]</code> before the provider and cache. Streaming is not redacted; optional detokenize restores values to the client.</p>
+      <p>Supported PII is tokenized before non-streaming provider calls and semantic-cache processing, keeping raw values inside the gateway.</p>
+      <p class="muted">Streaming PII redaction is currently out of scope.</p>
       <table>
         <thead>
           <tr><th>Case</th><th>Client sends</th><th>Gateway forwards</th><th>Token map</th></tr>
@@ -258,6 +430,11 @@ def _render_html(
       {cache_block}
     </div>
 
+    <h2>Controlled latency validation</h2>
+    <div class="panel">
+      {latency_validation_block}
+    </div>
+
     <h2>Observability snapshot</h2>
     <div class="panel">
       {metrics_block}
@@ -270,6 +447,7 @@ def _render_html(
 
 async def main() -> None:
     pii_rows = _pii_rows()
+    latency_validation_block = _render_latency_validation_block(_load_benchmark_validation())
     api_key = _resolve_api_key()
     live_ok = False
     stream_lines: list[str] = []
@@ -278,6 +456,7 @@ async def main() -> None:
     cache_first = cache_second = ""
     cache_first_ms = cache_second_ms = 0
     cache_same = False
+    verified_cache_hit: bool | None = None
     metrics: dict | None = None
 
     if api_key:
@@ -287,7 +466,7 @@ async def main() -> None:
                 health = await client.get("/health")
                 health.raise_for_status()
             stream_lines, stream_events, stream_done = await _capture_stream(headers)
-            cache_first, cache_second, cache_first_ms, cache_second_ms, cache_same = (
+            cache_first, cache_second, cache_first_ms, cache_second_ms, cache_same, verified_cache_hit = (
                 await _capture_cache(headers)
             )
             metrics = await _capture_metrics(headers)
@@ -308,6 +487,8 @@ async def main() -> None:
             cache_first_ms=cache_first_ms,
             cache_second_ms=cache_second_ms,
             cache_same=cache_same,
+            verified_cache_hit=verified_cache_hit,
+            latency_validation_block=latency_validation_block,
             metrics=metrics,
         ),
         encoding="utf-8",

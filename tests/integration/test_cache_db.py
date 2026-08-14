@@ -146,3 +146,32 @@ async def test_empty_cache_skips_embed_on_lookup(db_cache_client) -> None:
 
     assert provider.attempts == 1
     assert len(embedding_provider.calls) == 2
+
+
+@pytest.mark.asyncio
+async def test_pii_redacted_prompt_used_for_cache_embedding(db_cache_client, monkeypatch) -> None:
+    """With PII enabled, semantic cache embeddings are built from redacted prompt text."""
+    client, project, api_key, cache, provider, embedding_provider = db_cache_client
+    raw_email = "aseel@example.com"
+
+    monkeypatch.setattr("app.config.settings.pii_redaction_enabled", True)
+
+    payload = await _chat(client, api_key, f"Contact {raw_email} about Paris.")
+
+    assert payload["choices"][0]["message"]["content"] == "from-provider"
+    assert provider.attempts == 1
+    assert len(embedding_provider.calls) == 1
+    assert raw_email not in embedding_provider.calls[0]
+    assert "[EMAIL_1]" in embedding_provider.calls[0]
+    assert cache.size == 1
+
+    async with async_session_factory() as db:
+        cache_count = (
+            await db.execute(
+                select(func.count())
+                .select_from(CacheEntryRecord)
+                .where(CacheEntryRecord.project_id == project.id)
+            )
+        ).scalar_one()
+
+    assert cache_count == 1

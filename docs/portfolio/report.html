@@ -32,12 +32,13 @@
 <body>
   <main>
     <h1>LLM Gateway — Portfolio Report</h1>
-    <p class="subtitle">Generated 2026-08-03 20:38 UTC · Sample demo report — metrics reflect one local run</p>
-    <p class='warn'>PII section is offline. Start server for streaming/cache/metrics.</p>
+    <p class="subtitle">Generated 2026-08-13 09:22 UTC · Sample demo report — metrics reflect one local run</p>
+    <p class='ok'>Live gateway data captured.</p>
 
     <h2>Phase 9 — PII redaction (Arabic / Hebrew / Latin)</h2>
     <div class="panel">
-      <p>When <code>PII_REDACTION_ENABLED=true</code> (non-streaming), supported patterns become tokens like <code>[EMAIL_1]</code> before the provider and cache. Streaming is not redacted; optional detokenize restores values to the client.</p>
+      <p>Supported PII is tokenized before non-streaming provider calls and semantic-cache processing, keeping raw values inside the gateway.</p>
+      <p class="muted">Streaming PII redaction is currently out of scope.</p>
       <table>
         <thead>
           <tr><th>Case</th><th>Client sends</th><th>Gateway forwards</th><th>Token map</th></tr>
@@ -55,18 +56,34 @@
 
     <h2>Streaming proxy (SSE chunks)</h2>
     <div class="panel">
-      <p class="muted">offline</p>
-      <p class='muted'>Start uvicorn and re-run to capture live SSE chunks.</p>
+      <p class="muted">events=12, saw_done=True</p>
+      <pre>data: {&quot;id&quot;:&quot;chatcmpl-ECLvpXM0exg7l5lOfWHXRGvT8KaUD&quot;,&quot;object&quot;:&quot;chat.completion.chunk&quot;,&quot;created&quot;:1786...
+data: {&quot;id&quot;:&quot;chatcmpl-ECLvpXM0exg7l5lOfWHXRGvT8KaUD&quot;,&quot;object&quot;:&quot;chat.completion.chunk&quot;,&quot;created&quot;:1786...
+data: {&quot;id&quot;:&quot;chatcmpl-ECLvpXM0exg7l5lOfWHXRGvT8KaUD&quot;,&quot;object&quot;:&quot;chat.completion.chunk&quot;,&quot;created&quot;:1786...
+data: {&quot;id&quot;:&quot;chatcmpl-ECLvpXM0exg7l5lOfWHXRGvT8KaUD&quot;,&quot;object&quot;:&quot;chat.completion.chunk&quot;,&quot;created&quot;:1786...
+data: {&quot;id&quot;:&quot;chatcmpl-ECLvpXM0exg7l5lOfWHXRGvT8KaUD&quot;,&quot;object&quot;:&quot;chat.completion.chunk&quot;,&quot;created&quot;:1786...
+data: {&quot;id&quot;:&quot;chatcmpl-ECLvpXM0exg7l5lOfWHXRGvT8KaUD&quot;,&quot;object&quot;:&quot;chat.completion.chunk&quot;,&quot;created&quot;:1786...</pre>
     </div>
 
     <h2>Semantic cache (same prompt twice)</h2>
     <div class="panel">
-      <p class='muted'>Start uvicorn and re-run to capture cache timings.</p>
+      <p>First request: <code>961 ms</code> — 4</p><p>Cached request: <code>289 ms</code> — 4</p><p>Speedup: <strong>3.3×</strong></p><p>Same content: <strong>True</strong></p><p>Verified cache hit: <strong class='ok'>Yes</strong></p>
+    </div>
+
+    <h2>Controlled latency validation</h2>
+    <div class="panel">
+      <p class='muted'>30-iteration controlled run · source: <code>benchmark_validation_4path.json</code></p><table><thead><tr><th>Path</th><th>p50</th><th>p95</th><th>p99</th></tr></thead><tbody><tr><td>Direct OpenAI</td><td>574 ms</td><td>960 ms</td><td>2354 ms</td></tr>
+<tr><td>Gateway thin proxy</td><td>615 ms</td><td>2071 ms</td><td>6025 ms</td></tr>
+<tr><td>Semantic cache miss</td><td>908 ms</td><td>2554 ms</td><td>3291 ms</td></tr>
+<tr><td>Semantic cache hit</td><td>291 ms</td><td>357 ms</td><td>365 ms</td></tr></tbody></table><ul><li>Thin-proxy p50 overhead: <strong>+41 ms</strong> vs direct OpenAI</li>
+<li>Semantic cache hit p50: <strong>291 ms</strong></li>
+<li>Semantic cache hit p99: <strong>365 ms</strong></li>
+<li>Cache hits skip the chat-provider request</li></ul><p class='muted'>Provider and cache-miss tail latency includes external API/network variance. Paths are shown separately to avoid mixing provider latency with gateway overhead.</p>
     </div>
 
     <h2>Observability snapshot</h2>
     <div class="panel">
-      <p class='muted'>Metrics unavailable — run with server up.</p>
+      <ul><li>Total requests: <strong>5</strong></li><li>Success rate: <strong>100%</strong></li><li>Cache hit rate: <strong>40%</strong></li><li>P50 / P95 / P99: <strong>837</strong> / <strong>943</strong> / <strong>948</strong> ms</li></ul><p class='muted'>Full UI: http://127.0.0.1:8001/dashboard</p>
     </div>
   </main>
 </body>

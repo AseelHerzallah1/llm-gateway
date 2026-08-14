@@ -56,7 +56,8 @@ Mapped to development Phases 1–8:
 
 | Item | Deferred to | Reason |
 |------|-------------|--------|
-| Hebrew/Arabic PII tokenization | Phase 9 (v2) | Real edge feature; core must be stable first |
+| Email and phone detection in RTL text | Supported | Email/phone patterns in Arabic/Hebrew sentences; see [`PII.md`](PII.md) |
+| RTL-specific names, addresses, IDs, broader PII | Phase 9 (v2) | Requires NER/ML or locale-specific rules beyond regex email/phone |
 | Second provider + routing + fallback | Phase 7 | Prove single-provider path before routing complexity |
 | Regex prompt-injection detection | Never (v1) | Easily bypassed; real solution needs a classifier |
 | LangChain in gateway core | Never (unless explicit decision) | Hides complexity; not needed for proxy/cache |

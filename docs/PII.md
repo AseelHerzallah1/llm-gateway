@@ -51,7 +51,7 @@ sequenceDiagram
     G->>Cache: lookup/store (redacted prompt text only)
     G->>O: forward redacted prompt
     O-->>G: response
-    G->>PII: optional detokenize(response)
+    G->>PII: optional detokenize(response) on provider miss and cache hit
     G-->>C: response
 ```
 
@@ -121,7 +121,17 @@ pytest tests/integration/test_chat.py -k pii -v
 
 Unit tests cover email, phone, credit card (Luhn), IBAN (MOD-97), Arabic/Hebrew contexts, and detokenization.
 
-Integration tests verify provider and cache/store receive redacted prompts when enabled.
+Integration tests verify provider and cache/store receive redacted prompts when enabled, cache-hit detokenization, and streaming bypass behavior.
+
+---
+
+## Detokenization
+
+When `PII_DETOKENIZE_RESPONSES=true` (default), tokens in provider or **cached** responses are restored for the client using the in-memory map from that request.
+
+- **Provider miss:** provider may return `[EMAIL_1]`; client receives the original email.
+- **Cache hit:** cached response may contain `[EMAIL_1]`; client receives the original email after detokenize.
+- **`PII_DETOKENIZE_RESPONSES=false`:** client receives tokens unchanged.
 
 ---
 
@@ -132,5 +142,7 @@ Integration tests verify provider and cache/store receive redacted prompts when 
 - [x] Arabic/Hebrew email and phone cases covered
 - [x] Provider receives tokens, not raw values (integration tests)
 - [x] Cache lookup/store receives redacted prompt text (integration test)
-- [x] Detokenize restores values in client response when enabled
+- [x] Detokenize restores values on provider miss and cache hit when enabled
+- [x] With `PII_DETOKENIZE_RESPONSES=false`, client sees tokens
 - [x] With `PII_REDACTION_ENABLED=false`, text unchanged
+- [x] Streaming bypasses redaction (documented integration test)

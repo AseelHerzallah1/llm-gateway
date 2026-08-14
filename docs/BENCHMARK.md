@@ -7,9 +7,44 @@ Measured proxy overhead for non-streaming `POST /v1/chat/completions` on local d
 - `scripts/benchmark_decompose.py` — isolate embedding cost vs chat cost
 
 **Raw output:**
-- Before optimization: `docs/benchmark_results_before.json`
-- After optimization: re-run → `docs/benchmark_results_after.json`
-- Decomposition: `docs/benchmark_decompose.json`
+- **Final validation (2026-08-13):** `docs/benchmark_validation_4path.json` — clean-room, 30 iterations per path
+- Before optimization (historical): `docs/benchmark_results_before.json`
+- After optimization (historical): `docs/benchmark_results_after.json`, `docs/benchmark_results_after_fix.json`
+- Decomposition (historical): `docs/benchmark_decompose.json`
+
+---
+
+## Final controlled validation (2026-08-13)
+
+Clean-room run after resetting PostgreSQL cache/request logs and restarting uvicorn (empty in-memory semantic cache). **30 iterations per path.** Cache miss/hit status verified through `/v1/requests` — not inferred from latency or request order. Cache-miss prompts used semantically distinct math questions to avoid false semantic hits.
+
+| Path | p50 | p95 | p99 |
+|------|-----|-----|-----|
+| **Direct OpenAI** | 574 ms | 960 ms | 2354 ms |
+| **Gateway thin proxy** (cache bypass header) | 615 ms | 2071 ms | 6025 ms |
+| **Semantic cache miss** | 908 ms | 2554 ms | 3291 ms |
+| **Semantic cache hit** | 291 ms | 357 ms | 365 ms |
+
+### Portfolio-safe claims
+
+| Claim | Value | Notes |
+|-------|-------|-------|
+| Thin-proxy p50 overhead | **~+41 ms** | vs direct OpenAI (bypass header) |
+| Semantic cache hit p50 | **~291 ms** | embed lookup + gateway; **no chat-provider call** |
+| Semantic cache hit p99 | **~365 ms** | stable tail because provider is skipped |
+
+**Do not** present thin-proxy p95/p99 differences as steady gateway overhead — provider and network variance dominates tail latency on direct, thin-proxy, and cache-miss paths.
+
+### Path definitions
+
+| Path | What it measures |
+|------|------------------|
+| Direct OpenAI | Client → OpenAI `chat/completions` only |
+| Thin proxy | Gateway with `X-Gateway-Bypass-Cache: true` — auth + async logging, no embed/cache |
+| Cache miss | Semantic cache enabled; unique prompts; one embed + provider call |
+| Cache hit | Identical prompt repeated; embed lookup + cached response only |
+
+Direct embedding (auxiliary, same run): p50 **219 ms**, p95 240 ms, p99 267 ms.
 
 ---
 
@@ -34,7 +69,7 @@ A benchmark that only shows “gateway is slower” is not enough. We decomposed
 
 ---
 
-## Phase 1 — Before optimization (2026-07-22)
+## Phase 1 — Before optimization (2026-07-22) *(historical)*
 
 | Target | p50 | p95 |
 |--------|-----|-----|
@@ -70,7 +105,7 @@ Embedding alone is ~260 ms p50. Two embed calls ≈ **520 ms** of the ~744 ms ov
 
 ---
 
-## Phase 2 — Optimizations applied (2026-07-23)
+## Phase 2 — Optimizations applied (2026-07-23) *(historical)*
 
 | Change | File | Effect |
 |--------|------|--------|
@@ -83,7 +118,7 @@ Embedding alone is ~260 ms p50. Two embed calls ≈ **520 ms** of the ~744 ms ov
 
 ---
 
-## Phase 3 — Re-measure (you run this)
+## Phase 3 — Re-measure *(historical — superseded by final validation above)*
 
 ```powershell
 # 1. Restart gateway after pulling changes
@@ -111,14 +146,17 @@ Compare `benchmark_results_before.json` vs `benchmark_results_after.json`.
 | `REQUEST_LOG_ASYNC` | `true` | Set `false` to restore synchronous DB logging |
 | `X-Gateway-Bypass-Cache: true` | off | Benchmark script sends this — skips embed lookup/store for that request |
 
-### Two valid overhead measurements
+### Two valid overhead measurements *(updated with final validation)*
 
-| Mode | Typical p50 overhead | When to cite |
-|------|----------------------|--------------|
-| **Thin proxy** (bypass header or cache disabled) | ~+88 ms | Minimum auth + logging cost |
-| **Cache-on miss** (semantic cache enabled, warm DB) | ~+460–620 ms | Realistic miss path including one embed |
+| Mode | p50 overhead / latency | When to cite |
+|------|-------------------------|--------------|
+| **Thin proxy** (bypass header or cache disabled) | **~+41 ms** vs direct | Minimum auth + logging cost |
+| **Cache-on miss** (semantic cache enabled) | **~+334 ms** vs direct (908 vs 574 ms p50) | Realistic miss path including one embed |
+| **Cache hit** | **~291 ms p50** total | No provider call; cite p99 ~365 ms for stable tail |
 
-Do not compare these as “before/after optimizations” — they measure different code paths. See `docs/benchmark_results_after_fix.json` vs `docs/benchmark_results_after.json`.
+Historical mid-optimization samples (`benchmark_results_after_fix.json`, `benchmark_results_after.json`) showed ~+88 ms and ~+620 ms thin-proxy/miss overhead on earlier runs with smaller samples — see files for the optimization timeline.
+
+Do not compare historical and final numbers as “before/after optimizations” without noting different sample sizes and run conditions.
 
 ---
 
@@ -135,4 +173,6 @@ Do not compare these as “before/after optimizations” — they measure differ
 
 ## Summary
 
-Gateway overhead was decomposed (not just “gateway is slower”): duplicate embedding on cache miss was the dominant waste (~520 ms of ~744 ms before optimization). Fixes — reuse lookup embedding, skip lookup when cache empty, async logging — are documented with before/after JSON in this folder. Cite **+88 ms p50** only for thin-proxy / bypass mode (`benchmark_results_after_fix.json`); cache-on miss overhead is higher (~+460–620 ms).
+Gateway overhead was decomposed (not just “gateway is slower”): duplicate embedding on cache miss was the dominant waste (~520 ms of ~744 ms before optimization). Fixes — reuse lookup embedding, skip lookup when cache empty, async logging — are documented with historical before/after JSON in this folder.
+
+**Final validated numbers (2026-08-13):** cite **~+41 ms p50** thin-proxy overhead, **~291 ms p50** semantic cache hit, and **~365 ms p99** cache-hit tail from `docs/benchmark_validation_4path.json`. Provider/network variance affects p95/p99 on direct, thin-proxy, and cache-miss paths.

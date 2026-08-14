@@ -93,6 +93,26 @@ Server-Sent Events (SSE) — each event is a `data: {...}` line matching OpenAI 
 | `502` | Provider error or timeout |
 | `504` | Gateway timeout waiting for provider |
 
+### Optional PII redaction (Phase 9)
+
+Controlled by environment variables (see [`PII.md`](PII.md)). Not exposed as request body fields.
+
+| Setting | Default | Effect |
+|---------|---------|--------|
+| `PII_REDACTION_ENABLED` | `false` | Master switch for prompt redaction |
+| `PII_REDACT_EMAIL` | `true` | Redact emails when PII enabled |
+| `PII_REDACT_PHONE` | `true` | Redact phone numbers when PII enabled |
+| `PII_REDACT_CREDIT_CARD` | `false` | Opt-in Luhn-validated card redaction |
+| `PII_REDACT_IBAN` | `false` | Opt-in MOD-97-validated IBAN redaction |
+| `PII_DETOKENIZE_RESPONSES` | `true` | Restore tokens in responses (provider miss and cache hit) |
+
+**Behavior:**
+
+- Applies to **non-streaming** requests only (`stream=false`).
+- When enabled, email and phone patterns are redacted before semantic cache lookup/store and before the LLM provider call.
+- Credit card and IBAN redaction are optional and off by default.
+- **`stream=true` bypasses PII redaction** — raw prompt text is forwarded to the provider.
+
 ---
 
 ## `GET /v1/metrics`

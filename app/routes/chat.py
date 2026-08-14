@@ -62,6 +62,16 @@ def _pii_redaction_config() -> PiiRedactionConfig:
     )
 
 
+def _response_content_with_optional_detokenize(
+    content: str,
+    pii_token_map: dict[str, str],
+) -> str:
+    """Restore PII tokens in provider or cached response text when configured."""
+    if pii_token_map and settings.pii_detokenize_responses:
+        return detokenize_text(content, pii_token_map)
+    return content
+
+
 def _build_completion_request(
     body: ChatCompletionRequest,
 ) -> tuple[CompletionRequest, dict[str, str]]:
@@ -266,7 +276,24 @@ async def create_chat_completion(
         latency_before_provider,
     )
     if cache_check.cached_response is not None:
-        return cache_check.cached_response
+        cached = cache_check.cached_response
+        response_content = _response_content_with_optional_detokenize(
+            cached.choices[0].message.content,
+            pii_token_map,
+        )
+        return ChatCompletionResponse(
+            id=cached.id,
+            created=cached.created,
+            model=cached.model,
+            choices=[
+                ChatChoice(
+                    index=0,
+                    message=ChatMessageResponse(content=response_content),
+                    finish_reason=cached.choices[0].finish_reason,
+                )
+            ],
+            usage=cached.usage,
+        )
 
     try:
         result = await complete_with_fallback(
@@ -302,9 +329,10 @@ async def create_chat_completion(
         ),
     )
 
-    response_content = result.content
-    if pii_token_map and settings.pii_detokenize_responses:
-        response_content = detokenize_text(response_content, pii_token_map)
+    response_content = _response_content_with_optional_detokenize(
+        result.content,
+        pii_token_map,
+    )
 
     return ChatCompletionResponse(
         id=result.id,

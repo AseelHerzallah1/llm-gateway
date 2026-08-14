@@ -6,7 +6,7 @@
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-async-009688.svg)](https://fastapi.tiangolo.com/)
-[![Tests](https://img.shields.io/badge/tests-92%20collected-brightgreen.svg)](#run-tests)
+[![Tests](https://img.shields.io/badge/tests-96%20collected-brightgreen.svg)](#run-tests)
 
 ---
 
@@ -22,11 +22,12 @@ This project is a **production-style gateway** — not a chat UI — built in ph
 
 | | |
 |---|---|
-| **Thin-proxy overhead** | **+88 ms p50** vs direct OpenAI (cache bypass mode) — [`docs/BENCHMARK.md`](docs/BENCHMARK.md) |
+| **Thin-proxy overhead** | **~+41 ms p50** vs direct OpenAI (cache bypass) — [`docs/BENCHMARK.md`](docs/BENCHMARK.md) |
+| **Semantic cache hit** | **~291 ms p50**, **~365 ms p99** (no provider round-trip) |
 | **Semantic cache** | Cosine similarity ≥ 0.92, persisted to PostgreSQL |
 | **Providers** | OpenAI · Groq · Anthropic with retries + cross-provider fallback |
-| **PII (optional)** | Email & phone tokenization (Latin + RTL); opt-in credit card (Luhn) & IBAN (MOD-97) |
-| **Test coverage** | 92 automated tests (unit + HTTP + PostgreSQL integration) |
+| **PII (optional)** | Email & phone (Latin + RTL); opt-in credit card (Luhn) & IBAN (MOD-97); **non-streaming only** |
+| **Test coverage** | 96 automated tests (unit + HTTP + PostgreSQL integration) |
 
 ---
 
@@ -81,10 +82,11 @@ flowchart LR
 ### Production concerns
 - **Observability** — per-request latency, tokens, cost; p50/p95/p99 metrics API + dashboard
 - **Security** — bcrypt-hashed API keys with indexed lookup prefix ([`docs/SECURITY.md`](docs/SECURITY.md))
-- **PII** — optional regex redaction for email/phone (non-streaming); opt-in credit card & IBAN ([`docs/PII.md`](docs/PII.md))
+- **PII** — optional regex redaction for email/phone (non-streaming); opt-in credit card & IBAN; streaming PII redaction remains out of scope ([`docs/PII.md`](docs/PII.md))
 
 ### Evidence, not hand-waving
-- Benchmark scripts with before/after numbers in `docs/benchmark_*.json`
+- Final controlled latency validation (30 iterations per path) in `docs/benchmark_validation_4path.json`
+- Historical before/after optimization runs in `docs/benchmark_*.json`
 - Design doc with rejected alternatives and honest limitations
 - Integration tests for auth, streaming concurrency, cache hits, provider resilience
 
@@ -139,7 +141,7 @@ Full manual matrix: [`docs/TESTING.md`](docs/TESTING.md)
 ### Run tests
 
 ```powershell
-pytest                  # full suite (92 tests; 19 db tests skipped without PostgreSQL)
+pytest                  # full suite (96 tests; requires PostgreSQL for all to run)
 pytest -m db -v         # PostgreSQL integration only
 ```
 

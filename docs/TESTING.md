@@ -83,7 +83,7 @@ Run these in order. Each layer depends on the one below.
 ```
 Phase 3 — Non-streaming
   1. Error mapping (offline)       → no network
-  2. OpenAI provider (direct)      → OpenAI only
+  2. Provider adapters (direct)      → OpenAI / Anthropic / Groq
   3. Database seed + auth          → PostgreSQL only
   4. GET /health                   → gateway up
   5. POST /v1/chat/completions     → full stack (stream=false)
