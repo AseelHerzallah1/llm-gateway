@@ -60,6 +60,52 @@ GRAFANA_ADMIN_PASSWORD=your-local-password
 
 Do not expose Grafana, Prometheus, or `/metrics` to the public internet without authentication and network controls.
 
+## Grafana dashboard — LLM Gateway Overview
+
+Provisioned from `deploy/grafana/dashboards/llm-gateway.json` when running `docker compose up`.
+
+| Panel | What it shows |
+|-------|----------------|
+| **Total Requests** | Non-streaming request count |
+| **Cache Hit Rate** | `(exact_hit + semantic_hit) / (exact_hit + semantic_hit + miss)` — bypass excluded |
+| **Exact Hits (L1)** | L1 fingerprint hits |
+| **Semantic Hits (L2)** | Verified semantic reuse count |
+| **Provider Calls** | Upstream LLM attempts |
+| **Errors** | Request/provider errors |
+| **Requests by Result** | Time series: `exact_hit`, `semantic_hit`, `miss`, `bypass` |
+| **Cache Operations** | `exact_hit`, `semantic_hit`, `semantic_reject`, `semantic_miss`, `store`, etc. |
+| **Semantic Rejects** | Verifier rejected candidates (before provider fallback) |
+| **Latency** | Request duration histogram percentiles |
+| **Tokens / estimated cost** | Operational token and cost counters |
+
+### Demo visualization workload (not a performance benchmark)
+
+Script: `scripts/demo_grafana_workload.py` → `docs/demo_grafana_workload.json`
+
+Final screenshot run (2026-08-27):
+
+| Metric | Count |
+|--------|-------|
+| Total requests | 53 |
+| Exact hits (L1) | 26 |
+| Semantic hits (L2) | 3 |
+| Semantic rejects | 4 |
+| Misses | 19 |
+| Bypass | 5 |
+| Provider calls | 24 |
+| Errors | 0 |
+| Cache hit rate | 60.4% |
+
+The **3 semantic hits** populate L2 panels for dashboard visualization only — not a latency or throughput benchmark. After an L2 semantic hit, the new request fingerprint may be registered for L1, so later identical requests in the same workload often become **exact hits** (explains high L1 count relative to L2).
+
+Reproduce locally:
+
+```powershell
+docker compose up -d
+python scripts/demo_grafana_workload.py
+# Open http://localhost:3000/d/llm-gateway-overview/llm-gateway-overview
+```
+
 ## CI and release
 
 - **CI** (`.github/workflows/ci.yml`): runs on PRs and pushes to `main` — migrations, full pytest suite, `docker compose config`.

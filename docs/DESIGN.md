@@ -69,6 +69,12 @@ On miss, the embedding computed during lookup is passed to `store_non_streaming_
 
 **Why:** Duplicate embed on miss was ~520 ms of the ~744 ms gateway overhead before optimization.
 
+### Decision: register L1 fingerprint alias after verified L2 hit
+
+When the verifier accepts a semantic candidate, the gateway upserts the **current request fingerprint** into the L1 exact index (`_register_exact_fingerprint_alias` in `chat_integration.py`). Identical repeats thereafter become **exact_hit** without embed or verifier cost.
+
+**Why:** Benchmark Path D showed that semantic-only reuse without alias registration prevented identical repeats from hitting L1. Alias registration makes the two-layer design compositional — L2 for paraphrase, L1 for exact identity.
+
 ### Decision: cache only on non-streaming path
 
 Streaming requests always hit the provider. Streaming + cache would require buffering or complex partial-cache semantics — out of scope for v1.

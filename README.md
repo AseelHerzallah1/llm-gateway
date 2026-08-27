@@ -22,11 +22,11 @@ This project is a **production-style gateway** — not a chat UI — built in ph
 
 | | |
 |---|---|
-| **Thin-proxy overhead** | **~+41 ms p50** vs direct OpenAI (cache bypass) — [`docs/BENCHMARK.md`](docs/BENCHMARK.md) |
-| **Semantic cache** | L1 exact fingerprint + L2 verified semantic (candidate @ 0.65, gpt-4o-mini verifier) |
+| **L1 Exact Cache** | Versioned deterministic fingerprint — **~7.5× faster** reuse (p50 **225 ms** vs **1685 ms** miss) — [`docs/BENCHMARK.md`](docs/BENCHMARK.md) |
+| **L2 Verified Semantic** | Embedding retrieval @ **0.65** + answer-equivalence verifier — **~51% lower latency** on long responses |
 | **Providers** | OpenAI · Groq · Anthropic with retries + cross-provider fallback |
 | **PII (optional)** | Email & phone (Latin + RTL); opt-in credit card (Luhn) & IBAN (MOD-97); **non-streaming only** |
-| **Test coverage** | Automated unit + HTTP + PostgreSQL integration tests |
+| **Observability** | PostgreSQL metrics + Prometheus/Grafana stack (v0.2.0+) |
 
 ---
 
@@ -67,7 +67,14 @@ flowchart LR
 
 **Streaming path:** SSE chunks forwarded immediately; upstream cancelled when the client disconnects — no full-response buffering.
 
-**Cache path:** Non-streaming requests check L1 exact fingerprint first; on miss, L2 retrieves embedding candidates (≥ 0.65) and verifies answer equivalence before reuse. See [`docs/CACHE_TUNING.md`](docs/CACHE_TUNING.md).
+**Cache path (non-streaming):**
+
+1. **L1 Exact Cache** — versioned deterministic fingerprint lookup for identical request identity.
+2. **L2 Verified Semantic Cache** — embedding-based candidate retrieval at **0.65**, then a response-aware answer-equivalence verifier (`gpt-4o-mini`).
+
+**0.65 is a retrieval threshold, not a safety threshold.** Cosine similarity alone does **not** decide response reuse — the verifier must return `true`. After a verified L2 semantic hit, the requesting fingerprint may be registered for L1 so subsequent identical requests can become exact hits.
+
+See [`docs/CACHE_TUNING.md`](docs/CACHE_TUNING.md) and [`docs/BENCHMARK.md`](docs/BENCHMARK.md).
 
 ---
 
@@ -84,10 +91,20 @@ flowchart LR
 - **PII** — optional regex redaction for email/phone (non-streaming); opt-in credit card & IBAN; streaming PII redaction remains out of scope ([`docs/PII.md`](docs/PII.md))
 
 ### Evidence, not hand-waving
-- Final controlled latency validation (30 iterations per path) in `docs/benchmark_validation_4path.json`
-- Historical before/after optimization runs in `docs/benchmark_*.json`
-- Design doc with rejected alternatives and honest limitations
-- Integration tests for auth, streaming concurrency, cache hits, provider resilience
+
+**v0.2 final controlled benchmark** (30 iterations per path, `scripts/benchmark_cache_v2.py --final` → `docs/benchmark_v2_final_validation.json`):
+
+| Layer | Headline (p50) | Notes |
+|-------|----------------|-------|
+| **L1 exact miss** | 1685 ms | Provider path on first identical identity |
+| **L1 exact hit** | 225 ms | **~7.5× faster** reuse; **~86.6% lower latency** vs exact miss |
+| **L2 short semantic hit** | 1577 ms | vs bypass p50 **971 ms** — not always beneficial for short generations (embed + verifier overhead can exceed generation savings) |
+| **L2 long semantic hit** | 1195 ms | vs long provider baseline **2450 ms** — **1255 ms saved (~51.2% reduction)**; main L2 performance headline |
+| **Safety (Path F)** | 30/30 dangerous candidates rejected | Measured benchmark behavior; **0 unsafe semantic hits**; provider fallback after rejection — not a formal safety guarantee |
+
+Long provider baseline: `docs/benchmark_v2_long_provider_validation.json`. Diagnostic pre-fix run preserved as engineering evidence in `docs/benchmark_v2_validation.json` (do not cite as final).
+
+Historical v0.1 four-path validation and optimization timeline remain in `docs/benchmark_validation_4path.json` and `docs/benchmark_*.json`.
 
 ---
 

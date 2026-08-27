@@ -66,6 +66,7 @@ sequenceDiagram
             G->>V: should_reuse(A, cached_response, B)
             alt verifier true
                 V-->>G: semantic_hit
+                G->>L1: Register requesting fingerprint alias
                 G-->>C: Cached response
             else reject / miss / failure
                 G->>R: Route by model + retry/fallback
@@ -80,6 +81,8 @@ sequenceDiagram
 ```
 
 **Streaming:** Same auth and routing, but **no PII redaction** and **no cache** on the hot path — SSE chunks forward immediately; upstream cancels on client disconnect.
+
+**L2 terminology:** Cosine **0.65** is a **retrieval** threshold only — not a safety threshold. Similarity selects candidates; the answer-equivalence verifier alone authorizes reuse.
 
 ---
 

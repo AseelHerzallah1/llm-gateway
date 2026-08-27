@@ -23,6 +23,7 @@ flowchart TD
     Retrieve -->|candidate| Verifier[gpt-4o-mini verifier true/false]
     Verifier -->|true| SemanticHit[semantic_hit — return cached response]
     Verifier -->|false / malformed / failure| Provider
+    SemanticHit --> Alias[Register requesting fingerprint for L1]
     Provider --> Store[Persist for L1 + L2 reuse]
 ```
 
@@ -98,6 +99,24 @@ Verified semantic caching was validated in commit `5d5935c` (`research: validate
 - Verifier p50 ~**482 ms**; verified hit p50 ~**696 ms** (local experiment)
 
 See `docs/eval/verifier_optimization_experiment.json` for full artifacts.
+
+### v0.2 production benchmark (2026-08-27)
+
+Final seven-path controlled run: `docs/benchmark_v2_final_validation.json` (`scripts/benchmark_cache_v2.py --final`).
+
+| Result | p50 |
+|--------|-----|
+| L1 exact miss | 1685 ms |
+| L1 exact hit | 225 ms (~7.5× faster vs miss) |
+| L2 short semantic hit | 1577 ms (vs bypass 971 ms — overhead can dominate short gens) |
+| L2 long semantic hit | 1195 ms (vs provider baseline 2450 ms — ~51.2% reduction) |
+| Dangerous-negative safety (Path F) | 30/30 rejected, 0 unsafe semantic hits |
+
+Long provider baseline artifact: `docs/benchmark_v2_long_provider_validation.json`.
+
+**L1 alias after L2 hit:** On verified semantic reuse, the gateway upserts the requesting fingerprint into the L1 exact index so identical repeats skip embed + verifier. See `app/cache/chat_integration.py` (`_register_exact_fingerprint_alias`).
+
+Diagnostic pre-fix benchmark preserved in `docs/benchmark_v2_validation.json` — do not cite as final.
 
 ---
 
