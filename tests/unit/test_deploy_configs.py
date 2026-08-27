@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -50,13 +51,24 @@ def test_grafana_dashboard_json_parses() -> None:
 
 
 def test_docker_compose_config_is_valid() -> None:
-    result = subprocess.run(
-        ["docker", "compose", "config"],
-        cwd=ROOT,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert result.returncode == 0, result.stderr
-    assert "llm-gateway-prometheus" in result.stdout
-    assert "llm-gateway-grafana" in result.stdout
+    env_path = ROOT / ".env"
+    env_example = ROOT / ".env.example"
+    created_temp_env = False
+    if not env_path.exists():
+        assert env_example.exists(), ".env.example required for compose validation"
+        shutil.copy(env_example, env_path)
+        created_temp_env = True
+    try:
+        result = subprocess.run(
+            ["docker", "compose", "config"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        assert result.returncode == 0, result.stderr
+        assert "llm-gateway-prometheus" in result.stdout
+        assert "llm-gateway-grafana" in result.stdout
+    finally:
+        if created_temp_env and env_path.exists():
+            env_path.unlink()

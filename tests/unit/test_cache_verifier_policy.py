@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 from unittest.mock import AsyncMock, MagicMock
 
 import httpx
@@ -13,6 +12,7 @@ from app.cache.verifier import (
     AnswerEquivalenceVerifier,
     parse_verifier_output,
 )
+from tests.helpers import skip_unless_live_openai_key
 
 # Broad provider-style answer: covers authentication AND authorization incidentally.
 BROAD_OAUTH_AUTHENTICATION_RESPONSE = (
@@ -114,8 +114,7 @@ async def test_broad_cached_responses_rejected_by_live_verifier(
     new_request: str,
     cached_response: str,
 ) -> None:
-    if not os.getenv("OPENAI_API_KEY"):
-        pytest.skip("OPENAI_API_KEY required for live verifier policy regression")
+    skip_unless_live_openai_key()
 
     from app.cache.verifier import create_verifier_client
 
@@ -136,8 +135,7 @@ async def test_broad_cached_responses_rejected_by_live_verifier(
 @pytest.mark.unit
 @pytest.mark.asyncio
 async def test_https_paraphrase_still_accepted_by_live_verifier() -> None:
-    if not os.getenv("OPENAI_API_KEY"):
-        pytest.skip("OPENAI_API_KEY required for live verifier policy regression")
+    skip_unless_live_openai_key()
 
     from app.cache.verifier import create_verifier_client
 

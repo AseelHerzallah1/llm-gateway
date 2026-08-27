@@ -2,15 +2,39 @@
 
 from __future__ import annotations
 
+import os
 import uuid
 from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock
 
+import pytest
 from fastapi import FastAPI
 
 from app.db.models.project import Project
 from app.errors import invalid_request_error
 from tests.fakes.verifier import DeterministicVerifier
+
+# CI and template placeholders — not valid for live OpenAI API regression tests.
+_LIVE_OPENAI_SKIP_VALUES = frozenset(
+    {
+        "sk-test-dummy",
+        "sk-your-openai-key-here",
+    }
+)
+
+
+def live_openai_key_configured() -> bool:
+    """True when OPENAI_API_KEY is set to a non-placeholder value."""
+    key = os.getenv("OPENAI_API_KEY", "").strip()
+    if not key or key in _LIVE_OPENAI_SKIP_VALUES or key.endswith("-dummy"):
+        return False
+    return True
+
+
+def skip_unless_live_openai_key() -> None:
+    """Skip live verifier regression tests unless a real OpenAI key is configured."""
+    if not live_openai_key_configured():
+        pytest.skip("Real OPENAI_API_KEY required for live verifier policy regression")
 
 
 def make_project(*, active: bool = True) -> Project:
