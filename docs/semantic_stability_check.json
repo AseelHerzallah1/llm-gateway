@@ -1,0 +1,273 @@
+{
+  "wifi_inspection": {
+    "cycle": 1,
+    "prompt_a": "How does WiFi work? [inspect-stability-d8fe4893]",
+    "prompt_b": "Explain how wireless internet connectivity works. [inspect-stability-d8fe4893]",
+    "cached_response_a": "Wireless internet connectivity allows devices to connect to the internet without the need for physical cables. Here's a detailed explanation of how it works:\n\n### Components of Wireless Connectivity\n\n1. **Wireless Access Point (WAP) or Router**:\n   - This device connects to your modem and allows multiple devices to connect to the internet wire",
+    "similarity": 1.0,
+    "verifier_result": true,
+    "verifier_normalized": true,
+    "seed_id": "chatcmpl-EHQKpIP6oFVJUStrz2vi53lGv7tNa",
+    "hit_id": "chatcmpl-EHQKsS6NRIFVlZvcwPGxEu4aOIvFw",
+    "hit_ops": {
+      "exact_hit": 0.0,
+      "semantic_hit": 0.0,
+      "semantic_reject": 1.0,
+      "semantic_miss": 0.0,
+      "store": 1.0,
+      "provider": 1.0
+    },
+    "seed_response_preview": "WiFi, which stands for Wireless Fidelity, is a technology that allows devices to communicate wirelessly over a network. Here\u2019s a basic overview of how WiFi works:\n\n### Components of WiFi\n\n1. **Access "
+  },
+  "short_5": [
+    {
+      "cycle": 1,
+      "passed": true,
+      "pair": [
+        "Why is HTTPS safer than HTTP?",
+        "What makes HTTPS more secure than HTTP?"
+      ],
+      "ops": {
+        "exact_hit": 0.0,
+        "semantic_hit": 1.0,
+        "semantic_reject": 0.0,
+        "semantic_miss": 0.0,
+        "store": 0.0,
+        "provider": 0.0
+      },
+      "id": "cache-54bbeb93-38d5-4150-adcf-5f9a7bb35ce3",
+      "project_id": "78c05744-84c4-44f4-ae44-989c28f8de07"
+    },
+    {
+      "cycle": 2,
+      "passed": true,
+      "pair": [
+        "What is the capital of France?",
+        "Which city serves as France's capital?"
+      ],
+      "ops": {
+        "exact_hit": 0.0,
+        "semantic_hit": 1.0,
+        "semantic_reject": 0.0,
+        "semantic_miss": 0.0,
+        "store": 0.0,
+        "provider": 0.0
+      },
+      "id": "cache-8e236ba2-c0fd-495e-8c48-460f7a5ade60",
+      "project_id": "78c05744-84c4-44f4-ae44-989c28f8de07"
+    },
+    {
+      "cycle": 3,
+      "passed": true,
+      "pair": [
+        "Explain what a Python decorator does.",
+        "What is the purpose of decorators in Python?"
+      ],
+      "ops": {
+        "exact_hit": 0.0,
+        "semantic_hit": 1.0,
+        "semantic_reject": 0.0,
+        "semantic_miss": 0.0,
+        "store": 0.0,
+        "provider": 0.0
+      },
+      "id": "cache-c9311086-ad1d-43d4-9d19-e30a2108cbd7",
+      "project_id": "78c05744-84c4-44f4-ae44-989c28f8de07"
+    },
+    {
+      "cycle": 4,
+      "passed": true,
+      "pair": [
+        "Why is HTTPS safer than HTTP?",
+        "What makes HTTPS more secure than HTTP?"
+      ],
+      "ops": {
+        "exact_hit": 0.0,
+        "semantic_hit": 1.0,
+        "semantic_reject": 0.0,
+        "semantic_miss": 0.0,
+        "store": 0.0,
+        "provider": 0.0
+      },
+      "id": "cache-0e3b7b85-624b-45ea-b8b1-6d3b853a247e",
+      "project_id": "78c05744-84c4-44f4-ae44-989c28f8de07"
+    },
+    {
+      "cycle": 5,
+      "passed": true,
+      "pair": [
+        "What is the capital of France?",
+        "Which city serves as France's capital?"
+      ],
+      "ops": {
+        "exact_hit": 0.0,
+        "semantic_hit": 1.0,
+        "semantic_reject": 0.0,
+        "semantic_miss": 0.0,
+        "store": 0.0,
+        "provider": 0.0
+      },
+      "id": "cache-5043d4de-093d-4bf5-83d1-513edc34429d",
+      "project_id": "78c05744-84c4-44f4-ae44-989c28f8de07"
+    }
+  ],
+  "long_5": [
+    {
+      "cycle": 1,
+      "passed": true,
+      "pair": [
+        "In about 120-150 words, explain why HTTPS is safer than HTTP.",
+        "In roughly 120-150 words, explain what makes HTTPS more secure than HTTP."
+      ],
+      "ops": {
+        "exact_hit": 0.0,
+        "semantic_hit": 1.0,
+        "semantic_reject": 0.0,
+        "semantic_miss": 0.0,
+        "store": 0.0,
+        "provider": 0.0
+      },
+      "id": "cache-ab466966-f405-4055-bb1c-c6bc35c8570a",
+      "project_id": "78c05744-84c4-44f4-ae44-989c28f8de07"
+    },
+    {
+      "cycle": 2,
+      "passed": true,
+      "pair": [
+        "In about 120-150 words, explain why HTTPS is safer than HTTP.",
+        "In roughly 120-150 words, explain what makes HTTPS more secure than HTTP."
+      ],
+      "ops": {
+        "exact_hit": 0.0,
+        "semantic_hit": 1.0,
+        "semantic_reject": 0.0,
+        "semantic_miss": 0.0,
+        "store": 0.0,
+        "provider": 0.0
+      },
+      "id": "cache-62f66e75-9190-4955-99af-3ab576679d86",
+      "project_id": "78c05744-84c4-44f4-ae44-989c28f8de07"
+    },
+    {
+      "cycle": 3,
+      "passed": true,
+      "pair": [
+        "In about 120-150 words, explain why HTTPS is safer than HTTP.",
+        "In roughly 120-150 words, explain what makes HTTPS more secure than HTTP."
+      ],
+      "ops": {
+        "exact_hit": 0.0,
+        "semantic_hit": 1.0,
+        "semantic_reject": 0.0,
+        "semantic_miss": 0.0,
+        "store": 0.0,
+        "provider": 0.0
+      },
+      "id": "cache-ee8669c4-3f7e-4f93-9c3e-f988d72d3865",
+      "project_id": "78c05744-84c4-44f4-ae44-989c28f8de07"
+    },
+    {
+      "cycle": 4,
+      "passed": true,
+      "pair": [
+        "In about 120-150 words, explain why HTTPS is safer than HTTP.",
+        "In roughly 120-150 words, explain what makes HTTPS more secure than HTTP."
+      ],
+      "ops": {
+        "exact_hit": 0.0,
+        "semantic_hit": 1.0,
+        "semantic_reject": 0.0,
+        "semantic_miss": 0.0,
+        "store": 0.0,
+        "provider": 0.0
+      },
+      "id": "cache-4c170cf7-a653-4eb7-aafe-5691d51dcc7d",
+      "project_id": "78c05744-84c4-44f4-ae44-989c28f8de07"
+    },
+    {
+      "cycle": 5,
+      "passed": true,
+      "pair": [
+        "In about 120-150 words, explain why HTTPS is safer than HTTP.",
+        "In roughly 120-150 words, explain what makes HTTPS more secure than HTTP."
+      ],
+      "ops": {
+        "exact_hit": 0.0,
+        "semantic_hit": 1.0,
+        "semantic_reject": 0.0,
+        "semantic_miss": 0.0,
+        "store": 0.0,
+        "provider": 0.0
+      },
+      "id": "cache-df84a640-1345-4f7c-9421-f5885009378d",
+      "project_id": "78c05744-84c4-44f4-ae44-989c28f8de07"
+    }
+  ],
+  "dangerous_4": [
+    {
+      "passed": true,
+      "pair": [
+        "How does OAuth authentication work?",
+        "How does OAuth authorization work?"
+      ],
+      "ops": {
+        "exact_hit": 0.0,
+        "semantic_hit": 0.0,
+        "semantic_reject": 1.0,
+        "semantic_miss": 0.0,
+        "store": 1.0,
+        "provider": 1.0
+      },
+      "id": "chatcmpl-EHQMHLmclbbfzBgIVkrvYp3IHOj9n"
+    },
+    {
+      "passed": true,
+      "pair": [
+        "What does list.append do in Python?",
+        "What does list.extend do in Python?"
+      ],
+      "ops": {
+        "exact_hit": 0.0,
+        "semantic_hit": 0.0,
+        "semantic_reject": 1.0,
+        "semantic_miss": 0.0,
+        "store": 1.0,
+        "provider": 1.0
+      },
+      "id": "chatcmpl-EHQMPKg6l8U5VVJrslqanOkl8huqu"
+    },
+    {
+      "passed": true,
+      "pair": [
+        "How do I sort a Python list?",
+        "How do I reverse a Python list?"
+      ],
+      "ops": {
+        "exact_hit": 0.0,
+        "semantic_hit": 0.0,
+        "semantic_reject": 1.0,
+        "semantic_miss": 0.0,
+        "store": 1.0,
+        "provider": 1.0
+      },
+      "id": "chatcmpl-EHQMZMYgeouGDFlYEa2qYJQIQk76Z"
+    },
+    {
+      "passed": true,
+      "pair": [
+        "What are symptoms of type 1 diabetes?",
+        "What are symptoms of type 2 diabetes?"
+      ],
+      "ops": {
+        "exact_hit": 0.0,
+        "semantic_hit": 0.0,
+        "semantic_reject": 1.0,
+        "semantic_miss": 0.0,
+        "store": 1.0,
+        "provider": 1.0
+      },
+      "id": "chatcmpl-EHQMjPvRJknDND0z8f4zY2j1xPobA"
+    }
+  ],
+  "ready": true
+}

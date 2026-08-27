@@ -18,7 +18,7 @@ from app.cache.fingerprint import (
 )
 from app.cache.persistence import persist_cache_entry, record_cache_use
 from app.cache.semantic_gates import semantic_reuse_allowed
-from app.cache.types import CacheHitKind, new_cache_entry
+from app.cache.types import CacheEntry, CacheHitKind, new_cache_entry
 from app.config import settings
 from app.db.models.project import Project
 from app.embeddings.prompt import messages_to_embed_text
@@ -63,6 +63,59 @@ class NonStreamingCacheCheck:
     cached_response: ChatCompletionResponse | None
     cache_result: CacheResult
     embedding: list[float] | None = None
+
+
+async def _register_exact_fingerprint_alias(
+    *,
+    cache: GatewayCache,
+    project_id: uuid.UUID,
+    model: str,
+    fingerprint: str,
+    messages: list[ChatMessage],
+    temperature: float | None,
+    max_tokens: int | None,
+    token_map: dict[str, str],
+    source_entry: CacheEntry,
+) -> None:
+    """Map this request fingerprint to the reused entry so identical repeats L1-hit."""
+    if cache.lookup_exact(project_id, fingerprint) is not None:
+        return
+
+    alias = new_cache_entry(
+        project_id,
+        model,
+        list(source_entry.embedding),
+        source_entry.response,
+        fingerprint=fingerprint,
+        fingerprint_version=FINGERPRINT_VERSION,
+        request_messages=tuple(messages),
+        temperature=temperature,
+        max_tokens=max_tokens,
+        pii_values_hash=pii_values_hash(token_map),
+    )
+    try:
+        entry_id = await persist_cache_entry(alias)
+        stored = new_cache_entry(
+            project_id,
+            model,
+            list(source_entry.embedding),
+            source_entry.response,
+            entry_id=entry_id,
+            fingerprint=fingerprint,
+            fingerprint_version=FINGERPRINT_VERSION,
+            request_messages=tuple(messages),
+            temperature=temperature,
+            max_tokens=max_tokens,
+            pii_values_hash=pii_values_hash(token_map),
+        )
+        cache.upsert_entry(stored)
+    except Exception as exc:
+        logger.warning(
+            "Exact fingerprint alias skipped project_id=%s fingerprint=%s: %s",
+            project_id,
+            fingerprint,
+            exc,
+        )
 
 
 def _cached_chat_response(model: str, content: str) -> ChatCompletionResponse:
@@ -241,6 +294,18 @@ async def try_cached_non_streaming_completion(
             cache_result="miss",
             embedding=embedding,
         )
+
+    await _register_exact_fingerprint_alias(
+        cache=cache,
+        project_id=project.id,
+        model=body.model,
+        fingerprint=fingerprint,
+        messages=messages,
+        temperature=temperature,
+        max_tokens=max_tokens,
+        token_map=token_map,
+        source_entry=candidate.entry,
+    )
 
     response = await _finalize_cache_hit(
         http_request=http_request,
