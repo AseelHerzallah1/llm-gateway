@@ -4,7 +4,12 @@
 llm-gateway/
 ├── app/                    # Application source code
 │   ├── auth/               # API key + admin auth (Phase 3)
-│   ├── cache/              # Semantic cache (Phase 6)
+│   ├── cache/              # L1 exact + L2 verified semantic cache (v0.2)
+│   │   ├── fingerprint.py  # Versioned SHA-256 request identity
+│   │   ├── semantic_gates.py
+│   │   ├── verifier.py     # gpt-4o-mini answer-equivalence gate
+│   │   ├── memory.py       # GatewayCache (exact index + semantic scan)
+│   │   └── chat_integration.py
 │   ├── db/                 # Database session + models (Phase 2.5)
 │   ├── embeddings/         # Prompt embeddings (Phase 6)
 │   ├── observability/      # Metrics + logging (Phase 5)

@@ -1,0 +1,1578 @@
+{
+  "generated_at": "2026-08-27T07:30:02.806724+00:00",
+  "candidate_threshold": 0.65,
+  "verifier_model": "gpt-4o-mini",
+  "old_system_prompt": "Return true ONLY if the exact cached response can safely satisfy the new request without missing requested information, changing intent, violating constraints, or answering a different question. Otherwise return false.",
+  "hardened_system_prompt": "You are the cache reuse safety gate for an LLM API gateway. This is NOT a semantic similarity or topical overlap task.\n\nReturn true ONLY when ALL are true:\n1. Request A and Request B share the same PRIMARY user intent and underlying task.\n2. Any differences are wording, phrasing, or harmless specificity only.\n3. The cached response directly answers Request B as written, without repurposing incidental content.\n4. Request B does not shift to a neighboring concept, operation, subtype, comparison, direction, or requested task.\n\nReturn false when A and B differ in PRIMARY INTENT \u2014 even if the cached response incidentally mentions information relevant to B. Incidental coverage is NOT sufficient.\n\nExamples that MUST be false (different primary intent, not paraphrases):\n- authentication vs authorization\n- append vs extend (Python lists)\n- sort vs reverse (Python lists)\n- Type 1 vs Type 2 diabetes\n\nWhen uncertain, return false.",
+  "old_fixed": {
+    "prompt_name": "old",
+    "rows": [
+      {
+        "label": "pos_https_security",
+        "category": "class_a",
+        "similarity": 0.9142139925163636,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 509.11500002257526
+      },
+      {
+        "label": "pos_python_decorators",
+        "category": "class_a",
+        "similarity": 0.818449745611551,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 599.4637000840157
+      },
+      {
+        "label": "pos_france_capital",
+        "category": "class_a",
+        "similarity": 0.8080951173264695,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 1197.1325000049546
+      },
+      {
+        "label": "pos_photosynthesis",
+        "category": "class_b",
+        "similarity": 0.8202412289240905,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 618.3137999614701
+      },
+      {
+        "label": "pos_boil_egg",
+        "category": "class_b",
+        "similarity": 0.8110902467840727,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 719.4370999932289
+      },
+      {
+        "label": "pos_machine_learning",
+        "category": "class_b",
+        "similarity": 0.8262367692416273,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 491.7533000698313
+      },
+      {
+        "label": "pos_sql_join",
+        "category": "class_a",
+        "similarity": 0.8154069594782944,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 585.4761999798939
+      },
+      {
+        "label": "pos_binary_search_complexity",
+        "category": "class_a",
+        "similarity": 0.7741658481292518,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 569.5958000142127
+      },
+      {
+        "label": "pos_cover_letter",
+        "category": "class_b",
+        "similarity": 0.7718551180981769,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 657.3788999812678
+      },
+      {
+        "label": "pos_exercise_benefits",
+        "category": "class_a",
+        "similarity": 0.8216629291345791,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 491.82070000097156
+      },
+      {
+        "label": "pos_gdp",
+        "category": "class_a",
+        "similarity": 0.7838813848686245,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 705.2398000378162
+      },
+      {
+        "label": "pos_vaccination",
+        "category": "class_b",
+        "similarity": 0.7425923724447713,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 544.7866000467911
+      },
+      {
+        "label": "pos_recursion",
+        "category": "class_b",
+        "similarity": 0.792318504942036,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 1030.385300051421
+      },
+      {
+        "label": "pos_celsius_fahrenheit",
+        "category": "class_a",
+        "similarity": 0.8707905416102585,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 790.6414000317454
+      },
+      {
+        "label": "pos_speed_of_light",
+        "category": "class_a",
+        "similarity": 0.7475237677006602,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 605.0103000598028
+      },
+      {
+        "label": "pos_git_merge",
+        "category": "class_a",
+        "similarity": 0.8277804760980464,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 498.05009993724525
+      },
+      {
+        "label": "pos_seasons",
+        "category": "class_a",
+        "similarity": 0.844753358040957,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 514.8539999499917
+      },
+      {
+        "label": "pos_get_vs_post",
+        "category": "class_a",
+        "similarity": 0.8932611745588139,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 571.7641999945045
+      },
+      {
+        "label": "pos_sleep_quality",
+        "category": "class_b",
+        "similarity": 0.7208155704594896,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 526.4351000078022
+      },
+      {
+        "label": "pos_blockchain",
+        "category": "class_b",
+        "similarity": 0.7519290318649503,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 557.3639000067487
+      },
+      {
+        "label": "pos_supply_demand",
+        "category": "class_b",
+        "similarity": 0.7654225740625654,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 544.4552000844851
+      },
+      {
+        "label": "pos_reduce_stress",
+        "category": "class_b",
+        "similarity": 0.787486496608621,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 550.576200010255
+      },
+      {
+        "label": "pos_api",
+        "category": "class_a",
+        "similarity": 0.6821714828586669,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 515.7823999179527
+      },
+      {
+        "label": "pos_car_engine",
+        "category": "class_b",
+        "similarity": 0.7523734106393405,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 601.5317999990657
+      },
+      {
+        "label": "pos_climate_change",
+        "category": "class_b",
+        "similarity": 0.7633615550239498,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 817.1857000561431
+      },
+      {
+        "label": "pos_learn_language",
+        "category": "class_b",
+        "similarity": 0.7419612468281253,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 773.3141999924555
+      },
+      {
+        "label": "pos_oop",
+        "category": "class_b",
+        "similarity": 0.7704094352991551,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 656.8473000079393
+      },
+      {
+        "label": "pos_wifi",
+        "category": "class_a",
+        "similarity": 0.7739407501082315,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 523.4397000167519
+      },
+      {
+        "label": "pos_pythagorean",
+        "category": "class_b",
+        "similarity": 0.7880979516567697,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 636.2171999644488
+      },
+      {
+        "label": "pos_inflation",
+        "category": "class_c",
+        "similarity": 0.7405456248371918,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 559.0824000537395
+      },
+      {
+        "label": "neg_diabetes_symptoms_causes",
+        "category": "hard_negative",
+        "similarity": 0.7478265301539954,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 616.9901000102982
+      },
+      {
+        "label": "neg_diabetes_symptoms_treatment",
+        "category": "hard_negative",
+        "similarity": 0.6549359284705533,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 546.9038999872282
+      },
+      {
+        "label": "neg_http_cache_vs_semantic_cache",
+        "category": "hard_negative",
+        "similarity": 0.5876886897401412,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "neg_sort_vs_reverse_list",
+        "category": "hard_negative",
+        "similarity": 0.7755834980367804,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 616.6892999317497
+      },
+      {
+        "label": "neg_list_append_vs_extend",
+        "category": "hard_negative",
+        "similarity": 0.7936615584269274,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 465.8625000156462
+      },
+      {
+        "label": "neg_ml_define_vs_train",
+        "category": "hard_negative",
+        "similarity": 0.6090901645974649,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "neg_git_merge_vs_rebase",
+        "category": "hard_negative",
+        "similarity": 0.6597795829081564,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 537.9097999539226
+      },
+      {
+        "label": "neg_inflation_cause_vs_effect",
+        "category": "hard_negative",
+        "similarity": 0.7127810727936217,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 508.66679998580366
+      },
+      {
+        "label": "neg_running_start_vs_knee_pain",
+        "category": "hard_negative",
+        "similarity": 0.4927450670856285,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "neg_sql_select_vs_delete",
+        "category": "hard_negative",
+        "similarity": 0.6221483932415063,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "neg_encryption_define_vs_howto",
+        "category": "hard_negative",
+        "similarity": 0.5799032579749449,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "neg_heart_attack_symptoms_vs_first_aid",
+        "category": "hard_negative",
+        "similarity": 0.6662208297508162,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 555.9683000901714
+      },
+      {
+        "label": "neg_resume_vs_salary",
+        "category": "hard_negative",
+        "similarity": 0.4096222151762354,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "neg_climate_causes_vs_solutions",
+        "category": "hard_negative",
+        "similarity": 0.6693449821110785,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 626.7774999141693
+      },
+      {
+        "label": "neg_tcp_vs_udp",
+        "category": "hard_negative",
+        "similarity": 0.6713712387039387,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 480.3164000622928
+      },
+      {
+        "label": "neg_react_state_vs_props",
+        "category": "hard_negative",
+        "similarity": 0.6928044448812966,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 511.82329992298037
+      },
+      {
+        "label": "neg_compile_vs_runtime_error",
+        "category": "hard_negative",
+        "similarity": 0.7101210753148919,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 555.246299947612
+      },
+      {
+        "label": "neg_db_normalization_vs_indexing",
+        "category": "hard_negative",
+        "similarity": 0.5036737005156354,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "neg_oauth_auth_vs_authz",
+        "category": "hard_negative",
+        "similarity": 0.9348794121768881,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 535.7238999567926
+      },
+      {
+        "label": "neg_type1_vs_type2_diabetes",
+        "category": "hard_negative",
+        "similarity": 0.8626331430407662,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 843.9458999782801
+      },
+      {
+        "label": "neg_array_vs_linked_list",
+        "category": "hard_negative",
+        "similarity": 0.636363439480348,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "neg_bake_vs_store_bread",
+        "category": "hard_negative",
+        "similarity": 0.6140961027698764,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "neg_primary_vs_foreign_key",
+        "category": "hard_negative",
+        "similarity": 0.7454847838857178,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 594.4240000098944
+      },
+      {
+        "label": "neg_depression_symptoms_vs_treatment",
+        "category": "hard_negative",
+        "similarity": 0.6517840416397321,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 562.2512000845745
+      },
+      {
+        "label": "neg_cpu_vs_gpu",
+        "category": "hard_negative",
+        "similarity": 0.7206160068312002,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 718.9512000186369
+      },
+      {
+        "label": "neg_import_vs_export_econ",
+        "category": "hard_negative",
+        "similarity": 0.8078210606301791,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 558.1160000292584
+      },
+      {
+        "label": "neg_http_vs_https",
+        "category": "hard_negative",
+        "similarity": 0.7635248272296241,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 828.0408000573516
+      },
+      {
+        "label": "neg_overfitting_vs_underfitting",
+        "category": "hard_negative",
+        "similarity": 0.842341335628836,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 600.370500003919
+      },
+      {
+        "label": "neg_flu_symptoms_vs_prevention",
+        "category": "hard_negative",
+        "similarity": 0.5744653876744674,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "neg_rest_vs_graphql",
+        "category": "hard_negative",
+        "similarity": 0.4373700711522027,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "unrel_france_bread",
+        "category": "unrelated",
+        "similarity": 0.1527469889902926,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "unrel_python_weather",
+        "category": "unrelated",
+        "similarity": 0.15194924022287049,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "unrel_diabetes_car",
+        "category": "unrelated",
+        "similarity": 0.18398900235348806,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "unrel_ml_pasta",
+        "category": "unrelated",
+        "similarity": 0.19529483101526973,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "unrel_git_piano",
+        "category": "unrelated",
+        "similarity": 0.1701803061046894,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "unrel_sql_football",
+        "category": "unrelated",
+        "similarity": 0.27954264053353733,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "unrel_photosynthesis_stocks",
+        "category": "unrelated",
+        "similarity": 0.3776834477675776,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "unrel_sleep_rome",
+        "category": "unrelated",
+        "similarity": 0.12292289667162296,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "unrel_blockchain_garden",
+        "category": "unrelated",
+        "similarity": 0.2147004021914624,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "unrel_wifi_marine",
+        "category": "unrelated",
+        "similarity": 0.1328128659719492,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      }
+    ],
+    "metrics": {
+      "class_a_recall": 1.0,
+      "class_a_tp": 14,
+      "class_a_fn": 0,
+      "class_a_total_candidates": 14,
+      "hard_fp": 0,
+      "unrelated_fp": 0,
+      "total_fp": 0,
+      "precision": 1.0,
+      "class_b_accept": 11,
+      "class_b_reject": 4,
+      "class_b_total_candidates": 15,
+      "critical_decisions": {
+        "neg_oauth_auth_vs_authz": {
+          "reuse": false,
+          "raw": "false",
+          "similarity": 0.9348794121768881
+        },
+        "neg_list_append_vs_extend": {
+          "reuse": false,
+          "raw": "false",
+          "similarity": 0.7936615584269274
+        },
+        "neg_sort_vs_reverse_list": {
+          "reuse": false,
+          "raw": "false",
+          "similarity": 0.7755834980367804
+        },
+        "neg_type1_vs_type2_diabetes": {
+          "reuse": false,
+          "raw": "false",
+          "similarity": 0.8626331430407662
+        }
+      },
+      "verifier_p50_ms": 569.5958000142127,
+      "verifier_p95_ms": 837.5838600099087,
+      "verified_hit_p50_ms": 783.5958000142127
+    }
+  },
+  "hardened_fixed": {
+    "prompt_name": "hardened",
+    "rows": [
+      {
+        "label": "pos_https_security",
+        "category": "class_a",
+        "similarity": 0.9142139925163636,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 494.42289990838617
+      },
+      {
+        "label": "pos_python_decorators",
+        "category": "class_a",
+        "similarity": 0.818449745611551,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 507.44790001772344
+      },
+      {
+        "label": "pos_france_capital",
+        "category": "class_a",
+        "similarity": 0.8080951173264695,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 508.5440999828279
+      },
+      {
+        "label": "pos_photosynthesis",
+        "category": "class_b",
+        "similarity": 0.8202412289240905,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 510.26450004428625
+      },
+      {
+        "label": "pos_boil_egg",
+        "category": "class_b",
+        "similarity": 0.8110902467840727,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 510.4211999569088
+      },
+      {
+        "label": "pos_machine_learning",
+        "category": "class_b",
+        "similarity": 0.8262367692416273,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 520.2436000108719
+      },
+      {
+        "label": "pos_sql_join",
+        "category": "class_a",
+        "similarity": 0.8154069594782944,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 570.090200053528
+      },
+      {
+        "label": "pos_binary_search_complexity",
+        "category": "class_a",
+        "similarity": 0.7741658481292518,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 536.0865999246016
+      },
+      {
+        "label": "pos_cover_letter",
+        "category": "class_b",
+        "similarity": 0.7718551180981769,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 581.6945999395102
+      },
+      {
+        "label": "pos_exercise_benefits",
+        "category": "class_a",
+        "similarity": 0.8216629291345791,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 532.8456000424922
+      },
+      {
+        "label": "pos_gdp",
+        "category": "class_a",
+        "similarity": 0.7838813848686245,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 470.15619999729097
+      },
+      {
+        "label": "pos_vaccination",
+        "category": "class_b",
+        "similarity": 0.7425923724447713,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 640.8537999959663
+      },
+      {
+        "label": "pos_recursion",
+        "category": "class_b",
+        "similarity": 0.792318504942036,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 694.4405999965966
+      },
+      {
+        "label": "pos_celsius_fahrenheit",
+        "category": "class_a",
+        "similarity": 0.8707905416102585,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 571.6534000821412
+      },
+      {
+        "label": "pos_speed_of_light",
+        "category": "class_a",
+        "similarity": 0.7475237677006602,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 545.5277999863029
+      },
+      {
+        "label": "pos_git_merge",
+        "category": "class_a",
+        "similarity": 0.8277804760980464,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 519.0637001069263
+      },
+      {
+        "label": "pos_seasons",
+        "category": "class_a",
+        "similarity": 0.844753358040957,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 503.2933000475168
+      },
+      {
+        "label": "pos_get_vs_post",
+        "category": "class_a",
+        "similarity": 0.8932611745588139,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 575.6894999649376
+      },
+      {
+        "label": "pos_sleep_quality",
+        "category": "class_b",
+        "similarity": 0.7208155704594896,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 490.7779999775812
+      },
+      {
+        "label": "pos_blockchain",
+        "category": "class_b",
+        "similarity": 0.7519290318649503,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 532.1296999463812
+      },
+      {
+        "label": "pos_supply_demand",
+        "category": "class_b",
+        "similarity": 0.7654225740625654,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 602.3170000407845
+      },
+      {
+        "label": "pos_reduce_stress",
+        "category": "class_b",
+        "similarity": 0.787486496608621,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 548.8483998924494
+      },
+      {
+        "label": "pos_api",
+        "category": "class_a",
+        "similarity": 0.6821714828586669,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 491.12400005105883
+      },
+      {
+        "label": "pos_car_engine",
+        "category": "class_b",
+        "similarity": 0.7523734106393405,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 487.2893000720069
+      },
+      {
+        "label": "pos_climate_change",
+        "category": "class_b",
+        "similarity": 0.7633615550239498,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 484.0406000148505
+      },
+      {
+        "label": "pos_learn_language",
+        "category": "class_b",
+        "similarity": 0.7419612468281253,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 632.0310999872163
+      },
+      {
+        "label": "pos_oop",
+        "category": "class_b",
+        "similarity": 0.7704094352991551,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 525.07719991263
+      },
+      {
+        "label": "pos_wifi",
+        "category": "class_a",
+        "similarity": 0.7739407501082315,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 506.4781999681145
+      },
+      {
+        "label": "pos_pythagorean",
+        "category": "class_b",
+        "similarity": 0.7880979516567697,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 487.8085000673309
+      },
+      {
+        "label": "pos_inflation",
+        "category": "class_c",
+        "similarity": 0.7405456248371918,
+        "candidate": true,
+        "reuse": true,
+        "raw": "true",
+        "latency_ms": 536.3952000625432
+      },
+      {
+        "label": "neg_diabetes_symptoms_causes",
+        "category": "hard_negative",
+        "similarity": 0.7478265301539954,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 493.6303000431508
+      },
+      {
+        "label": "neg_diabetes_symptoms_treatment",
+        "category": "hard_negative",
+        "similarity": 0.6549359284705533,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 616.5467000100762
+      },
+      {
+        "label": "neg_http_cache_vs_semantic_cache",
+        "category": "hard_negative",
+        "similarity": 0.5876886897401412,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "neg_sort_vs_reverse_list",
+        "category": "hard_negative",
+        "similarity": 0.7755834980367804,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 525.789299979806
+      },
+      {
+        "label": "neg_list_append_vs_extend",
+        "category": "hard_negative",
+        "similarity": 0.7936615584269274,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 528.3565000863746
+      },
+      {
+        "label": "neg_ml_define_vs_train",
+        "category": "hard_negative",
+        "similarity": 0.6090901645974649,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "neg_git_merge_vs_rebase",
+        "category": "hard_negative",
+        "similarity": 0.6597795829081564,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 528.5187000408769
+      },
+      {
+        "label": "neg_inflation_cause_vs_effect",
+        "category": "hard_negative",
+        "similarity": 0.7127810727936217,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 718.7908999621868
+      },
+      {
+        "label": "neg_running_start_vs_knee_pain",
+        "category": "hard_negative",
+        "similarity": 0.4927450670856285,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "neg_sql_select_vs_delete",
+        "category": "hard_negative",
+        "similarity": 0.6221483932415063,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "neg_encryption_define_vs_howto",
+        "category": "hard_negative",
+        "similarity": 0.5799032579749449,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "neg_heart_attack_symptoms_vs_first_aid",
+        "category": "hard_negative",
+        "similarity": 0.6662208297508162,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 1730.2395000588149
+      },
+      {
+        "label": "neg_resume_vs_salary",
+        "category": "hard_negative",
+        "similarity": 0.4096222151762354,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "neg_climate_causes_vs_solutions",
+        "category": "hard_negative",
+        "similarity": 0.6693449821110785,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 532.3481000959873
+      },
+      {
+        "label": "neg_tcp_vs_udp",
+        "category": "hard_negative",
+        "similarity": 0.6713712387039387,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 624.3684000801295
+      },
+      {
+        "label": "neg_react_state_vs_props",
+        "category": "hard_negative",
+        "similarity": 0.6928044448812966,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 494.8430999647826
+      },
+      {
+        "label": "neg_compile_vs_runtime_error",
+        "category": "hard_negative",
+        "similarity": 0.7101210753148919,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 499.1925999056548
+      },
+      {
+        "label": "neg_db_normalization_vs_indexing",
+        "category": "hard_negative",
+        "similarity": 0.5036737005156354,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "neg_oauth_auth_vs_authz",
+        "category": "hard_negative",
+        "similarity": 0.9348794121768881,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 555.6975000072271
+      },
+      {
+        "label": "neg_type1_vs_type2_diabetes",
+        "category": "hard_negative",
+        "similarity": 0.8626331430407662,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 497.365300077945
+      },
+      {
+        "label": "neg_array_vs_linked_list",
+        "category": "hard_negative",
+        "similarity": 0.636363439480348,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "neg_bake_vs_store_bread",
+        "category": "hard_negative",
+        "similarity": 0.6140961027698764,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "neg_primary_vs_foreign_key",
+        "category": "hard_negative",
+        "similarity": 0.7454847838857178,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 661.132000037469
+      },
+      {
+        "label": "neg_depression_symptoms_vs_treatment",
+        "category": "hard_negative",
+        "similarity": 0.6517840416397321,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 576.176599948667
+      },
+      {
+        "label": "neg_cpu_vs_gpu",
+        "category": "hard_negative",
+        "similarity": 0.7206160068312002,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 487.83200001344085
+      },
+      {
+        "label": "neg_import_vs_export_econ",
+        "category": "hard_negative",
+        "similarity": 0.8078210606301791,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 672.152700019069
+      },
+      {
+        "label": "neg_http_vs_https",
+        "category": "hard_negative",
+        "similarity": 0.7635248272296241,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 540.6874000327662
+      },
+      {
+        "label": "neg_overfitting_vs_underfitting",
+        "category": "hard_negative",
+        "similarity": 0.842341335628836,
+        "candidate": true,
+        "reuse": false,
+        "raw": "false",
+        "latency_ms": 517.7599000744522
+      },
+      {
+        "label": "neg_flu_symptoms_vs_prevention",
+        "category": "hard_negative",
+        "similarity": 0.5744653876744674,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "neg_rest_vs_graphql",
+        "category": "hard_negative",
+        "similarity": 0.4373700711522027,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "unrel_france_bread",
+        "category": "unrelated",
+        "similarity": 0.1527469889902926,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "unrel_python_weather",
+        "category": "unrelated",
+        "similarity": 0.15194924022287049,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "unrel_diabetes_car",
+        "category": "unrelated",
+        "similarity": 0.18398900235348806,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "unrel_ml_pasta",
+        "category": "unrelated",
+        "similarity": 0.19529483101526973,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "unrel_git_piano",
+        "category": "unrelated",
+        "similarity": 0.1701803061046894,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "unrel_sql_football",
+        "category": "unrelated",
+        "similarity": 0.27954264053353733,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "unrel_photosynthesis_stocks",
+        "category": "unrelated",
+        "similarity": 0.3776834477675776,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "unrel_sleep_rome",
+        "category": "unrelated",
+        "similarity": 0.12292289667162296,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "unrel_blockchain_garden",
+        "category": "unrelated",
+        "similarity": 0.2147004021914624,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      },
+      {
+        "label": "unrel_wifi_marine",
+        "category": "unrelated",
+        "similarity": 0.1328128659719492,
+        "candidate": false,
+        "reuse": null,
+        "raw": "",
+        "latency_ms": 0.0
+      }
+    ],
+    "metrics": {
+      "class_a_recall": 1.0,
+      "class_a_tp": 14,
+      "class_a_fn": 0,
+      "class_a_total_candidates": 14,
+      "hard_fp": 0,
+      "unrelated_fp": 0,
+      "total_fp": 0,
+      "precision": 1.0,
+      "class_b_accept": 14,
+      "class_b_reject": 1,
+      "class_b_total_candidates": 15,
+      "critical_decisions": {
+        "neg_oauth_auth_vs_authz": {
+          "reuse": false,
+          "raw": "false",
+          "similarity": 0.9348794121768881
+        },
+        "neg_list_append_vs_extend": {
+          "reuse": false,
+          "raw": "false",
+          "similarity": 0.7936615584269274
+        },
+        "neg_sort_vs_reverse_list": {
+          "reuse": false,
+          "raw": "false",
+          "similarity": 0.7755834980367804
+        },
+        "neg_type1_vs_type2_diabetes": {
+          "reuse": false,
+          "raw": "false",
+          "similarity": 0.8626331430407662
+        }
+      },
+      "verifier_p50_ms": 528.5187000408769,
+      "verifier_p95_ms": 685.5254400055854,
+      "verified_hit_p50_ms": 742.5187000408769
+    }
+  },
+  "live_response_robustness": {
+    "results": [
+      {
+        "label": "pos_https_security",
+        "seed": 0,
+        "expected_reuse": true,
+        "reuse": true,
+        "raw": "true",
+        "passed": true,
+        "response_preview": "HTTPS (Hypertext Transfer Protocol Secure) is considered safer than HTTP (Hypertext Transfer Protocol) for several reasons:\n\n1. **Encryption**: HTTPS uses SSL/TLS (Secure Sockets Layer/Transport Layer"
+      },
+      {
+        "label": "pos_https_security",
+        "seed": 1,
+        "expected_reuse": true,
+        "reuse": true,
+        "raw": "true",
+        "passed": true,
+        "response_preview": "HTTPS (Hypertext Transfer Protocol Secure) is considered safer than HTTP (Hypertext Transfer Protocol) for several key reasons:\n\n1. **Encryption**: HTTPS encrypts the data exchanged between the user's"
+      },
+      {
+        "label": "pos_https_security",
+        "seed": 2,
+        "expected_reuse": true,
+        "reuse": true,
+        "raw": "true",
+        "passed": true,
+        "response_preview": "HTTPS (HyperText Transfer Protocol Secure) is considered safer than HTTP (HyperText Transfer Protocol) for several key reasons:\n\n1. **Encryption**: HTTPS encrypts the data exchanged between the user's"
+      },
+      {
+        "label": "pos_france_capital",
+        "seed": 0,
+        "expected_reuse": true,
+        "reuse": true,
+        "raw": "true",
+        "passed": true,
+        "response_preview": "The capital of France is Paris."
+      },
+      {
+        "label": "pos_france_capital",
+        "seed": 1,
+        "expected_reuse": true,
+        "reuse": true,
+        "raw": "true",
+        "passed": true,
+        "response_preview": "The capital of France is Paris."
+      },
+      {
+        "label": "pos_france_capital",
+        "seed": 2,
+        "expected_reuse": true,
+        "reuse": true,
+        "raw": "true",
+        "passed": true,
+        "response_preview": "The capital of France is Paris."
+      },
+      {
+        "label": "pos_python_decorators",
+        "seed": 0,
+        "expected_reuse": true,
+        "reuse": true,
+        "raw": "true",
+        "passed": true,
+        "response_preview": "A Python decorator is a design pattern that allows you to modify or enhance the behavior of functions or methods in a clean and readable way. Decorators are essentially functions that take another fun"
+      },
+      {
+        "label": "pos_python_decorators",
+        "seed": 1,
+        "expected_reuse": true,
+        "reuse": true,
+        "raw": "true",
+        "passed": true,
+        "response_preview": "A Python decorator is a special type of function that allows you to modify or enhance the behavior of another function or method. Decorators provide a convenient way to wrap additional functionality a"
+      },
+      {
+        "label": "pos_python_decorators",
+        "seed": 2,
+        "expected_reuse": true,
+        "reuse": true,
+        "raw": "true",
+        "passed": true,
+        "response_preview": "A Python decorator is a design pattern that allows you to modify or enhance the behavior of a function or method without changing its actual code. Decorators are typically used to add functionality to"
+      },
+      {
+        "label": "pos_wifi",
+        "seed": 0,
+        "expected_reuse": true,
+        "reuse": true,
+        "raw": "true",
+        "passed": true,
+        "response_preview": "WiFi, short for Wireless Fidelity, is a technology that allows electronic devices to connect to a local area network (LAN) wirelessly. It primarily uses radio waves to transmit data between devices, s"
+      },
+      {
+        "label": "pos_wifi",
+        "seed": 1,
+        "expected_reuse": true,
+        "reuse": true,
+        "raw": "true",
+        "passed": true,
+        "response_preview": "WiFi, or Wireless Fidelity, is a technology that allows electronic devices to connect to a local area network (LAN) wirelessly, typically for the purpose of accessing the internet. Here's a breakdown "
+      },
+      {
+        "label": "pos_wifi",
+        "seed": 2,
+        "expected_reuse": true,
+        "reuse": true,
+        "raw": "true",
+        "passed": true,
+        "response_preview": "WiFi, short for Wireless Fidelity, is a technology that allows electronic devices to connect to a local area network (LAN) wirelessly. It primarily uses radio waves to transmit data between devices, s"
+      },
+      {
+        "label": "neg_oauth_auth_vs_authz",
+        "seed": 0,
+        "expected_reuse": false,
+        "reuse": false,
+        "raw": "false",
+        "passed": true,
+        "response_preview": "OAuth (Open Authorization) is an open standard for access delegation commonly used for token-based authentication and authorization on the internet. It allows third-party applications to access user d"
+      },
+      {
+        "label": "neg_oauth_auth_vs_authz",
+        "seed": 1,
+        "expected_reuse": false,
+        "reuse": false,
+        "raw": "false",
+        "passed": true,
+        "response_preview": "OAuth (Open Authorization) is an open standard for access delegation commonly used for token-based authentication and authorization on the internet. It allows third-party applications to access user d"
+      },
+      {
+        "label": "neg_oauth_auth_vs_authz",
+        "seed": 2,
+        "expected_reuse": false,
+        "reuse": false,
+        "raw": "false",
+        "passed": true,
+        "response_preview": "OAuth (Open Authorization) is an open standard for access delegation commonly used for token-based authentication and authorization on the internet. It allows third-party services to exchange informat"
+      },
+      {
+        "label": "neg_list_append_vs_extend",
+        "seed": 0,
+        "expected_reuse": false,
+        "reuse": false,
+        "raw": "false",
+        "passed": true,
+        "response_preview": "In Python, the `list.append()` method is used to add a single element to the end of a list. This method modifies the original list in place and does not return a new list.\n\n### Syntax\n```python\nlist.a"
+      },
+      {
+        "label": "neg_list_append_vs_extend",
+        "seed": 1,
+        "expected_reuse": false,
+        "reuse": false,
+        "raw": "false",
+        "passed": true,
+        "response_preview": "In Python, the `list.append()` method is used to add a single element to the end of a list. This method modifies the original list in place and does not return a new list.\n\n### Syntax\n```python\nlist.a"
+      },
+      {
+        "label": "neg_list_append_vs_extend",
+        "seed": 2,
+        "expected_reuse": false,
+        "reuse": false,
+        "raw": "false",
+        "passed": true,
+        "response_preview": "In Python, the `list.append()` method is used to add an item to the end of a list. It modifies the original list in place and does not return a new list. The syntax for using `append()` is as follows:"
+      },
+      {
+        "label": "neg_sort_vs_reverse_list",
+        "seed": 0,
+        "expected_reuse": false,
+        "reuse": false,
+        "raw": "false",
+        "passed": true,
+        "response_preview": "In Python, you can sort a list using two main methods: the `sort()` method and the `sorted()` function. Here\u2019s how each of them works:\n\n### 1. Using the `sort()` method\n\nThe `sort()` method sorts the "
+      },
+      {
+        "label": "neg_sort_vs_reverse_list",
+        "seed": 1,
+        "expected_reuse": false,
+        "reuse": false,
+        "raw": "false",
+        "passed": true,
+        "response_preview": "In Python, you can sort a list using either the `sort()` method or the `sorted()` function. Here's how each method works:\n\n### Using `sort()`\n\nThe `sort()` method sorts the list in place, meaning that"
+      },
+      {
+        "label": "neg_sort_vs_reverse_list",
+        "seed": 2,
+        "expected_reuse": false,
+        "reuse": false,
+        "raw": "false",
+        "passed": true,
+        "response_preview": "In Python, you can sort a list using two main methods: the `sort()` method and the `sorted()` function. Here\u2019s how each one works:\n\n### 1. Using `sort()`\n\nThe `sort()` method sorts the list in place, "
+      },
+      {
+        "label": "neg_type1_vs_type2_diabetes",
+        "seed": 0,
+        "expected_reuse": false,
+        "reuse": false,
+        "raw": "false",
+        "passed": true,
+        "response_preview": "Type 1 diabetes is a chronic condition in which the pancreas produces little or no insulin. Symptoms can develop quickly, often over a few weeks, and may include:\n\n1. **Increased Thirst (Polydipsia)**"
+      },
+      {
+        "label": "neg_type1_vs_type2_diabetes",
+        "seed": 1,
+        "expected_reuse": false,
+        "reuse": false,
+        "raw": "false",
+        "passed": true,
+        "response_preview": "Type 1 diabetes symptoms can develop quickly, often within a few weeks. Common symptoms include:\n\n1. **Increased Thirst (Polydipsia)**: A persistent feeling of thirst that doesn't go away, leading to "
+      },
+      {
+        "label": "neg_type1_vs_type2_diabetes",
+        "seed": 2,
+        "expected_reuse": false,
+        "reuse": false,
+        "raw": "false",
+        "passed": true,
+        "response_preview": "Type 1 diabetes is characterized by a lack of insulin production in the body due to the autoimmune destruction of insulin-producing beta cells in the pancreas. Symptoms can develop quickly, often with"
+      }
+    ],
+    "positive_pass_rate": 1.0,
+    "negative_pass_rate": 1.0,
+    "negative_failures": [],
+    "positive_failures": []
+  },
+  "recommendation": "adopt_hardened_prompt"
+}

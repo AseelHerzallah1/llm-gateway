@@ -17,7 +17,7 @@ class FlakyProvider(LLMProvider):
 
     @property
     def name(self) -> str:
-        return "flaky"
+        return "openai"
 
     async def complete(self, request: CompletionRequest) -> CompletionResponse:
         self.attempts += 1

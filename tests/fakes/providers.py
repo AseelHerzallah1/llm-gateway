@@ -21,7 +21,7 @@ def sse_data(payload: dict | str) -> str:
 class StreamingProvider(LLMProvider):
     """Yield OpenAI-compatible SSE chunks including usage and [DONE]."""
 
-    def __init__(self, *, name: str = "streaming-openai") -> None:
+    def __init__(self, *, name: str = "openai") -> None:
         self._name = name
         self.streams_started = 0
         self.stream_closed = False
@@ -62,7 +62,7 @@ class SlowStreamProvider(StreamingProvider):
     """Stream many chunks with a small delay so clients can disconnect mid-flight."""
 
     def __init__(self, *, chunk_count: int = 12, delay_s: float = 0.03) -> None:
-        super().__init__(name="slow-stream")
+        super().__init__(name="openai")
         self.chunk_count = chunk_count
         self.delay_s = delay_s
 
@@ -88,7 +88,7 @@ class FlakyProvider(LLMProvider):
 
     @property
     def name(self) -> str:
-        return "flaky-openai"
+        return "openai"
 
     async def complete(self, request: CompletionRequest) -> CompletionResponse:
         self.attempts += 1

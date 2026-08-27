@@ -13,6 +13,17 @@ from app.providers.router import resolve_provider_name
 from tests.helpers import make_project, mock_app_state
 
 
+@pytest.fixture(autouse=True)
+def isolated_prometheus_registry():
+    """Avoid duplicate metric registration across tests."""
+    from prometheus_client import CollectorRegistry
+
+    from app.observability.prometheus_metrics import reset_prometheus_metrics_for_tests
+
+    reset_prometheus_metrics_for_tests(CollectorRegistry())
+    yield
+
+
 @pytest.fixture
 def test_project():
     return make_project()

@@ -22,7 +22,11 @@ def _patch_chat_dependencies(monkeypatch) -> None:
     monkeypatch.setattr(
         "app.routes.chat.try_cached_non_streaming_completion",
         AsyncMock(
-            return_value=NonStreamingCacheCheck(cached_response=None, embedding=None)
+            return_value=NonStreamingCacheCheck(
+                cached_response=None,
+                cache_result="miss",
+                embedding=None,
+            )
         ),
     )
     monkeypatch.setattr("app.routes.chat.store_non_streaming_completion", AsyncMock())

@@ -6,7 +6,7 @@
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-async-009688.svg)](https://fastapi.tiangolo.com/)
-[![Tests](https://img.shields.io/badge/tests-96%20collected-brightgreen.svg)](#run-tests)
+[![Tests](https://img.shields.io/badge/tests-automated-brightgreen.svg)](#run-tests)
 
 ---
 
@@ -23,11 +23,10 @@ This project is a **production-style gateway** — not a chat UI — built in ph
 | | |
 |---|---|
 | **Thin-proxy overhead** | **~+41 ms p50** vs direct OpenAI (cache bypass) — [`docs/BENCHMARK.md`](docs/BENCHMARK.md) |
-| **Semantic cache hit** | **~291 ms p50**, **~365 ms p99** (no provider round-trip) |
-| **Semantic cache** | Cosine similarity ≥ 0.92, persisted to PostgreSQL |
+| **Semantic cache** | L1 exact fingerprint + L2 verified semantic (candidate @ 0.65, gpt-4o-mini verifier) |
 | **Providers** | OpenAI · Groq · Anthropic with retries + cross-provider fallback |
 | **PII (optional)** | Email & phone (Latin + RTL); opt-in credit card (Luhn) & IBAN (MOD-97); **non-streaming only** |
-| **Test coverage** | 96 automated tests (unit + HTTP + PostgreSQL integration) |
+| **Test coverage** | Automated unit + HTTP + PostgreSQL integration tests |
 
 ---
 
@@ -50,7 +49,7 @@ flowchart LR
     GW["LLM Gateway\nFastAPI + asyncio"]
     Auth["Auth\nbcrypt API keys"]
     PII["PII redaction\noptional"]
-    Cache["Semantic cache\nembed + cosine"]
+    Cache["Gateway cache\nL1 exact + L2 verified"]
     Router["Provider router\nretry + fallback"]
     OAI["OpenAI"]
     Groq["Groq"]
@@ -68,7 +67,7 @@ flowchart LR
 
 **Streaming path:** SSE chunks forwarded immediately; upstream cancelled when the client disconnects — no full-response buffering.
 
-**Cache path:** Non-streaming prompts embed once; similar prompts skip the provider. Threshold tuning and false-hit analysis in [`docs/CACHE_TUNING.md`](docs/CACHE_TUNING.md).
+**Cache path:** Non-streaming requests check L1 exact fingerprint first; on miss, L2 retrieves embedding candidates (≥ 0.65) and verifies answer equivalence before reuse. See [`docs/CACHE_TUNING.md`](docs/CACHE_TUNING.md).
 
 ---
 
@@ -80,7 +79,7 @@ flowchart LR
 - Transient error retries and optional fallback model swap
 
 ### Production concerns
-- **Observability** — per-request latency, tokens, cost; p50/p95/p99 metrics API + dashboard
+- **Observability** — PostgreSQL-backed `/v1/metrics` + dashboard; Prometheus `/metrics` with Grafana stack (v0.2.0+)
 - **Security** — bcrypt-hashed API keys with indexed lookup prefix ([`docs/SECURITY.md`](docs/SECURITY.md))
 - **PII** — optional regex redaction for email/phone (non-streaming); opt-in credit card & IBAN; streaming PII redaction remains out of scope ([`docs/PII.md`](docs/PII.md))
 
@@ -116,6 +115,20 @@ python scripts/seed_test_project.py # save the gw-sk-... key
 uvicorn app.main:app --host 127.0.0.1 --port 8001
 ```
 
+**Full local stack** (PostgreSQL + gateway + Prometheus + Grafana):
+
+```powershell
+docker compose up
+```
+
+Open Grafana at http://localhost:3000 (default `admin` / `admin`, overridable via `.env`) — the **LLM Gateway Overview** dashboard is provisioned automatically. See [`docs/OBSERVABILITY.md`](docs/OBSERVABILITY.md).
+
+**Minimal Docker dev** (database + app only):
+
+```powershell
+docker compose up db app
+```
+
 ### Try it in one minute
 
 **Terminal 1** — keep the server running:
@@ -141,9 +154,11 @@ Full manual matrix: [`docs/TESTING.md`](docs/TESTING.md)
 ### Run tests
 
 ```powershell
-pytest                  # full suite (96 tests; requires PostgreSQL for all to run)
+pytest                  # full suite (requires PostgreSQL for db-marked tests)
 pytest -m db -v         # PostgreSQL integration only
 ```
+
+CI runs the full suite on every PR and push to `main`. Release builds publish Docker images to `ghcr.io/aseelherzallah1/llm-gateway` when you push a `v*.*.*` tag.
 
 ---
 
@@ -159,6 +174,7 @@ pytest -m db -v         # PostgreSQL integration only
 | [`docs/SECURITY.md`](docs/SECURITY.md) | API key hashing audit |
 | [`docs/PII.md`](docs/PII.md) | Supported PII types, config, limitations |
 | [`docs/TESTING.md`](docs/TESTING.md) | Manual + automated test guide |
+| [`docs/OBSERVABILITY.md`](docs/OBSERVABILITY.md) | `/v1/metrics` vs `/metrics`, Prometheus + Grafana |
 
 ---
 
@@ -169,9 +185,10 @@ app/
   auth/           API keys (bcrypt)
   cache/          Semantic cache + PostgreSQL persistence
   providers/      OpenAI, Groq, Anthropic — router, retry, fallback
-  observability/  Request logs, percentiles, cost
+  observability/  Request logs, percentiles, cost, Prometheus metrics
   security/       PII detection and redaction
-  routes/         chat, metrics, dashboard, health
+  routes/         chat, metrics, prometheus, dashboard, health
+deploy/           Prometheus + Grafana provisioning
 tests/            unit + integration (pytest -m db)
 scripts/          demo.py, benchmarks, E2E helpers
 docs/             design decisions and measured results
@@ -185,8 +202,11 @@ docs/             design decisions and measured results
 |-----|-------------|
 | http://127.0.0.1:8001/health | Liveness |
 | http://127.0.0.1:8001/v1/chat/completions | Chat proxy |
-| http://127.0.0.1:8001/v1/metrics | Latency percentiles + cost |
+| http://127.0.0.1:8001/v1/metrics | Latency percentiles + cost (PostgreSQL, authenticated) |
+| http://127.0.0.1:8001/metrics | Prometheus operational telemetry (internal; unauthenticated) |
 | http://127.0.0.1:8001/dashboard | Minimal metrics UI |
+| http://localhost:3000 | Grafana — **LLM Gateway Overview** (with `docker compose up`) |
+| http://localhost:9090 | Prometheus UI (with full stack) |
 
 ---
 

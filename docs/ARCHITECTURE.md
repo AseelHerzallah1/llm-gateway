@@ -12,21 +12,42 @@ flowchart LR
     Router --> Anthropic[Anthropic]
 ```
 
-The gateway is the only component clients talk to. It owns auth, optional PII redaction, semantic cache, observability, and provider routing. PostgreSQL stores projects, request logs, and cache entries. The **provider router** selects OpenAI, Groq, or Anthropic by model name, with retries and cross-provider fallback.
+The gateway is the only component clients talk to. It owns auth, optional PII redaction, **L1 exact + L2 verified semantic cache**, observability, and provider routing. PostgreSQL stores projects, request logs, and cache entries. The **provider router** selects OpenAI, Groq, or Anthropic by model name, with retries and cross-provider fallback.
 
 ---
 
-## Request flow — non-streaming (with cache + optional PII)
+## Request flow — non-streaming (v0.2 cache + optional PII)
+
+```mermaid
+flowchart TD
+    Client[Client] --> Auth[Auth / request processing]
+    Auth --> PII[PII handling optional]
+    PII --> L1[L1 Exact Cache SHA-256 fingerprint]
+    L1 -->|exact_hit| Return1[Return cached response]
+    L1 -->|miss| Gates[L2 Semantic Gates]
+    Gates -->|PII / multi-turn / time-sensitive / bypass| Provider[Provider LLM]
+    Gates -->|allowed| Embed[Embedding candidate retrieval ≥ 0.65]
+    Embed --> Verifier[Answer-Equivalence Verifier gpt-4o-mini]
+    Verifier -->|true| Return2[semantic_hit]
+    Verifier -->|false / failure| Provider
+    Provider --> Persist[PostgreSQL persistence + in-memory index]
+    Persist --> Obs[Prometheus / request logs]
+    Return1 --> Obs
+    Return2 --> Obs
+```
 
 ```mermaid
 sequenceDiagram
     participant C as Client
     participant G as Gateway
     participant PII as PII module
-    participant Cache as Semantic cache
+    participant L1 as L1 Exact index
     participant E as Embeddings API
+    participant L2 as L2 semantic scan
+    participant V as Verifier gpt-4o-mini
     participant R as Provider router
     participant P as LLM provider
+    participant DB as PostgreSQL
 
     C->>G: POST /v1/chat/completions
     G->>G: Validate API key
@@ -34,25 +55,31 @@ sequenceDiagram
         G->>PII: Redact prompt (non-stream only)
         PII-->>G: Redacted messages + token map
     end
-    G->>E: Embed prompt (if cache may hit)
-    G->>Cache: Lookup by cosine similarity
-    alt Cache hit
-        Cache-->>G: Cached response
-        G-->>C: Response (cache_hit logged)
-    else Cache miss
-        G->>R: Route by model + retry/fallback
-        R->>P: Forward redacted prompt
-        P-->>G: Response
-        G->>Cache: Store embedding + response
-        opt Detokenize enabled
-            G->>PII: Restore tokens in response
+    G->>L1: lookup_exact(fingerprint)
+    alt exact_hit
+        L1-->>G: Cached response
+        G-->>C: Response (0 embed, 0 verifier, 0 provider)
+    else L1 miss
+        opt L2 gates pass
+            G->>E: Embed prompt
+            G->>L2: Best candidate if cosine ≥ 0.65
+            G->>V: should_reuse(A, cached_response, B)
+            alt verifier true
+                V-->>G: semantic_hit
+                G-->>C: Cached response
+            else reject / miss / failure
+                G->>R: Route by model + retry/fallback
+                R->>P: Forward prompt
+                P-->>G: Response
+                G->>DB: Upsert cache entry (fingerprint + embedding)
+                G-->>C: Response
+            end
         end
-        G-->>C: Response
     end
-    G->>G: Log metrics (async by default)
+    G->>DB: Log request metrics
 ```
 
-**Streaming:** Same auth and routing, but **no PII redaction** and **no semantic cache** on the hot path — SSE chunks forward immediately; upstream cancels on client disconnect.
+**Streaming:** Same auth and routing, but **no PII redaction** and **no cache** on the hot path — SSE chunks forward immediately; upstream cancels on client disconnect.
 
 ---
 
@@ -89,7 +116,8 @@ sequenceDiagram
 | Auth | `app/auth/` | bcrypt API keys, lookup prefix |
 | PII redaction | `app/security/pii.py` | Regex detect/redact; optional detokenize |
 | Chat route | `app/routes/chat.py` | JSON + SSE completions |
-| Semantic cache | `app/cache/` | In-memory index + PostgreSQL persistence |
+| Semantic cache | `app/cache/` | L1 exact index + L2 verified semantic + PostgreSQL persistence |
+| Cache verifier | `app/cache/verifier.py` | gpt-4o-mini answer-equivalence gate |
 | Embeddings | `app/embeddings/` | OpenAI embeddings for cache |
 | Provider interface | `app/providers/base.py` | Shared `LLMProvider` contract |
 | OpenAI / Groq / Anthropic | `app/providers/*.py` | Provider adapters |
@@ -140,10 +168,14 @@ erDiagram
     cache_entries {
         uuid id PK
         uuid project_id FK
+        string fingerprint
+        jsonb request_messages
         vector embedding
         text cached_response
         string model
         int use_count
+        int exact_use_count
+        int semantic_use_count
         timestamp last_used_at
     }
 ```
@@ -161,7 +193,7 @@ erDiagram
 | Retries + cross-provider fallback | Yes | Model id may change on fallback |
 | Non-streaming before streaming | Yes | Isolates proxy bugs incrementally |
 | Observability before cache | Yes | Measure cache impact when it ships |
-| In-memory cache + PG persistence | Yes | Fast lookup; not shared across replicas |
+| In-memory L1 exact index + PG persistence | Yes | O(1) exact hits; linear L2 scan in v0.2 |
 | Optional PII redaction (Phase 9) | Regex, non-streaming | Not DLP/NER; streaming bypasses redaction |
 | Percentiles over averages | Yes | More meaningful tail latency |
 

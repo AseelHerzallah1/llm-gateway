@@ -10,6 +10,7 @@ from fastapi import FastAPI
 
 from app.db.models.project import Project
 from app.errors import invalid_request_error
+from tests.fakes.verifier import DeterministicVerifier
 
 
 def make_project(*, active: bool = True) -> Project:
@@ -53,21 +54,29 @@ def mock_app_state(
     mock_router.aclose = AsyncMock()
 
     mock_cache = MagicMock()
-    mock_cache.similarity_threshold = 0.92
-    mock_cache.lookup = MagicMock(return_value=None)
-    mock_cache.has_entries = MagicMock(return_value=False)
-    mock_cache.store = MagicMock()
+    mock_cache.candidate_threshold = 0.65
+    mock_cache.lookup_exact = MagicMock(return_value=None)
+    mock_cache.has_semantic_entries = MagicMock(return_value=False)
+    mock_cache.lookup_semantic_candidate = MagicMock(return_value=None)
+    mock_cache.upsert_entry = MagicMock()
     mock_cache.size = 0
 
+    mock_verifier_client = AsyncMock()
+    mock_verifier_client.aclose = AsyncMock()
+    mock_verifier = DeterministicVerifier()
+
     monkeypatch.setattr("app.main.verify_db_connection", AsyncMock())
-    monkeypatch.setattr("app.main.hydrate_semantic_cache", AsyncMock(return_value=0))
+    monkeypatch.setattr("app.main.hydrate_gateway_cache", AsyncMock(return_value=0))
     monkeypatch.setattr("app.main.close_db", AsyncMock())
     monkeypatch.setattr("app.main.create_provider_router", lambda: mock_router)
-    monkeypatch.setattr("app.main.create_semantic_cache", lambda: mock_cache)
+    monkeypatch.setattr("app.main.create_gateway_cache", lambda: mock_cache)
     monkeypatch.setattr("app.main.create_openai_embedding_provider", lambda: mock_embedding)
+    monkeypatch.setattr("app.main.create_verifier_client", lambda: mock_verifier_client)
 
     app.state.provider_router = mock_router
     app.state.semantic_cache = mock_cache
     app.state.embedding_provider = mock_embedding
+    app.state.cache_verifier = mock_verifier
+    app.state.cache_verifier_client = mock_verifier_client
 
     return mock_router

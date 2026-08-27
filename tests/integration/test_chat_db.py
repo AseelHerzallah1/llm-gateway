@@ -37,7 +37,9 @@ async def test_chat_success_persists_request_log(db_client, monkeypatch) -> None
     monkeypatch.setattr(
         "app.routes.chat.try_cached_non_streaming_completion",
         AsyncMock(
-            return_value=NonStreamingCacheCheck(cached_response=None, embedding=[1.0, 0.0])
+            return_value=NonStreamingCacheCheck(
+                cached_response=None, cache_result="miss", embedding=[1.0, 0.0]
+            )
         ),
     )
     monkeypatch.setattr("app.routes.chat.store_non_streaming_completion", AsyncMock())
@@ -78,7 +80,9 @@ async def test_chat_provider_error_persists_error_log(db_client, monkeypatch) ->
     monkeypatch.setattr(
         "app.routes.chat.try_cached_non_streaming_completion",
         AsyncMock(
-            return_value=NonStreamingCacheCheck(cached_response=None, embedding=None)
+            return_value=NonStreamingCacheCheck(
+                cached_response=None, cache_result="miss", embedding=None
+            )
         ),
     )
     monkeypatch.setattr("app.routes.chat.complete_with_fallback", failing_complete)
@@ -125,7 +129,9 @@ async def test_chat_async_request_log_eventually_persists(db_client, monkeypatch
     monkeypatch.setattr(
         "app.routes.chat.try_cached_non_streaming_completion",
         AsyncMock(
-            return_value=NonStreamingCacheCheck(cached_response=None, embedding=None)
+            return_value=NonStreamingCacheCheck(
+                cached_response=None, cache_result="miss", embedding=None
+            )
         ),
     )
     monkeypatch.setattr("app.routes.chat.store_non_streaming_completion", AsyncMock())
