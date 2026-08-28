@@ -1,0 +1,5540 @@
+{
+  "timestamp": "2026-08-27T09:15:13.543750+00:00",
+  "completed_at": "2026-08-27T09:32:33.377957+00:00",
+  "git_commit": "7ada54050621da9723422577b07d74b396a1f8ba",
+  "branch": "feat/v0.2-observability-release",
+  "version": "0.2.0",
+  "methodology": "v0.2 seven-path controlled benchmark with per-iteration isolation for semantic paths",
+  "safety_stop": false,
+  "iterations_target": 30,
+  "run_id": "ca5f5e9a85",
+  "path_statistics": {
+    "A_direct_openai": {
+      "path": "A_direct_openai",
+      "valid_count": 30,
+      "invalid_count": 0,
+      "retried_count": 0,
+      "min_ms": 868.9520000480115,
+      "mean_ms": 1390.7243800077897,
+      "p50_ms": 1184.0,
+      "p95_ms": 1729.0,
+      "p99_ms": 4316.0,
+      "max_ms": 5354.366299929097,
+      "stdev_ms": 766.3354495899679,
+      "total_input_tokens": 888,
+      "total_output_tokens": 60,
+      "estimated_cost_usd": 0.0,
+      "correct_path": true,
+      "notes": ""
+    },
+    "B_thin_proxy_bypass": {
+      "path": "B_thin_proxy_bypass",
+      "valid_count": 30,
+      "invalid_count": 0,
+      "retried_count": 0,
+      "min_ms": 702.1798000205308,
+      "mean_ms": 1069.6384199972574,
+      "p50_ms": 971.0,
+      "p95_ms": 1714.0,
+      "p99_ms": 1927.0,
+      "max_ms": 1954.8104999121279,
+      "stdev_ms": 316.0459003473979,
+      "total_input_tokens": 894,
+      "total_output_tokens": 60,
+      "estimated_cost_usd": 0.0,
+      "correct_path": true,
+      "notes": "cache_result=bypass verified"
+    },
+    "C_exact_miss": {
+      "path": "C_exact_miss",
+      "valid_count": 30,
+      "invalid_count": 0,
+      "retried_count": 0,
+      "min_ms": 1450.2558000385761,
+      "mean_ms": 1730.187900007392,
+      "p50_ms": 1685.0,
+      "p95_ms": 2158.0,
+      "p99_ms": 2217.0,
+      "max_ms": 2227.521700086072,
+      "stdev_ms": 216.49203696358865,
+      "total_input_tokens": 1122,
+      "total_output_tokens": 60,
+      "estimated_cost_usd": 0.0,
+      "correct_path": true,
+      "notes": "provider miss only"
+    },
+    "D_exact_hit": {
+      "path": "D_exact_hit",
+      "valid_count": 30,
+      "invalid_count": 0,
+      "retried_count": 0,
+      "min_ms": 184.7425999585539,
+      "mean_ms": 268.75666999646154,
+      "p50_ms": 225.0,
+      "p95_ms": 548.0,
+      "p99_ms": 763.0,
+      "max_ms": 763.9030999271199,
+      "stdev_ms": 135.663513224721,
+      "total_input_tokens": 0,
+      "total_output_tokens": 0,
+      "estimated_cost_usd": 0.0,
+      "correct_path": true,
+      "notes": "0 provider/embed/verifier on measured hit"
+    },
+    "E_verified_semantic_hit": {
+      "path": "E_verified_semantic_hit",
+      "valid_count": 30,
+      "invalid_count": 0,
+      "retried_count": 0,
+      "min_ms": 1196.2070000590757,
+      "mean_ms": 1619.5089166673522,
+      "p50_ms": 1577.0,
+      "p95_ms": 2323.0,
+      "p99_ms": 2595.0,
+      "max_ms": 2635.9239000594243,
+      "stdev_ms": 322.9626392609453,
+      "total_input_tokens": 0,
+      "total_output_tokens": 0,
+      "estimated_cost_usd": 0.0,
+      "correct_path": true,
+      "notes": "Class-A paraphrase pairs"
+    },
+    "F_semantic_reject_provider": {
+      "path": "F_semantic_reject_provider",
+      "valid_count": 30,
+      "invalid_count": 0,
+      "retried_count": 0,
+      "min_ms": 2011.7616999195889,
+      "mean_ms": 2330.114833335392,
+      "p50_ms": 2269.0,
+      "p95_ms": 2832.0,
+      "p99_ms": 3281.0,
+      "max_ms": 3406.6431000828743,
+      "stdev_ms": 286.02069237447586,
+      "total_input_tokens": 1119,
+      "total_output_tokens": 1920,
+      "estimated_cost_usd": 0.0,
+      "correct_path": true,
+      "notes": "dangerous-negative pairs; semantic_reject + provider"
+    },
+    "G_long_semantic_hit": {
+      "path": "G_long_semantic_hit",
+      "valid_count": 30,
+      "invalid_count": 0,
+      "retried_count": 0,
+      "min_ms": 1049.3797999806702,
+      "mean_ms": 1352.1979700114268,
+      "p50_ms": 1195.0,
+      "p95_ms": 1564.0,
+      "p99_ms": 3899.0,
+      "max_ms": 4841.653099982068,
+      "stdev_ms": 661.0567925130949,
+      "total_input_tokens": 0,
+      "total_output_tokens": 0,
+      "estimated_cost_usd": 0.0,
+      "correct_path": true,
+      "notes": "max_tokens=180 semantic hit; word-count HTTPS pair"
+    }
+  },
+  "comparative_metrics": {
+    "thin_proxy_overhead_p50_ms": -213.0,
+    "thin_proxy_overhead_p50_pct": -17.989864864864867,
+    "exact_hit_speedup_vs_thin_proxy_p50_ms": 746.0,
+    "exact_hit_speedup_vs_exact_miss_p50_ms": 1460.0,
+    "semantic_hit_p50_ms": 1577.0,
+    "research_verified_hit_p50_reference_ms": 743,
+    "semantic_hit_vs_thin_proxy_p50_ms": -606.0,
+    "semantic_hit_vs_exact_miss_p50_ms": 108.0,
+    "long_semantic_hit_p50_ms": 1195.0,
+    "long_semantic_vs_thin_proxy_saved_ms": -224.0,
+    "semantic_reject_penalty_vs_bypass_p50_ms": 1298.0
+  },
+  "raw_iterations": {
+    "A": [
+      {
+        "iteration": 1,
+        "path": "A_direct_openai",
+        "latency_ms": 1776.7385999904945,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQUU32sJRRb1y4q8Z0tgM3gpY5EJ",
+        "input_tokens": 29,
+        "output_tokens": 2,
+        "total_tokens": 31,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 2,
+        "path": "A_direct_openai",
+        "latency_ms": 1223.0224000522867,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQUVQ4xIzXVp39Hy1iDdOJtMQVSv",
+        "input_tokens": 29,
+        "output_tokens": 2,
+        "total_tokens": 31,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 3,
+        "path": "A_direct_openai",
+        "latency_ms": 1589.3000999931246,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQUXFmkIIG6pSBx0n0aNOt7XX3uC",
+        "input_tokens": 29,
+        "output_tokens": 2,
+        "total_tokens": 31,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 4,
+        "path": "A_direct_openai",
+        "latency_ms": 1671.176000032574,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQUYIvuxZb6T9exKfoVLyXrkyNEO",
+        "input_tokens": 30,
+        "output_tokens": 2,
+        "total_tokens": 32,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 5,
+        "path": "A_direct_openai",
+        "latency_ms": 1330.6931999977678,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQUaL0Z02j5Lw0z0VsIhin6fCIVk",
+        "input_tokens": 30,
+        "output_tokens": 2,
+        "total_tokens": 32,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 6,
+        "path": "A_direct_openai",
+        "latency_ms": 1541.680600028485,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQUbUDI3IlmQRgQCN5gYQruiEp5R",
+        "input_tokens": 28,
+        "output_tokens": 2,
+        "total_tokens": 30,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 7,
+        "path": "A_direct_openai",
+        "latency_ms": 1251.2180999619886,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQUd4mD3jbtHqjYcKnIfIqnANUWk",
+        "input_tokens": 29,
+        "output_tokens": 2,
+        "total_tokens": 31,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 8,
+        "path": "A_direct_openai",
+        "latency_ms": 1040.5555000761524,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQUeUlAcBiPHfo4DeHvBNu1R7jyo",
+        "input_tokens": 31,
+        "output_tokens": 2,
+        "total_tokens": 33,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 9,
+        "path": "A_direct_openai",
+        "latency_ms": 1653.4151000669226,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQUfnHvOLU5pk78YvI4Am6u4PWiE",
+        "input_tokens": 30,
+        "output_tokens": 2,
+        "total_tokens": 32,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 10,
+        "path": "A_direct_openai",
+        "latency_ms": 1011.8849000427872,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQUguOANQGG1DBkrOEmVVF2iTpoD",
+        "input_tokens": 30,
+        "output_tokens": 2,
+        "total_tokens": 32,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 11,
+        "path": "A_direct_openai",
+        "latency_ms": 868.9520000480115,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQUhNFA1nJ3xHdparoRz22lx99eN",
+        "input_tokens": 29,
+        "output_tokens": 2,
+        "total_tokens": 31,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 12,
+        "path": "A_direct_openai",
+        "latency_ms": 1160.4018999496475,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQUimEiinyK5rCiYHZWCBEYKPmnL",
+        "input_tokens": 29,
+        "output_tokens": 2,
+        "total_tokens": 31,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 13,
+        "path": "A_direct_openai",
+        "latency_ms": 1131.7198000615463,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQUjYsE7iWjq79djWjwxUb4VM9HO",
+        "input_tokens": 29,
+        "output_tokens": 2,
+        "total_tokens": 31,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 14,
+        "path": "A_direct_openai",
+        "latency_ms": 1220.5515999812633,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQUllPw36DyPhQ5THKU0KGpfxJ0o",
+        "input_tokens": 29,
+        "output_tokens": 2,
+        "total_tokens": 31,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 15,
+        "path": "A_direct_openai",
+        "latency_ms": 1080.0264000426978,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQUm0eRDuQEzhDTi35VSgDknmWDc",
+        "input_tokens": 29,
+        "output_tokens": 2,
+        "total_tokens": 31,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 16,
+        "path": "A_direct_openai",
+        "latency_ms": 1221.3119000662118,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQUnyRoWBlvZQ6Pb8ERcjtYe9FNR",
+        "input_tokens": 29,
+        "output_tokens": 2,
+        "total_tokens": 31,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 17,
+        "path": "A_direct_openai",
+        "latency_ms": 1161.013799952343,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQUoXOEdk9HCwADTn9dw2EuLPXZq",
+        "input_tokens": 30,
+        "output_tokens": 2,
+        "total_tokens": 32,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 18,
+        "path": "A_direct_openai",
+        "latency_ms": 1211.9755999883637,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQUpkGzQNlSEmHEAtRDp4rgooClX",
+        "input_tokens": 31,
+        "output_tokens": 2,
+        "total_tokens": 33,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 19,
+        "path": "A_direct_openai",
+        "latency_ms": 1522.1351999789476,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQUrCalsP5SSPDkvZsJVzN5vyYoQ",
+        "input_tokens": 31,
+        "output_tokens": 2,
+        "total_tokens": 33,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 20,
+        "path": "A_direct_openai",
+        "latency_ms": 1108.73169999104,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQUsK3fKDMzEphxnue8vPIm3O6SB",
+        "input_tokens": 29,
+        "output_tokens": 2,
+        "total_tokens": 31,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 21,
+        "path": "A_direct_openai",
+        "latency_ms": 1142.0166000025347,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQUtCI58R6WVAYCnxPsbBWRYbLGE",
+        "input_tokens": 30,
+        "output_tokens": 2,
+        "total_tokens": 32,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 22,
+        "path": "A_direct_openai",
+        "latency_ms": 5354.366299929097,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQUyNl12TtbAAxX3wbFw4yRgiTZJ",
+        "input_tokens": 30,
+        "output_tokens": 2,
+        "total_tokens": 32,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 23,
+        "path": "A_direct_openai",
+        "latency_ms": 1123.4950999496505,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQV0hity6A3czQLh6DQ5CeAkyAEy",
+        "input_tokens": 30,
+        "output_tokens": 2,
+        "total_tokens": 32,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 24,
+        "path": "A_direct_openai",
+        "latency_ms": 1208.4992000600323,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQV1AsEYLPQqdGu3NeAA4CmEpTkp",
+        "input_tokens": 30,
+        "output_tokens": 2,
+        "total_tokens": 32,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 25,
+        "path": "A_direct_openai",
+        "latency_ms": 1132.84980005119,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQV2MOYeL3RyGxZTSfnZyla8IEho",
+        "input_tokens": 30,
+        "output_tokens": 2,
+        "total_tokens": 32,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 26,
+        "path": "A_direct_openai",
+        "latency_ms": 1449.4716000044718,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQV3hJwAIqpdMuDsc9sEC5iKuijM",
+        "input_tokens": 29,
+        "output_tokens": 2,
+        "total_tokens": 31,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 27,
+        "path": "A_direct_openai",
+        "latency_ms": 1142.7962000016123,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQV5cTkNsaw0Tq3m5QHcgpqFfmwv",
+        "input_tokens": 29,
+        "output_tokens": 2,
+        "total_tokens": 31,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 28,
+        "path": "A_direct_openai",
+        "latency_ms": 1159.8776000319049,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQV6xoJQxn1xqkMhxLFSKRjcDgPw",
+        "input_tokens": 31,
+        "output_tokens": 2,
+        "total_tokens": 33,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 29,
+        "path": "A_direct_openai",
+        "latency_ms": 1092.0233000069857,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQV7HjraqhfuvKn51En5CyK3JVF7",
+        "input_tokens": 30,
+        "output_tokens": 2,
+        "total_tokens": 32,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 30,
+        "path": "A_direct_openai",
+        "latency_ms": 1139.831299893558,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQV8auiS0g8Q75CssW6ru5SBu1RF",
+        "input_tokens": 29,
+        "output_tokens": 2,
+        "total_tokens": 31,
+        "cache_result": null,
+        "metrics_delta": {},
+        "similarity": null,
+        "extra": {}
+      }
+    ],
+    "B": [
+      {
+        "iteration": 1,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 1494.8208999121562,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVAmqMo4we7hIImB3YxaFV2ZEGt",
+        "input_tokens": 30,
+        "output_tokens": 2,
+        "total_tokens": 32,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 2,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 1207.0041000843048,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVDe9VcKYJQpEfYIVAvr3cYA8Dz",
+        "input_tokens": 31,
+        "output_tokens": 2,
+        "total_tokens": 33,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 3,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 1054.551100009121,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVFHHgoBli4vm0XD6BE09zqqZc4",
+        "input_tokens": 30,
+        "output_tokens": 2,
+        "total_tokens": 32,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 4,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 1954.8104999121279,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVHKM8IH029CnKZBshoSqa21nd2",
+        "input_tokens": 30,
+        "output_tokens": 2,
+        "total_tokens": 32,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 5,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 1327.0080999936908,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVKwKDaSW9Q843EPaJIHxy1XVgU",
+        "input_tokens": 30,
+        "output_tokens": 2,
+        "total_tokens": 32,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 6,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 1094.7714999783784,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVNaKXpSF2VamzhIBBv6GcBQp1a",
+        "input_tokens": 30,
+        "output_tokens": 2,
+        "total_tokens": 32,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 7,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 1199.6543999994174,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVPRYgaONl9l37VqnWucGEWWzSy",
+        "input_tokens": 30,
+        "output_tokens": 2,
+        "total_tokens": 32,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 8,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 1147.921200026758,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVSihKmTZZkxPNnSyk5tocHt8ku",
+        "input_tokens": 28,
+        "output_tokens": 2,
+        "total_tokens": 30,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 9,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 1859.5756998984143,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVU3ctMRu5MNrH8DeeU0YDK1oJB",
+        "input_tokens": 31,
+        "output_tokens": 2,
+        "total_tokens": 33,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 10,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 1415.9896000055596,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVWAwOcTmulJ6TZJAI1aIQKvNn6",
+        "input_tokens": 29,
+        "output_tokens": 2,
+        "total_tokens": 31,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 11,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 763.3848000550643,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVYKWOvzUr8NIsK7RunOwnaxigH",
+        "input_tokens": 31,
+        "output_tokens": 2,
+        "total_tokens": 33,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 12,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 847.7898000273854,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVZ88ayf0w7fBgexnxwGltc54K3",
+        "input_tokens": 29,
+        "output_tokens": 2,
+        "total_tokens": 31,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 13,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 917.5358000211418,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVbmUnAOL0XPGuAM1xhgxhDtgvg",
+        "input_tokens": 31,
+        "output_tokens": 2,
+        "total_tokens": 33,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 14,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 899.472099961713,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVcIeGy0HByVWOAajpRSC2lXDCa",
+        "input_tokens": 29,
+        "output_tokens": 2,
+        "total_tokens": 31,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 15,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 955.9018000727519,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVeHioTeNSlb3unacpPWn2nwg7C",
+        "input_tokens": 28,
+        "output_tokens": 2,
+        "total_tokens": 30,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 16,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 1536.8726999731734,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVgXF0a3sWpDHP2D9RdzMmRvsDz",
+        "input_tokens": 30,
+        "output_tokens": 2,
+        "total_tokens": 32,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 17,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 987.0243000332266,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVhU7bNH2l4ErhYzkvcYZlaW8fa",
+        "input_tokens": 29,
+        "output_tokens": 2,
+        "total_tokens": 31,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 18,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 1218.440799973905,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVimUxUUmkjrKWlKoS8LDbHWjTL",
+        "input_tokens": 29,
+        "output_tokens": 2,
+        "total_tokens": 31,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 19,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 822.2405000124127,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVkQ6WDa7xSbsdBjaa8Ccng4jRE",
+        "input_tokens": 30,
+        "output_tokens": 2,
+        "total_tokens": 32,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 20,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 702.1798000205308,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVl4BECcHzmH3BCSysqSIPnfmoX",
+        "input_tokens": 31,
+        "output_tokens": 2,
+        "total_tokens": 33,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 21,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 866.2259998964146,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVn6CDHEYAnrbBqGbBSgksu6ihO",
+        "input_tokens": 29,
+        "output_tokens": 2,
+        "total_tokens": 31,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 22,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 1118.4043999528512,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVoPLfsGTE049LJHrhY9OGQzFAO",
+        "input_tokens": 30,
+        "output_tokens": 2,
+        "total_tokens": 32,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 23,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 911.9464000687003,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVpzHfkIkH6XiwTK7mT4qtV6QIa",
+        "input_tokens": 28,
+        "output_tokens": 2,
+        "total_tokens": 30,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 24,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 781.3416999997571,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVrRz9J4zLRnrweSWlpfE35PenN",
+        "input_tokens": 29,
+        "output_tokens": 2,
+        "total_tokens": 31,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 25,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 993.6165999388322,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVse4rYr13f4YTjd4f5sa2HPB8M",
+        "input_tokens": 29,
+        "output_tokens": 2,
+        "total_tokens": 31,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 26,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 829.493600060232,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVt0h4POx9pM2o7C0Aw9pUYmACL",
+        "input_tokens": 30,
+        "output_tokens": 2,
+        "total_tokens": 32,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 27,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 755.2740999963135,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVvsSymewme0dYeE9z6HgKtfn4k",
+        "input_tokens": 29,
+        "output_tokens": 2,
+        "total_tokens": 31,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 28,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 730.0057000247762,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVwSdh3423Pcnm9mVfwwddDC0my",
+        "input_tokens": 32,
+        "output_tokens": 2,
+        "total_tokens": 34,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 29,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 841.495200060308,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVxvUOmBWfrnfJYz2mznyChHcQQ",
+        "input_tokens": 31,
+        "output_tokens": 2,
+        "total_tokens": 33,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 30,
+        "path": "B_thin_proxy_bypass",
+        "latency_ms": 854.3993999483064,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQVyZHvtsH19Jh8q6QgEkpiE8Boa",
+        "input_tokens": 31,
+        "output_tokens": 2,
+        "total_tokens": 33,
+        "cache_result": "bypass",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "lookup_skipped": 1.0
+          },
+          "requests_total": {
+            "bypass": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      }
+    ],
+    "C": [
+      {
+        "iteration": 1,
+        "path": "C_exact_miss",
+        "latency_ms": 2192.5677999388427,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQW3AvVPBtITEjwFxLlLmrcHRAAo",
+        "input_tokens": 37,
+        "output_tokens": 2,
+        "total_tokens": 39,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 2,
+        "path": "C_exact_miss",
+        "latency_ms": 2227.521700086072,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQW7svGK9SPkhuUfkIcB0eaTjJ3N",
+        "input_tokens": 39,
+        "output_tokens": 2,
+        "total_tokens": 41,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 3,
+        "path": "C_exact_miss",
+        "latency_ms": 1738.1416999269277,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQW9l0LYPlgcEDOF4c6I1lYiB0v7",
+        "input_tokens": 37,
+        "output_tokens": 2,
+        "total_tokens": 39,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 4,
+        "path": "C_exact_miss",
+        "latency_ms": 1976.2839000904933,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQWCisxoFfYUX2i0Smy5vPqQK4Cm",
+        "input_tokens": 36,
+        "output_tokens": 2,
+        "total_tokens": 38,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 5,
+        "path": "C_exact_miss",
+        "latency_ms": 1552.7559000765905,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQWEYuPsulgFdSxdG1mjJbi2GL53",
+        "input_tokens": 36,
+        "output_tokens": 2,
+        "total_tokens": 38,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 6,
+        "path": "C_exact_miss",
+        "latency_ms": 1548.0109999189153,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQWGS4LxgrGHsRO7waLEH9rw8IWt",
+        "input_tokens": 36,
+        "output_tokens": 2,
+        "total_tokens": 38,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 7,
+        "path": "C_exact_miss",
+        "latency_ms": 1922.6360999746248,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQWIFyglAtedGzEkxxitifnlpJKN",
+        "input_tokens": 38,
+        "output_tokens": 2,
+        "total_tokens": 40,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 8,
+        "path": "C_exact_miss",
+        "latency_ms": 1759.3357999576256,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQWKf0L3Z4Btlx8ahpLBZX0WzF2V",
+        "input_tokens": 38,
+        "output_tokens": 2,
+        "total_tokens": 40,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 9,
+        "path": "C_exact_miss",
+        "latency_ms": 1820.1838000677526,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQWMatUqF5cIRouS2dDVtEbPp0W3",
+        "input_tokens": 37,
+        "output_tokens": 2,
+        "total_tokens": 39,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 10,
+        "path": "C_exact_miss",
+        "latency_ms": 1623.1730000581592,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQWOzik5S77mHfAo70i9Ire1esLF",
+        "input_tokens": 37,
+        "output_tokens": 2,
+        "total_tokens": 39,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 11,
+        "path": "C_exact_miss",
+        "latency_ms": 1962.772099999711,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQWRVWhXkTzZJn8nE0w2xJPobIq2",
+        "input_tokens": 37,
+        "output_tokens": 2,
+        "total_tokens": 39,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 12,
+        "path": "C_exact_miss",
+        "latency_ms": 1465.5180999543518,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQWTGQY1liTRhc9dz08mTjacjPNZ",
+        "input_tokens": 38,
+        "output_tokens": 2,
+        "total_tokens": 40,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 13,
+        "path": "C_exact_miss",
+        "latency_ms": 1726.8024999648333,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQWUnGzBbnA4dbUkVoaPj2fdEzwh",
+        "input_tokens": 37,
+        "output_tokens": 2,
+        "total_tokens": 39,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 14,
+        "path": "C_exact_miss",
+        "latency_ms": 1683.4445999702439,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQWXRQpERkdrEJhZUHZRMd6ClnGC",
+        "input_tokens": 38,
+        "output_tokens": 2,
+        "total_tokens": 40,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 15,
+        "path": "C_exact_miss",
+        "latency_ms": 1591.1528000142425,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQWZubN3ZXl2lMZ0x6pPcZDkiab7",
+        "input_tokens": 37,
+        "output_tokens": 2,
+        "total_tokens": 39,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 16,
+        "path": "C_exact_miss",
+        "latency_ms": 1454.6870000194758,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQWa0JXyQaAX1dbS5Jv1rMUvqmpK",
+        "input_tokens": 39,
+        "output_tokens": 2,
+        "total_tokens": 41,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 17,
+        "path": "C_exact_miss",
+        "latency_ms": 1713.1577000254765,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQWcEDduSN7wTzn5WnlRmTobqN8r",
+        "input_tokens": 37,
+        "output_tokens": 2,
+        "total_tokens": 39,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 18,
+        "path": "C_exact_miss",
+        "latency_ms": 1551.1493000667542,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQWfDHmKY3kcvGo3iCJ0phjMSfjT",
+        "input_tokens": 38,
+        "output_tokens": 2,
+        "total_tokens": 40,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 19,
+        "path": "C_exact_miss",
+        "latency_ms": 1580.9757000533864,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQWgr40HoFe0RUC2EIHjI7zc8rvX",
+        "input_tokens": 37,
+        "output_tokens": 2,
+        "total_tokens": 39,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 20,
+        "path": "C_exact_miss",
+        "latency_ms": 2115.8806000603363,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQWjTFiQla11DKBroVaZSBfK4maY",
+        "input_tokens": 38,
+        "output_tokens": 2,
+        "total_tokens": 40,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 21,
+        "path": "C_exact_miss",
+        "latency_ms": 1508.285399992019,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQWl6Z8SnL1wxFrS6lGrvqtuQsXC",
+        "input_tokens": 38,
+        "output_tokens": 2,
+        "total_tokens": 40,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 22,
+        "path": "C_exact_miss",
+        "latency_ms": 2105.981200002134,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQWntef8WPUDjZyYhNEhjDig01zP",
+        "input_tokens": 37,
+        "output_tokens": 2,
+        "total_tokens": 39,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 23,
+        "path": "C_exact_miss",
+        "latency_ms": 1736.5845000604168,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQWqxEt4jaH3emqwaKf6L1HBxmfj",
+        "input_tokens": 36,
+        "output_tokens": 2,
+        "total_tokens": 38,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 24,
+        "path": "C_exact_miss",
+        "latency_ms": 1681.7212000023574,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQWs6QnoVUGTJGWQm31zrMcLIZlc",
+        "input_tokens": 36,
+        "output_tokens": 2,
+        "total_tokens": 38,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 25,
+        "path": "C_exact_miss",
+        "latency_ms": 1618.3807000052184,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQWuNuhFCOVhl2Al5C8I3brtrkjh",
+        "input_tokens": 38,
+        "output_tokens": 2,
+        "total_tokens": 40,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 26,
+        "path": "C_exact_miss",
+        "latency_ms": 1743.8927999464795,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQWwqJGkc4sEmoZHvExtBIyDevPo",
+        "input_tokens": 37,
+        "output_tokens": 2,
+        "total_tokens": 39,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 27,
+        "path": "C_exact_miss",
+        "latency_ms": 1518.3661000337452,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQWyRDqhCGprBMCzyrdYtgJKJQPu",
+        "input_tokens": 37,
+        "output_tokens": 2,
+        "total_tokens": 39,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 28,
+        "path": "C_exact_miss",
+        "latency_ms": 1450.2558000385761,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQX0NRjThXc4H3THABPUmJPT9rcN",
+        "input_tokens": 39,
+        "output_tokens": 2,
+        "total_tokens": 41,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 29,
+        "path": "C_exact_miss",
+        "latency_ms": 1687.3659999109805,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQX2ABXY3slNzbwZYXZiDN6QJzmU",
+        "input_tokens": 38,
+        "output_tokens": 2,
+        "total_tokens": 40,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 30,
+        "path": "C_exact_miss",
+        "latency_ms": 1648.6522000050172,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQX47hfkAkQsNCPdoec3z86DBu2F",
+        "input_tokens": 39,
+        "output_tokens": 2,
+        "total_tokens": 41,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      }
+    ],
+    "D": [
+      {
+        "iteration": 1,
+        "path": "D_exact_hit",
+        "latency_ms": 267.3022000817582,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-81931260-87d0-4603-9531-e07328fcc22f",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "exact_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "exact_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 2,
+        "path": "D_exact_hit",
+        "latency_ms": 218.9471999881789,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-fd630e6a-461f-4021-a7a5-a01b91fb1d38",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 3,
+        "path": "D_exact_hit",
+        "latency_ms": 222.87649998907,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-c8bf4209-763d-479e-9c67-a032832cce92",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 4,
+        "path": "D_exact_hit",
+        "latency_ms": 198.1429000152275,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-07d914da-ce93-40ca-8698-2f83b62ac699",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 5,
+        "path": "D_exact_hit",
+        "latency_ms": 228.7155999802053,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-87020897-842d-41fc-934d-092dacffd979",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 6,
+        "path": "D_exact_hit",
+        "latency_ms": 202.06489996053278,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-513a4631-e570-4089-a651-4ba870144650",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 7,
+        "path": "D_exact_hit",
+        "latency_ms": 184.7425999585539,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-e89eb3ea-2a67-4dec-8292-1a601877aa8f",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 8,
+        "path": "D_exact_hit",
+        "latency_ms": 192.13419989682734,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-a601d428-f46a-43df-b0f6-65f266f9507e",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 9,
+        "path": "D_exact_hit",
+        "latency_ms": 186.98080000467598,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-a6873dd6-8f9c-4152-9736-68020e99c21a",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 10,
+        "path": "D_exact_hit",
+        "latency_ms": 287.89539996068925,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-86a54234-3e42-468a-ab28-b8567858819f",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 11,
+        "path": "D_exact_hit",
+        "latency_ms": 217.2345999861136,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-00766ea3-db82-463a-9d4e-a6db7a1a3e50",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 12,
+        "path": "D_exact_hit",
+        "latency_ms": 264.56889999099076,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-8855ae26-6148-40b1-8617-c730e26cb78b",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 13,
+        "path": "D_exact_hit",
+        "latency_ms": 274.62859998922795,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-f85e359e-d179-4804-8dfd-1a58a322d783",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 14,
+        "path": "D_exact_hit",
+        "latency_ms": 216.19619999546558,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-215b615c-fc35-4d1f-871b-e302afd3fa9e",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 15,
+        "path": "D_exact_hit",
+        "latency_ms": 264.35949990991503,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-8fbb0c39-21ee-45f3-971c-8bd01a9550dd",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 16,
+        "path": "D_exact_hit",
+        "latency_ms": 284.0445999754593,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-45985485-7f66-442c-8f0c-2a02969718b6",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 17,
+        "path": "D_exact_hit",
+        "latency_ms": 204.66799999121577,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-7b9aa4d8-c553-4d11-8036-231ffb8d864f",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 18,
+        "path": "D_exact_hit",
+        "latency_ms": 268.66400009021163,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-b002cdf4-223a-4771-befa-f3c055efb115",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 19,
+        "path": "D_exact_hit",
+        "latency_ms": 272.18950004316866,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-ae13591a-30cb-4a49-adea-bc05dce21b2a",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 20,
+        "path": "D_exact_hit",
+        "latency_ms": 230.4511999245733,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-9b3e7106-581c-4c47-935f-20e213f57bba",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 21,
+        "path": "D_exact_hit",
+        "latency_ms": 214.3836000468582,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-cfb8b766-2bdf-4f78-918b-89efd0416cc5",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 22,
+        "path": "D_exact_hit",
+        "latency_ms": 281.80789994075894,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-3b574023-6e0f-4be5-a6cb-59d7754833f2",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 23,
+        "path": "D_exact_hit",
+        "latency_ms": 231.58430005423725,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-479aaac7-45b1-4e19-96bf-da85414168d0",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 24,
+        "path": "D_exact_hit",
+        "latency_ms": 208.43160001095384,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-afdb2870-6509-4733-915f-09dfa1317248",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 25,
+        "path": "D_exact_hit",
+        "latency_ms": 212.6574000576511,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-e6c7273f-2b46-4b64-9f42-1e60b68d3349",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 26,
+        "path": "D_exact_hit",
+        "latency_ms": 205.71260002907366,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-7fbdf20c-689f-4830-977e-428853028783",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 27,
+        "path": "D_exact_hit",
+        "latency_ms": 276.47110004909337,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-479b57c8-6be4-420b-959b-1fa70bb6a95d",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 28,
+        "path": "D_exact_hit",
+        "latency_ms": 219.9084999738261,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-f28c24e6-56bd-416e-a484-aa2c3547c136",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 29,
+        "path": "D_exact_hit",
+        "latency_ms": 761.0326000722125,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-e6507952-77cf-40d4-98dc-01297ba02380",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      },
+      {
+        "iteration": 30,
+        "path": "D_exact_hit",
+        "latency_ms": 763.9030999271199,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-be410da2-4e96-437f-a3ba-e17855706cba",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "exact_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 0.0,
+            "store": 0.0,
+            "exact_hit": 1.0
+          },
+          "requests_total": {
+            "semantic_hit": 0.0,
+            "miss": 0.0,
+            "exact_hit": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {}
+      }
+    ],
+    "E": [
+      {
+        "iteration": 1,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 1689.297999953851,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-75f0d301-d48a-42f8-9842-4a91c47df0d0",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Why is HTTPS safer than HTTP?",
+          "prompt_b": "What makes HTTPS more secure than HTTP?"
+        }
+      },
+      {
+        "iteration": 2,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 1607.8145999927074,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-2d58ed48-4614-4bbf-9672-f6a8aa7960b0",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What is the capital of France?",
+          "prompt_b": "Which city serves as France's capital?"
+        }
+      },
+      {
+        "iteration": 3,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 1635.1638999767601,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-36c5bf0c-af40-480a-9a57-535329fbcaad",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Explain what a Python decorator does.",
+          "prompt_b": "What is the purpose of decorators in Python?"
+        }
+      },
+      {
+        "iteration": 4,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 1926.7814999911934,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-ec568aa7-0491-4cd3-a067-a136b9284f5d",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Why is HTTPS safer than HTTP?",
+          "prompt_b": "What makes HTTPS more secure than HTTP?"
+        }
+      },
+      {
+        "iteration": 5,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 1415.9327000379562,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-804c0bfb-01ee-4693-b5a5-0ef7d73a81d4",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What is the capital of France?",
+          "prompt_b": "Which city serves as France's capital?"
+        }
+      },
+      {
+        "iteration": 6,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 1719.9171000393108,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-b24db182-3880-410d-a562-43de303dbe64",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Explain what a Python decorator does.",
+          "prompt_b": "What is the purpose of decorators in Python?"
+        }
+      },
+      {
+        "iteration": 7,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 2497.5758000509813,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-fbcf9bb4-0922-4499-953b-7e686d85421b",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Why is HTTPS safer than HTTP?",
+          "prompt_b": "What makes HTTPS more secure than HTTP?"
+        }
+      },
+      {
+        "iteration": 8,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 1935.6777999782935,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-cdc42541-6212-4866-bf2d-e7ee2579e6b8",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What is the capital of France?",
+          "prompt_b": "Which city serves as France's capital?"
+        }
+      },
+      {
+        "iteration": 9,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 1688.9895999338478,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-feff6216-ca40-40f7-93b8-66c0b187a34d",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Explain what a Python decorator does.",
+          "prompt_b": "What is the purpose of decorators in Python?"
+        }
+      },
+      {
+        "iteration": 10,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 1274.0044000092894,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-6ae5906f-669e-496e-993d-64242bbc5672",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Why is HTTPS safer than HTTP?",
+          "prompt_b": "What makes HTTPS more secure than HTTP?"
+        }
+      },
+      {
+        "iteration": 11,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 1613.2503999397159,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-219b34a1-3c55-4997-a32e-da9c66019249",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What is the capital of France?",
+          "prompt_b": "Which city serves as France's capital?"
+        }
+      },
+      {
+        "iteration": 12,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 1665.3254999546334,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-d5504401-02c5-40e5-b157-2a760ab3c976",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Explain what a Python decorator does.",
+          "prompt_b": "What is the purpose of decorators in Python?"
+        }
+      },
+      {
+        "iteration": 13,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 2635.9239000594243,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-9ca56f74-edf3-4e52-ada1-bfe8d20e24a8",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Why is HTTPS safer than HTTP?",
+          "prompt_b": "What makes HTTPS more secure than HTTP?"
+        }
+      },
+      {
+        "iteration": 14,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 1574.7799000237137,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-e30c71a5-6070-4133-b86b-dcbd1979b9d9",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What is the capital of France?",
+          "prompt_b": "Which city serves as France's capital?"
+        }
+      },
+      {
+        "iteration": 15,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 1356.4951999578625,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-90dcb557-5174-4599-b95d-1f5e260d4c2a",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Explain what a Python decorator does.",
+          "prompt_b": "What is the purpose of decorators in Python?"
+        }
+      },
+      {
+        "iteration": 16,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 1498.6542999977246,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-0b9715e6-5e1f-4e82-a03d-fe44b3a095d5",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Why is HTTPS safer than HTTP?",
+          "prompt_b": "What makes HTTPS more secure than HTTP?"
+        }
+      },
+      {
+        "iteration": 17,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 1611.7108000908047,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-6d4f7b1d-be15-47c7-a4fa-001abd48ea0c",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What is the capital of France?",
+          "prompt_b": "Which city serves as France's capital?"
+        }
+      },
+      {
+        "iteration": 18,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 1350.2408999484032,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-e8e5c31a-c469-4369-b722-ca252de5644f",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Explain what a Python decorator does.",
+          "prompt_b": "What is the purpose of decorators in Python?"
+        }
+      },
+      {
+        "iteration": 19,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 1428.8227000506595,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-1bd6bcc0-6508-48a3-bce4-e02698e24754",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Why is HTTPS safer than HTTP?",
+          "prompt_b": "What makes HTTPS more secure than HTTP?"
+        }
+      },
+      {
+        "iteration": 20,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 1585.5141999199986,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-464aede3-71a4-4bfc-a6c7-8cf2ac9d58b2",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What is the capital of France?",
+          "prompt_b": "Which city serves as France's capital?"
+        }
+      },
+      {
+        "iteration": 21,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 1504.0540000190958,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-181ecb1a-aaf0-465c-9a32-727896417235",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Explain what a Python decorator does.",
+          "prompt_b": "What is the purpose of decorators in Python?"
+        }
+      },
+      {
+        "iteration": 22,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 1533.1294999923557,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-49c0aeb2-7761-4487-8b4c-c1f4de288662",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Why is HTTPS safer than HTTP?",
+          "prompt_b": "What makes HTTPS more secure than HTTP?"
+        }
+      },
+      {
+        "iteration": 23,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 1436.523100011982,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-f37342db-1954-4631-b15b-74288c87b7e5",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What is the capital of France?",
+          "prompt_b": "Which city serves as France's capital?"
+        }
+      },
+      {
+        "iteration": 24,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 1490.6365000642836,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-a6ebf1b4-837c-421f-80ab-a20e97363ebf",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Explain what a Python decorator does.",
+          "prompt_b": "What is the purpose of decorators in Python?"
+        }
+      },
+      {
+        "iteration": 25,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 1379.276700085029,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-34ac8d1a-d684-4926-afaf-1f2c42c622dd",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Why is HTTPS safer than HTTP?",
+          "prompt_b": "What makes HTTPS more secure than HTTP?"
+        }
+      },
+      {
+        "iteration": 26,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 1424.205399933271,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-8ae20aae-d09e-49ce-91ff-27ead1d2f98f",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What is the capital of France?",
+          "prompt_b": "Which city serves as France's capital?"
+        }
+      },
+      {
+        "iteration": 27,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 1196.2070000590757,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-79cc2fc6-4a67-4a77-b096-b1a313048f3f",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Explain what a Python decorator does.",
+          "prompt_b": "What is the purpose of decorators in Python?"
+        }
+      },
+      {
+        "iteration": 28,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 1580.3416999988258,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-0b8622d4-6758-4aad-bce6-143276524299",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Why is HTTPS safer than HTTP?",
+          "prompt_b": "What makes HTTPS more secure than HTTP?"
+        }
+      },
+      {
+        "iteration": 29,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 2111.822500010021,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-ad04aa3e-c20f-46e8-8e76-75d3d4a0fdfa",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What is the capital of France?",
+          "prompt_b": "Which city serves as France's capital?"
+        }
+      },
+      {
+        "iteration": 30,
+        "path": "E_verified_semantic_hit",
+        "latency_ms": 1217.1978999394923,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-d986b67e-f7c3-4aaa-b60b-bbb1152977a4",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Explain what a Python decorator does.",
+          "prompt_b": "What is the purpose of decorators in Python?"
+        }
+      }
+    ],
+    "F": [
+      {
+        "iteration": 1,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2490.9388000378385,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQd2aBJ06i6b2M36NmKJzosgDFpN",
+        "input_tokens": 35,
+        "output_tokens": 64,
+        "total_tokens": 99,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "How does OAuth authentication work?",
+          "prompt_b": "How does OAuth authorization work?"
+        }
+      },
+      {
+        "iteration": 2,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2656.402499997057,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQdBC3ZVaXxrAqf0pW8cdsUjBFcS",
+        "input_tokens": 38,
+        "output_tokens": 64,
+        "total_tokens": 102,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What does list.append do in Python?",
+          "prompt_b": "What does list.extend do in Python?"
+        }
+      },
+      {
+        "iteration": 3,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2457.79669994954,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQdKdCQoVe9HTlxVzYzages3XVDF",
+        "input_tokens": 37,
+        "output_tokens": 64,
+        "total_tokens": 101,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "How do I sort a Python list?",
+          "prompt_b": "How do I reverse a Python list?"
+        }
+      },
+      {
+        "iteration": 4,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2288.315700017847,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQdTrOLYfFosr4aULtGJozJfKbmW",
+        "input_tokens": 40,
+        "output_tokens": 64,
+        "total_tokens": 104,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What are symptoms of type 1 diabetes?",
+          "prompt_b": "What are symptoms of type 2 diabetes?"
+        }
+      },
+      {
+        "iteration": 5,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2434.9855999462306,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQdclkl4VWkUIFb0bbN5nFJ0khFR",
+        "input_tokens": 36,
+        "output_tokens": 64,
+        "total_tokens": 100,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "How does OAuth authentication work?",
+          "prompt_b": "How does OAuth authorization work?"
+        }
+      },
+      {
+        "iteration": 6,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2173.1241999659687,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQdkkWvyrivsXsJI0RNEo6o5ZcVc",
+        "input_tokens": 37,
+        "output_tokens": 64,
+        "total_tokens": 101,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What does list.append do in Python?",
+          "prompt_b": "What does list.extend do in Python?"
+        }
+      },
+      {
+        "iteration": 7,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2074.9891999876127,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQdtQBbUoLgwCzvNBPTRLJDp3Zv9",
+        "input_tokens": 38,
+        "output_tokens": 64,
+        "total_tokens": 102,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "How do I sort a Python list?",
+          "prompt_b": "How do I reverse a Python list?"
+        }
+      },
+      {
+        "iteration": 8,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2075.297600007616,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQe1Yf4bwQQzxWFgHtGpUb3xYKOR",
+        "input_tokens": 39,
+        "output_tokens": 64,
+        "total_tokens": 103,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What are symptoms of type 1 diabetes?",
+          "prompt_b": "What are symptoms of type 2 diabetes?"
+        }
+      },
+      {
+        "iteration": 9,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2234.730700030923,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQe9GccIUz6ZLBvs4t4hA6HXw0j3",
+        "input_tokens": 35,
+        "output_tokens": 64,
+        "total_tokens": 99,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "How does OAuth authentication work?",
+          "prompt_b": "How does OAuth authorization work?"
+        }
+      },
+      {
+        "iteration": 10,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2976.220600074157,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQeIJqaj0gwNavYHuYPKb5rjGlwp",
+        "input_tokens": 38,
+        "output_tokens": 64,
+        "total_tokens": 102,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What does list.append do in Python?",
+          "prompt_b": "What does list.extend do in Python?"
+        }
+      },
+      {
+        "iteration": 11,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2155.8277999283746,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQeU9cRwEyJ91Fr0FONT35jHtWwL",
+        "input_tokens": 37,
+        "output_tokens": 64,
+        "total_tokens": 101,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "How do I sort a Python list?",
+          "prompt_b": "How do I reverse a Python list?"
+        }
+      },
+      {
+        "iteration": 12,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2270.284999976866,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQecrLBKc905mY4I3BPZqvH3kDJg",
+        "input_tokens": 39,
+        "output_tokens": 64,
+        "total_tokens": 103,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What are symptoms of type 1 diabetes?",
+          "prompt_b": "What are symptoms of type 2 diabetes?"
+        }
+      },
+      {
+        "iteration": 13,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2278.6020999774337,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQelmPObY3zeFtOea61lYYfu6U87",
+        "input_tokens": 37,
+        "output_tokens": 64,
+        "total_tokens": 101,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "How does OAuth authentication work?",
+          "prompt_b": "How does OAuth authorization work?"
+        }
+      },
+      {
+        "iteration": 14,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2487.5424000201747,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQeurxiM4xzaFrBfUsgRLIJbfiLR",
+        "input_tokens": 37,
+        "output_tokens": 64,
+        "total_tokens": 101,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What does list.append do in Python?",
+          "prompt_b": "What does list.extend do in Python?"
+        }
+      },
+      {
+        "iteration": 15,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2154.4130999827757,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQf3oNPftVq0E0KQt4tbJJV7edct",
+        "input_tokens": 37,
+        "output_tokens": 64,
+        "total_tokens": 101,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "How do I sort a Python list?",
+          "prompt_b": "How do I reverse a Python list?"
+        }
+      },
+      {
+        "iteration": 16,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2321.959200082347,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQfB9xWb0TX7fQpVNOkxwJVF7Fdw",
+        "input_tokens": 37,
+        "output_tokens": 64,
+        "total_tokens": 101,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What are symptoms of type 1 diabetes?",
+          "prompt_b": "What are symptoms of type 2 diabetes?"
+        }
+      },
+      {
+        "iteration": 17,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2084.709999966435,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQfJt52FbCtSs0DqDGilahB1Xscs",
+        "input_tokens": 35,
+        "output_tokens": 64,
+        "total_tokens": 99,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "How does OAuth authentication work?",
+          "prompt_b": "How does OAuth authorization work?"
+        }
+      },
+      {
+        "iteration": 18,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2285.5069999350235,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQfSo4PsUYunOwfMzFi5Qsysf73T",
+        "input_tokens": 36,
+        "output_tokens": 64,
+        "total_tokens": 100,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What does list.append do in Python?",
+          "prompt_b": "What does list.extend do in Python?"
+        }
+      },
+      {
+        "iteration": 19,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2232.1825000690296,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQfa3t3pVTgLP5xxhVuhICGlUAYA",
+        "input_tokens": 37,
+        "output_tokens": 64,
+        "total_tokens": 101,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "How do I sort a Python list?",
+          "prompt_b": "How do I reverse a Python list?"
+        }
+      },
+      {
+        "iteration": 20,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2257.7755000675097,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQfjazxm93dIYSzEkySd6xhyDa78",
+        "input_tokens": 39,
+        "output_tokens": 64,
+        "total_tokens": 103,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What are symptoms of type 1 diabetes?",
+          "prompt_b": "What are symptoms of type 2 diabetes?"
+        }
+      },
+      {
+        "iteration": 21,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2603.614900028333,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQfspam7Q8LAiXWOzkehVs18muR3",
+        "input_tokens": 38,
+        "output_tokens": 64,
+        "total_tokens": 102,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "How does OAuth authentication work?",
+          "prompt_b": "How does OAuth authorization work?"
+        }
+      },
+      {
+        "iteration": 22,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2153.950799955055,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQg2NYVPpmyX4k1F7lT9MSZ8FZR0",
+        "input_tokens": 38,
+        "output_tokens": 64,
+        "total_tokens": 102,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What does list.append do in Python?",
+          "prompt_b": "What does list.extend do in Python?"
+        }
+      },
+      {
+        "iteration": 23,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 3406.6431000828743,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQgCqiaLv6znM4XlIPPcCx5zLBd6",
+        "input_tokens": 37,
+        "output_tokens": 64,
+        "total_tokens": 101,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "How do I sort a Python list?",
+          "prompt_b": "How do I reverse a Python list?"
+        }
+      },
+      {
+        "iteration": 24,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2195.4756000777707,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQgLcaQpAJDDNkoUhilmKmByw0XZ",
+        "input_tokens": 41,
+        "output_tokens": 64,
+        "total_tokens": 105,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What are symptoms of type 1 diabetes?",
+          "prompt_b": "What are symptoms of type 2 diabetes?"
+        }
+      },
+      {
+        "iteration": 25,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2411.0102999256924,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQgUs57VmqW5kPaizJMmUh4Adcta",
+        "input_tokens": 36,
+        "output_tokens": 64,
+        "total_tokens": 100,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "How does OAuth authentication work?",
+          "prompt_b": "How does OAuth authorization work?"
+        }
+      },
+      {
+        "iteration": 26,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2341.520700021647,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQgcqbqzcPcLHifyT3ejRGdub9s5",
+        "input_tokens": 39,
+        "output_tokens": 64,
+        "total_tokens": 103,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What does list.append do in Python?",
+          "prompt_b": "What does list.extend do in Python?"
+        }
+      },
+      {
+        "iteration": 27,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2267.8745000157505,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQglYfnZUIXEjggY5TIfVZVbDbLq",
+        "input_tokens": 37,
+        "output_tokens": 64,
+        "total_tokens": 101,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "How do I sort a Python list?",
+          "prompt_b": "How do I reverse a Python list?"
+        }
+      },
+      {
+        "iteration": 28,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2031.9781000725925,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQgtY3cXdlMHnaR2sis2STW4ceTo",
+        "input_tokens": 38,
+        "output_tokens": 64,
+        "total_tokens": 102,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What are symptoms of type 1 diabetes?",
+          "prompt_b": "What are symptoms of type 2 diabetes?"
+        }
+      },
+      {
+        "iteration": 29,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2088.0090999417007,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQh2C7FV6S1VNftUMtOCfMQsMRnd",
+        "input_tokens": 34,
+        "output_tokens": 64,
+        "total_tokens": 98,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "How does OAuth authentication work?",
+          "prompt_b": "How does OAuth authorization work?"
+        }
+      },
+      {
+        "iteration": 30,
+        "path": "F_semantic_reject_provider",
+        "latency_ms": 2011.7616999195889,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "chatcmpl-EHQhA7GDpT2xCZKyw55TwSxfkFl9Y",
+        "input_tokens": 37,
+        "output_tokens": 64,
+        "total_tokens": 101,
+        "cache_result": "miss",
+        "metrics_delta": {
+          "provider_requests": 1.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_reject": 1.0,
+            "store": 1.0
+          },
+          "requests_total": {
+            "miss": 1.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What does list.append do in Python?",
+          "prompt_b": "What does list.extend do in Python?"
+        }
+      }
+    ],
+    "G": [
+      {
+        "iteration": 1,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1067.7155000157654,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-01d7e0be-909e-4536-afa1-f0eeb4bc4766",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Why is HTTPS safer than HTTP?",
+          "prompt_b": "What makes HTTPS more secure than HTTP?"
+        }
+      },
+      {
+        "iteration": 2,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1170.64540006686,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-fbdf6348-f9a8-4cef-8d69-2a7ec6524e4e",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What is the capital of France?",
+          "prompt_b": "Which city serves as France's capital?"
+        }
+      },
+      {
+        "iteration": 3,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1245.883300085552,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-6d827197-914c-496a-ad32-efb722be7f6e",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Explain what a Python decorator does.",
+          "prompt_b": "What is the purpose of decorators in Python?"
+        }
+      },
+      {
+        "iteration": 4,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1394.578899955377,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-61d3fb00-6dda-433c-840e-7262d77e43ed",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Why is HTTPS safer than HTTP?",
+          "prompt_b": "What makes HTTPS more secure than HTTP?"
+        }
+      },
+      {
+        "iteration": 5,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1175.341400085017,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-2ac49d56-57d7-4975-aaba-8ae9180587b3",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What is the capital of France?",
+          "prompt_b": "Which city serves as France's capital?"
+        }
+      },
+      {
+        "iteration": 6,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1216.0257999785244,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-790a97fd-bf5c-435a-a3e0-0f1d0c84f534",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Explain what a Python decorator does.",
+          "prompt_b": "What is the purpose of decorators in Python?"
+        }
+      },
+      {
+        "iteration": 7,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1331.9285000907257,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-77b3327d-59c6-46b1-add5-1be1c58aec20",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Why is HTTPS safer than HTTP?",
+          "prompt_b": "What makes HTTPS more secure than HTTP?"
+        }
+      },
+      {
+        "iteration": 8,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1593.219699920155,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-555b596f-9b46-4ec2-972d-7b8d025f9d18",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What is the capital of France?",
+          "prompt_b": "Which city serves as France's capital?"
+        }
+      },
+      {
+        "iteration": 9,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1170.970999985002,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-8c9f458a-3890-49e7-8f58-5d28fa960a7c",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Explain what a Python decorator does.",
+          "prompt_b": "What is the purpose of decorators in Python?"
+        }
+      },
+      {
+        "iteration": 10,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1205.5261000059545,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-c2971775-24c4-4be4-b962-40ae0c5c09a0",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Why is HTTPS safer than HTTP?",
+          "prompt_b": "What makes HTTPS more secure than HTTP?"
+        }
+      },
+      {
+        "iteration": 11,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1356.6244000103325,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-ee97a8d9-2b2b-46ec-a9c8-29b0ff0d79b0",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What is the capital of France?",
+          "prompt_b": "Which city serves as France's capital?"
+        }
+      },
+      {
+        "iteration": 12,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1423.372899997048,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-882d679c-3470-4ff0-a954-2b365ebeacc6",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Explain what a Python decorator does.",
+          "prompt_b": "What is the purpose of decorators in Python?"
+        }
+      },
+      {
+        "iteration": 13,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1117.4863000633195,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-b80d69e6-c06b-4e05-b70c-9adad906394f",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Why is HTTPS safer than HTTP?",
+          "prompt_b": "What makes HTTPS more secure than HTTP?"
+        }
+      },
+      {
+        "iteration": 14,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1128.732300014235,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-acbb1677-3022-425c-9859-85f832001d34",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What is the capital of France?",
+          "prompt_b": "Which city serves as France's capital?"
+        }
+      },
+      {
+        "iteration": 15,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1161.495600012131,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-31a6fb06-4411-41d3-8e19-656357f92b40",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Explain what a Python decorator does.",
+          "prompt_b": "What is the purpose of decorators in Python?"
+        }
+      },
+      {
+        "iteration": 16,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1179.514600080438,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-6667da73-6ad3-4215-8009-871d90834b01",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Why is HTTPS safer than HTTP?",
+          "prompt_b": "What makes HTTPS more secure than HTTP?"
+        }
+      },
+      {
+        "iteration": 17,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1196.8312000390142,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-cbfff8f0-536e-4120-850a-1ce24167652e",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What is the capital of France?",
+          "prompt_b": "Which city serves as France's capital?"
+        }
+      },
+      {
+        "iteration": 18,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1339.8447999497876,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-77160242-66e5-48d3-a0f8-742d82c84c71",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Explain what a Python decorator does.",
+          "prompt_b": "What is the purpose of decorators in Python?"
+        }
+      },
+      {
+        "iteration": 19,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1304.2273999890313,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-28a949fd-7748-4848-ab65-5b6f9299c681",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Why is HTTPS safer than HTTP?",
+          "prompt_b": "What makes HTTPS more secure than HTTP?"
+        }
+      },
+      {
+        "iteration": 20,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1530.5082000559196,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-e1ea7073-65f9-45d9-8d6e-48da50a34bc5",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What is the capital of France?",
+          "prompt_b": "Which city serves as France's capital?"
+        }
+      },
+      {
+        "iteration": 21,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1114.0253000194207,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-91e1a45d-f36a-4b08-9451-59a98b4fb724",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Explain what a Python decorator does.",
+          "prompt_b": "What is the purpose of decorators in Python?"
+        }
+      },
+      {
+        "iteration": 22,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1329.6202999772504,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-a974d424-7aad-453e-8b8c-156bf3bae6db",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Why is HTTPS safer than HTTP?",
+          "prompt_b": "What makes HTTPS more secure than HTTP?"
+        }
+      },
+      {
+        "iteration": 23,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 4841.653099982068,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-96e76ad3-91e1-4f9d-ab59-5908e8fbe6af",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What is the capital of France?",
+          "prompt_b": "Which city serves as France's capital?"
+        }
+      },
+      {
+        "iteration": 24,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1152.6071999687701,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-9581b161-b499-4871-9049-973122e1dd8d",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Explain what a Python decorator does.",
+          "prompt_b": "What is the purpose of decorators in Python?"
+        }
+      },
+      {
+        "iteration": 25,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1193.5428999131545,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-3384351e-8427-4a67-9bda-778b36b23d90",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Why is HTTPS safer than HTTP?",
+          "prompt_b": "What makes HTTPS more secure than HTTP?"
+        }
+      },
+      {
+        "iteration": 26,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1050.6894999416545,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-f799c7d5-1c10-4b66-9250-2719e6786055",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What is the capital of France?",
+          "prompt_b": "Which city serves as France's capital?"
+        }
+      },
+      {
+        "iteration": 27,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1255.1080000121146,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-14f64c49-4752-469b-ab42-49bd74e01faa",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Explain what a Python decorator does.",
+          "prompt_b": "What is the purpose of decorators in Python?"
+        }
+      },
+      {
+        "iteration": 28,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1049.3797999806702,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-96dbae95-7357-49e2-8f72-36cfa6973362",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Why is HTTPS safer than HTTP?",
+          "prompt_b": "What makes HTTPS more secure than HTTP?"
+        }
+      },
+      {
+        "iteration": 29,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1141.4323000935838,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-65580d3e-458a-46cf-98e6-4a2d40e4d8b0",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "What is the capital of France?",
+          "prompt_b": "Which city serves as France's capital?"
+        }
+      },
+      {
+        "iteration": 30,
+        "path": "G_long_semantic_hit",
+        "latency_ms": 1127.4074000539258,
+        "valid": true,
+        "invalid_reason": null,
+        "completion_id": "cache-27373783-3cd1-4051-a423-29d72373e069",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "total_tokens": 0,
+        "cache_result": "semantic_hit",
+        "metrics_delta": {
+          "provider_requests": 0.0,
+          "cache_operations": {
+            "semantic_miss": 0.0,
+            "semantic_hit": 1.0,
+            "store": 0.0
+          },
+          "requests_total": {
+            "semantic_hit": 1.0,
+            "miss": 0.0
+          }
+        },
+        "similarity": null,
+        "extra": {
+          "prompt_a": "Explain what a Python decorator does.",
+          "prompt_b": "What is the purpose of decorators in Python?"
+        }
+      }
+    ]
+  },
+  "invalid_iterations": [],
+  "limitations": [
+    "Client-side latency includes network variance",
+    "Semantic paths restart gateway per iteration for isolation",
+    "Prometheus counters are process-lifetime; deltas used per request"
+  ],
+  "environment": {
+    "health": {
+      "status": "ok",
+      "version": "0.2.0"
+    },
+    "prometheus_target_up": true,
+    "prometheus_target": {
+      "discoveredLabels": {
+        "__address__": "app:8000",
+        "__metrics_path__": "/metrics",
+        "__scheme__": "http",
+        "__scrape_interval__": "15s",
+        "__scrape_timeout__": "10s",
+        "job": "llm-gateway"
+      },
+      "labels": {
+        "instance": "app:8000",
+        "job": "llm-gateway"
+      },
+      "scrapePool": "llm-gateway",
+      "scrapeUrl": "http://app:8000/metrics",
+      "globalUrl": "http://app:8000/metrics",
+      "lastError": "",
+      "lastScrape": "2026-08-27T09:14:56.476660421Z",
+      "lastScrapeDuration": 0.003103408,
+      "health": "up",
+      "scrapeInterval": "15s",
+      "scrapeTimeout": "10s"
+    },
+    "git_commit": "7ada54050621da9723422577b07d74b396a1f8ba",
+    "gateway_url": "http://127.0.0.1:8001",
+    "model": "gpt-4o-mini",
+    "cache_candidate_threshold": 0.65,
+    "cache_verifier_model": "gpt-4o-mini",
+    "embedding_model": "text-embedding-3-small",
+    "semantic_cache_enabled": true,
+    "alembic_stdout": ""
+  },
+  "benchmark_project_id": "78c05744-84c4-44f4-ae44-989c28f8de07",
+  "cross_check": {
+    "prometheus_cache_operations": {
+      "semantic_hit": 1.0,
+      "semantic_miss": 1.0,
+      "store": 1.0
+    },
+    "prometheus_requests_by_cache_result": {
+      "semantic_hit": 1.0,
+      "miss": 1.0
+    },
+    "prometheus_provider_requests_openai_success": 1.0,
+    "postgres_benchmark_project": {
+      "project_id": "78c05744-84c4-44f4-ae44-989c28f8de07",
+      "cache_entries": 2,
+      "request_logs": 2,
+      "cache_hit_rows": 1
+    },
+    "requests_api_sample_total": 2,
+    "note": "Request logs expose cache_hit bool only; Prometheus cache_result label is authoritative for exact_hit/semantic_hit/bypass/miss. cache_operations counters include semantic_reject and store at operation granularity."
+  }
+}

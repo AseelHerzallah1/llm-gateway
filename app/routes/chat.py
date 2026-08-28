@@ -13,6 +13,7 @@ from starlette.responses import StreamingResponse
 
 from app.auth.dependencies import get_current_project
 from app.cache.chat_integration import (
+    bypass_semantic_cache,
     store_non_streaming_completion,
     try_cached_non_streaming_completion,
 )
@@ -24,6 +25,8 @@ from app.observability.sse_usage import parse_sse_usage
 from app.providers.base import ChatMessage, CompletionRequest
 from app.providers.fallback import complete_with_fallback, stream_with_fallback
 from app.providers.exceptions import AnthropicProviderError, OpenAIProviderError
+from app.observability.prometheus_metrics import get_prometheus_metrics
+from app.observability.cost import estimate_cost_usd
 from app.security.pii import PiiRedactionConfig, detokenize_text, redact_messages
 from app.schemas.chat import (
     ChatChoice,
@@ -97,6 +100,35 @@ def _build_completion_request(
 
 def _latency_ms(started_at: float) -> int:
     return int((time.perf_counter() - started_at) * 1000)
+
+
+def _non_stream_cache_result(http_request: Request, *, cache_result: str) -> str:
+    if bypass_semantic_cache(http_request) or not settings.semantic_cache_enabled:
+        return "bypass"
+    return cache_result
+
+
+def _record_gateway_request(
+    *,
+    status: str,
+    stream: bool,
+    cache_result: str,
+    started_at: float,
+    input_tokens: int = 0,
+    output_tokens: int = 0,
+    cost_usd: float = 0.0,
+) -> None:
+    if not settings.prometheus_enabled:
+        return
+    get_prometheus_metrics().record_request(
+        status=status,
+        stream=stream,
+        cache_result=cache_result,
+        duration_seconds=time.perf_counter() - started_at,
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+        cost_usd=cost_usd,
+    )
 
 
 async def _schedule_request_log(
@@ -201,6 +233,16 @@ async def _sse_event_generator(
             status = "error"
             error_reason = "stream_incomplete"
 
+        cost_usd = estimate_cost_usd(model, input_tokens, output_tokens)
+        _record_gateway_request(
+            status=status,
+            stream=True,
+            cache_result="none",
+            started_at=started_at,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            cost_usd=cost_usd if status == "success" else 0.0,
+        )
         await persist_request_log(
             RequestLogCreate(
                 project_id=project.id,
@@ -251,6 +293,12 @@ async def create_chat_completion(
         except (OpenAIProviderError, AnthropicProviderError) as exc:
             logger.warning("Provider stream error for project_id=%s: %s", project.id, exc.message)
             await _log_error(background_tasks, project, body.model, started_at, exc.message)
+            _record_gateway_request(
+                status="error",
+                stream=True,
+                cache_result="none",
+                started_at=started_at,
+            )
             raise map_openai_provider_error(exc) from exc
 
         return StreamingResponse(
@@ -266,20 +314,27 @@ async def create_chat_completion(
             headers=SSE_HEADERS,
         )
 
-    latency_before_provider = _latency_ms(started_at)
     cache_check = await try_cached_non_streaming_completion(
         request,
         project,
         body,
         completion_request.messages,
-        started_at,
-        latency_before_provider,
+        temperature=completion_request.temperature,
+        max_tokens=completion_request.max_tokens,
+        token_map=pii_token_map,
+        started_at=started_at,
     )
     if cache_check.cached_response is not None:
         cached = cache_check.cached_response
         response_content = _response_content_with_optional_detokenize(
             cached.choices[0].message.content,
             pii_token_map,
+        )
+        _record_gateway_request(
+            status="success",
+            stream=False,
+            cache_result=cache_check.cache_result,
+            started_at=started_at,
         )
         return ChatCompletionResponse(
             id=cached.id,
@@ -306,6 +361,12 @@ async def create_chat_completion(
     except (OpenAIProviderError, AnthropicProviderError) as exc:
         logger.warning("Provider error for project_id=%s: %s", project.id, exc.message)
         await _log_error(background_tasks, project, body.model, started_at, exc.message)
+        _record_gateway_request(
+            status="error",
+            stream=False,
+            cache_result=getattr(request.state, "cache_result", "miss"),
+            started_at=started_at,
+        )
         raise map_openai_provider_error(exc) from exc
 
     await store_non_streaming_completion(
@@ -314,6 +375,9 @@ async def create_chat_completion(
         body.model,
         completion_request.messages,
         result,
+        temperature=completion_request.temperature,
+        max_tokens=completion_request.max_tokens,
+        token_map=pii_token_map,
         embedding=cache_check.embedding,
     )
 
@@ -327,6 +391,21 @@ async def create_chat_completion(
             input_tokens=result.prompt_tokens,
             output_tokens=result.completion_tokens,
         ),
+    )
+
+    cost_usd = estimate_cost_usd(
+        result.model,
+        result.prompt_tokens,
+        result.completion_tokens,
+    )
+    _record_gateway_request(
+        status="success",
+        stream=False,
+        cache_result=getattr(request.state, "cache_result", "miss"),
+        started_at=started_at,
+        input_tokens=result.prompt_tokens,
+        output_tokens=result.completion_tokens,
+        cost_usd=cost_usd,
     )
 
     response_content = _response_content_with_optional_detokenize(

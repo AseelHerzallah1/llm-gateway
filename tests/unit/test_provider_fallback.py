@@ -14,7 +14,7 @@ from app.providers.router import FallbackTarget, ProviderRouter
 class AlwaysFailProvider(LLMProvider):
     @property
     def name(self) -> str:
-        return "always-fail"
+        return "groq"
 
     async def complete(self, request: CompletionRequest) -> CompletionResponse:
         raise OpenAIProviderError("upstream unavailable", status_code=503)

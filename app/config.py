@@ -59,12 +59,18 @@ class Settings(BaseSettings):
     secret_key: SecretStr = Field(default=SecretStr("change-me"))
     gateway_test_api_key: SecretStr = Field(default=SecretStr(""))
 
-    # Semantic cache (used from Phase 6+)
+    # Gateway cache (L1 exact + L2 verified semantic)
     semantic_cache_enabled: bool = True
+    cache_candidate_threshold: float = 0.65
+    cache_verifier_model: str = "gpt-4o-mini"
+    cache_verifier_timeout_s: float = 10.0
+    cache_verifier_max_tokens: int = 4
+    # Deprecated: cosine-only threshold retained for config compat only.
     cache_similarity_threshold: float = 0.92
 
     # Observability (Phase 8 perf)
     request_log_async: bool = True
+    prometheus_enabled: bool = True
 
     # Provider retries (Phase 7+)
     provider_max_retries: int = 2

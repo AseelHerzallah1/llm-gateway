@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import time
 from collections.abc import AsyncIterator
 
+from app.observability.prometheus_metrics import get_prometheus_metrics
 from app.providers.base import CompletionRequest, CompletionResponse, LLMProvider
 from app.providers.exceptions import AnthropicProviderError, OpenAIProviderError
 
@@ -37,13 +39,19 @@ async def complete_with_retry(
 ) -> CompletionResponse:
     """Call provider.complete with retries on transient errors."""
     attempt = 0
+    metrics = get_prometheus_metrics()
     while True:
+        started = time.perf_counter()
+        status = "success"
         try:
-            return await provider.complete(request)
+            result = await provider.complete(request)
+            return result
         except (OpenAIProviderError, AnthropicProviderError) as exc:
+            status = "error"
             if attempt >= max_retries or not is_retryable_provider_error(exc):
                 raise
 
+            metrics.record_provider_retry(provider.name)
             delay = backoff_s * (2**attempt)
             logger.warning(
                 "Retrying provider=%s attempt=%d/%d after %.2fs: %s",
@@ -55,6 +63,12 @@ async def complete_with_retry(
             )
             await asyncio.sleep(delay)
             attempt += 1
+        finally:
+            metrics.record_provider_attempt(
+                provider=provider.name,
+                status=status,
+                duration_seconds=time.perf_counter() - started,
+            )
 
 
 async def stream_with_retry(
@@ -66,18 +80,23 @@ async def stream_with_retry(
 ) -> tuple[AsyncIterator[str], str | None]:
     """Open a provider stream and read the first chunk, retrying on transient open failures."""
     attempt = 0
+    metrics = get_prometheus_metrics()
     while True:
         stream_iter = provider.stream(request)
+        started = time.perf_counter()
+        status = "success"
         try:
             first_chunk = await stream_iter.__anext__()
             return stream_iter, first_chunk
         except StopAsyncIteration:
             return stream_iter, None
         except (OpenAIProviderError, AnthropicProviderError) as exc:
+            status = "error"
             await stream_iter.aclose()
             if attempt >= max_retries or not is_retryable_provider_error(exc):
                 raise
 
+            metrics.record_provider_retry(provider.name)
             delay = backoff_s * (2**attempt)
             logger.warning(
                 "Retrying provider=%s stream attempt=%d/%d after %.2fs: %s",
@@ -89,3 +108,9 @@ async def stream_with_retry(
             )
             await asyncio.sleep(delay)
             attempt += 1
+        finally:
+            metrics.record_provider_attempt(
+                provider=provider.name,
+                status=status,
+                duration_seconds=time.perf_counter() - started,
+            )

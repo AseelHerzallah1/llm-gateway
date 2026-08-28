@@ -1,0 +1,54 @@
+{
+  "started_at": "2026-08-27T14:38:24.152770+00:00",
+  "completed_at": "2026-08-27T14:42:45.391315+00:00",
+  "duration_seconds": 255.8,
+  "safety_stop": false,
+  "request_count": 53,
+  "prometheus_delta": {
+    "requests_total": {
+      "exact_hit": 26.0,
+      "bypass": 5.0,
+      "miss": 19.0,
+      "semantic_hit": 3.0
+    },
+    "cache_operations": {
+      "semantic_miss": 15.0,
+      "semantic_reject": 4.0,
+      "semantic_hit": 3.0,
+      "store": 19.0,
+      "exact_hit": 26.0
+    },
+    "provider_requests": 24.0,
+    "provider_errors": 0.0,
+    "request_errors": 0.0
+  },
+  "summary": {
+    "total_requests_non_stream": 53,
+    "exact_hit": 26,
+    "semantic_hit": 3,
+    "miss": 19,
+    "bypass": 5,
+    "semantic_reject": 4,
+    "provider_attempts": 24,
+    "errors": 0,
+    "cache_hit_rate_pct": 60.4
+  },
+  "outcome_counts_by_inferred_result": {
+    "miss": 19,
+    "exact_hit": 26,
+    "semantic_hit": 3,
+    "bypass": 5
+  },
+  "cross_check": {
+    "project_id": "78c05744-84c4-44f4-ae44-989c28f8de07",
+    "cache_entries": 22,
+    "request_logs": 53,
+    "cache_hit_rows": 29,
+    "requests_api_total": 53
+  },
+  "grafana": {
+    "url": "http://127.0.0.1:3000/d/llm-gateway-overview/llm-gateway-overview",
+    "recommended_time_range": "Last 15 minutes",
+    "screenshot_ready": false
+  }
+}

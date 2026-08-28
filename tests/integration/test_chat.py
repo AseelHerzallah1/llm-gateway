@@ -28,7 +28,7 @@ async def test_chat_completion_returns_provider_response(client, monkeypatch) ->
 
     monkeypatch.setattr(
         "app.routes.chat.try_cached_non_streaming_completion",
-        AsyncMock(return_value=NonStreamingCacheCheck(cached_response=None, embedding=None)),
+        AsyncMock(return_value=NonStreamingCacheCheck(cached_response=None, cache_result="miss", embedding=None)),
     )
     monkeypatch.setattr("app.routes.chat.store_non_streaming_completion", AsyncMock())
     monkeypatch.setattr("app.routes.chat.persist_request_log", AsyncMock())
@@ -87,7 +87,7 @@ async def test_chat_redacts_pii_before_provider(client, monkeypatch) -> None:
 
     monkeypatch.setattr(
         "app.routes.chat.try_cached_non_streaming_completion",
-        AsyncMock(return_value=NonStreamingCacheCheck(cached_response=None, embedding=None)),
+        AsyncMock(return_value=NonStreamingCacheCheck(cached_response=None, cache_result="miss", embedding=None)),
     )
     monkeypatch.setattr("app.routes.chat.store_non_streaming_completion", AsyncMock())
     monkeypatch.setattr("app.routes.chat.persist_request_log", AsyncMock())
@@ -129,7 +129,7 @@ async def test_chat_skips_pii_when_disabled(client, monkeypatch) -> None:
 
     monkeypatch.setattr(
         "app.routes.chat.try_cached_non_streaming_completion",
-        AsyncMock(return_value=NonStreamingCacheCheck(cached_response=None, embedding=None)),
+        AsyncMock(return_value=NonStreamingCacheCheck(cached_response=None, cache_result="miss", embedding=None)),
     )
     monkeypatch.setattr("app.routes.chat.store_non_streaming_completion", AsyncMock())
     monkeypatch.setattr("app.routes.chat.persist_request_log", AsyncMock())
@@ -174,7 +174,7 @@ async def test_chat_redacts_credit_card_before_provider(client, monkeypatch) -> 
 
     monkeypatch.setattr(
         "app.routes.chat.try_cached_non_streaming_completion",
-        AsyncMock(return_value=NonStreamingCacheCheck(cached_response=None, embedding=None)),
+        AsyncMock(return_value=NonStreamingCacheCheck(cached_response=None, cache_result="miss", embedding=None)),
     )
     monkeypatch.setattr("app.routes.chat.store_non_streaming_completion", AsyncMock())
     monkeypatch.setattr("app.routes.chat.persist_request_log", AsyncMock())
@@ -214,7 +214,7 @@ async def test_chat_detokenizes_credit_card_in_response(client, monkeypatch) -> 
 
     monkeypatch.setattr(
         "app.routes.chat.try_cached_non_streaming_completion",
-        AsyncMock(return_value=NonStreamingCacheCheck(cached_response=None, embedding=None)),
+        AsyncMock(return_value=NonStreamingCacheCheck(cached_response=None, cache_result="miss", embedding=None)),
     )
     monkeypatch.setattr("app.routes.chat.store_non_streaming_completion", AsyncMock())
     monkeypatch.setattr("app.routes.chat.persist_request_log", AsyncMock())
@@ -257,7 +257,7 @@ async def test_chat_redacts_iban_before_provider(client, monkeypatch) -> None:
 
     monkeypatch.setattr(
         "app.routes.chat.try_cached_non_streaming_completion",
-        AsyncMock(return_value=NonStreamingCacheCheck(cached_response=None, embedding=None)),
+        AsyncMock(return_value=NonStreamingCacheCheck(cached_response=None, cache_result="miss", embedding=None)),
     )
     monkeypatch.setattr("app.routes.chat.store_non_streaming_completion", AsyncMock())
     monkeypatch.setattr("app.routes.chat.persist_request_log", AsyncMock())
@@ -288,7 +288,7 @@ async def test_chat_redacted_prompt_reaches_cache_and_store(client, monkeypatch)
 
     async def fake_cache(_http_request, _project, _body, messages, *_args, **_kwargs):
         cache_messages.extend(messages)
-        return NonStreamingCacheCheck(cached_response=None, embedding=None)
+        return NonStreamingCacheCheck(cached_response=None, cache_result="miss", embedding=None)
 
     async def fake_store(_request, _project, _model, messages, *_args, **_kwargs):
         stored_messages.extend(messages)
@@ -354,6 +354,7 @@ async def test_chat_detokenizes_cached_response_on_cache_hit(client, monkeypatch
         AsyncMock(
             return_value=NonStreamingCacheCheck(
                 cached_response=cached_response,
+                cache_result="exact_hit",
                 embedding=None,
             )
         ),
@@ -398,7 +399,7 @@ async def test_chat_leaves_tokens_when_detokenize_disabled(client, monkeypatch) 
 
     monkeypatch.setattr(
         "app.routes.chat.try_cached_non_streaming_completion",
-        AsyncMock(return_value=NonStreamingCacheCheck(cached_response=None, embedding=None)),
+        AsyncMock(return_value=NonStreamingCacheCheck(cached_response=None, cache_result="miss", embedding=None)),
     )
     monkeypatch.setattr("app.routes.chat.store_non_streaming_completion", AsyncMock())
     monkeypatch.setattr("app.routes.chat.persist_request_log", AsyncMock())

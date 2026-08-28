@@ -51,23 +51,17 @@ Token counts are extracted from the final usage chunk via `parse_sse_usage()` so
 
 ---
 
-## 4. Semantic cache
+## 4. Gateway cache (v0.2 — L1 exact + L2 verified semantic)
 
-### Decision: cosine similarity on prompt embeddings
+### Decision: two-layer cache instead of cosine-only reuse (v0.2)
 
-Non-streaming requests embed the prompt (OpenAI `text-embedding-3-small`), compare to stored vectors, return cached text when similarity ≥ threshold (default **0.92**).
+**v0.1** used cosine similarity ≥ **0.92** as the production reuse gate. **v0.2** requires **L1 exact_hit** (SHA-256 fingerprint) or **L2 semantic_hit** (candidate @ **0.65** + gpt-4o-mini verifier returning literal `true`).
 
-**Why:** Exact-match caches miss paraphrases; full LLM re-ranking is too slow for the hot path.
+Research commit `5d5935c` validated this design. Historical cosine measurements remain in `docs/eval/` — they informed the redesign but are not current production behavior.
 
-**Trade-off documented in [`CACHE_TUNING.md`](CACHE_TUNING.md):**
-- At 0.92, **symptoms vs causes** (same topic, different intent) correctly **miss** (~0.57 similarity)
-- Light **paraphrases** may **miss** (~0.82 for “capital of France” variants) — we accept false misses over false hits
+### Decision: skip embed when no semantic entries exist
 
-### Decision: skip embed lookup when cache is empty
-
-`has_entries(project_id, model)` returns false → no embedding API call on lookup.
-
-**Why:** Benchmarking showed ~260 ms p50 per embed; calling OpenAI when nothing can match was pure overhead (see [`BENCHMARK.md`](BENCHMARK.md)).
+`has_semantic_entries(project_id, model)` false → no embedding on L2 lookup path.
 
 ### Decision: reuse lookup embedding on store
 
@@ -75,17 +69,19 @@ On miss, the embedding computed during lookup is passed to `store_non_streaming_
 
 **Why:** Duplicate embed on miss was ~520 ms of the ~744 ms gateway overhead before optimization.
 
+### Decision: register L1 fingerprint alias after verified L2 hit
+
+When the verifier accepts a semantic candidate, the gateway upserts the **current request fingerprint** into the L1 exact index (`_register_exact_fingerprint_alias` in `chat_integration.py`). Identical repeats thereafter become **exact_hit** without embed or verifier cost.
+
+**Why:** Benchmark Path D showed that semantic-only reuse without alias registration prevented identical repeats from hitting L1. Alias registration makes the two-layer design compositional — L2 for paraphrase, L1 for exact identity.
+
 ### Decision: cache only on non-streaming path
 
 Streaming requests always hit the provider. Streaming + cache would require buffering or complex partial-cache semantics — out of scope for v1.
 
 ### Decision: PostgreSQL persistence + in-memory index
 
-Entries persist to `cache_entries`; gateway hydrates into `InMemorySemanticCache` at startup.
-
-**Why:** Process restarts should not cold-start the cache every time.
-
-**Limitation:** Multiple gateway instances each hold their own memory index; no cross-node invalidation in v1.
+Entries persist to `cache_entries` (fingerprint, request_messages, use counters); gateway hydrates into `GatewayCache` at startup.
 
 ---
 

@@ -1,0 +1,689 @@
+{
+  "generated_at": "2026-08-21T08:47:46.189926+00:00",
+  "embedding_model": "text-embedding-3-small",
+  "production_threshold_unchanged": 0.92,
+  "pair_counts": {
+    "positive": 30,
+    "hard_negative": 30,
+    "unrelated": 10,
+    "total": 70
+  },
+  "distributions": {
+    "positive": {
+      "min": 0.6248274143897684,
+      "median": 0.7404416597539698,
+      "max": 0.9109946291201959
+    },
+    "hard_negative": {
+      "min": 0.29901500379190016,
+      "median": 0.5366274023248343,
+      "max": 0.9216787663483498
+    },
+    "all_negative": {
+      "min": 0.04685096208792023,
+      "median": 0.5100302093656437,
+      "max": 0.9216787663483498
+    },
+    "overlap_positive_min_with_negative_max": true
+  },
+  "pairs": [
+    {
+      "label": "pos_https_security",
+      "category": "positive",
+      "prompt_a": "Why is HTTPS safer than HTTP?",
+      "prompt_b": "What makes HTTPS more secure than HTTP?",
+      "similarity": 0.9109946291201959,
+      "should_hit": true
+    },
+    {
+      "label": "pos_python_decorators",
+      "category": "positive",
+      "prompt_a": "Explain what a Python decorator does.",
+      "prompt_b": "What is the purpose of decorators in Python?",
+      "similarity": 0.7856552778273874,
+      "should_hit": true
+    },
+    {
+      "label": "pos_france_capital",
+      "category": "positive",
+      "prompt_a": "What is the capital of France?",
+      "prompt_b": "Which city serves as France's capital?",
+      "similarity": 0.7978723534672982,
+      "should_hit": true
+    },
+    {
+      "label": "pos_photosynthesis",
+      "category": "positive",
+      "prompt_a": "How does photosynthesis work in plants?",
+      "prompt_b": "Explain the process of photosynthesis in plants.",
+      "similarity": 0.7731867287068801,
+      "should_hit": true
+    },
+    {
+      "label": "pos_boil_egg",
+      "category": "positive",
+      "prompt_a": "What is the best way to boil an egg?",
+      "prompt_b": "How do I hard-boil an egg properly?",
+      "similarity": 0.7616666532876605,
+      "should_hit": true
+    },
+    {
+      "label": "pos_machine_learning",
+      "category": "positive",
+      "prompt_a": "What is machine learning?",
+      "prompt_b": "Can you define machine learning in simple terms?",
+      "similarity": 0.7704129690955629,
+      "should_hit": true
+    },
+    {
+      "label": "pos_sql_join",
+      "category": "positive",
+      "prompt_a": "What does a SQL JOIN do?",
+      "prompt_b": "Explain how JOINs work in SQL.",
+      "similarity": 0.7863839876937675,
+      "should_hit": true
+    },
+    {
+      "label": "pos_binary_search_complexity",
+      "category": "positive",
+      "prompt_a": "What is the time complexity of binary search?",
+      "prompt_b": "How fast is binary search in big-O terms?",
+      "similarity": 0.7619650085896321,
+      "should_hit": true
+    },
+    {
+      "label": "pos_cover_letter",
+      "category": "positive",
+      "prompt_a": "How should I write a strong cover letter?",
+      "prompt_b": "What makes an effective cover letter?",
+      "similarity": 0.7284950092289001,
+      "should_hit": true
+    },
+    {
+      "label": "pos_exercise_benefits",
+      "category": "positive",
+      "prompt_a": "What are the health benefits of regular exercise?",
+      "prompt_b": "Why is exercising regularly good for your health?",
+      "similarity": 0.7735374053729085,
+      "should_hit": true
+    },
+    {
+      "label": "pos_gdp",
+      "category": "positive",
+      "prompt_a": "What is GDP?",
+      "prompt_b": "Define gross domestic product.",
+      "similarity": 0.7207831701742049,
+      "should_hit": true
+    },
+    {
+      "label": "pos_vaccination",
+      "category": "positive",
+      "prompt_a": "How do vaccines protect against disease?",
+      "prompt_b": "Why do vaccinations help prevent illness?",
+      "similarity": 0.7089927727866946,
+      "should_hit": true
+    },
+    {
+      "label": "pos_recursion",
+      "category": "positive",
+      "prompt_a": "Explain recursion in programming for a beginner.",
+      "prompt_b": "What is recursion and how does it work in code?",
+      "similarity": 0.7523883102790396,
+      "should_hit": true
+    },
+    {
+      "label": "pos_celsius_fahrenheit",
+      "category": "positive",
+      "prompt_a": "How do you convert Celsius to Fahrenheit?",
+      "prompt_b": "What is the formula to convert from Celsius to Fahrenheit?",
+      "similarity": 0.877778771119189,
+      "should_hit": true
+    },
+    {
+      "label": "pos_speed_of_light",
+      "category": "positive",
+      "prompt_a": "What is the speed of light in a vacuum?",
+      "prompt_b": "How fast does light travel in empty space?",
+      "similarity": 0.7064379304988134,
+      "should_hit": true
+    },
+    {
+      "label": "pos_git_merge",
+      "category": "positive",
+      "prompt_a": "How do I merge one Git branch into another?",
+      "prompt_b": "What are the steps to merge branches in Git?",
+      "similarity": 0.8154919398495178,
+      "should_hit": true
+    },
+    {
+      "label": "pos_seasons",
+      "category": "positive",
+      "prompt_a": "Why do we have seasons on Earth?",
+      "prompt_b": "What causes seasons to change on Earth?",
+      "similarity": 0.7931153336149815,
+      "should_hit": true
+    },
+    {
+      "label": "pos_get_vs_post",
+      "category": "positive",
+      "prompt_a": "What is the difference between HTTP GET and POST?",
+      "prompt_b": "How do GET and POST requests differ in HTTP?",
+      "similarity": 0.9003099564831665,
+      "should_hit": true
+    },
+    {
+      "label": "pos_sleep_quality",
+      "category": "positive",
+      "prompt_a": "How can I improve my sleep quality?",
+      "prompt_b": "What habits help you sleep better at night?",
+      "similarity": 0.6617809315301695,
+      "should_hit": true
+    },
+    {
+      "label": "pos_blockchain",
+      "category": "positive",
+      "prompt_a": "What is a blockchain?",
+      "prompt_b": "Explain blockchain technology in simple terms.",
+      "similarity": 0.7241814936622645,
+      "should_hit": true
+    },
+    {
+      "label": "pos_supply_demand",
+      "category": "positive",
+      "prompt_a": "Explain supply and demand in economics.",
+      "prompt_b": "What is the law of supply and demand?",
+      "similarity": 0.7265267375689353,
+      "should_hit": true
+    },
+    {
+      "label": "pos_reduce_stress",
+      "category": "positive",
+      "prompt_a": "What are effective ways to reduce stress?",
+      "prompt_b": "How can I manage stress in daily life?",
+      "similarity": 0.7118838910193627,
+      "should_hit": true
+    },
+    {
+      "label": "pos_api",
+      "category": "positive",
+      "prompt_a": "What is an API?",
+      "prompt_b": "Define an application programming interface.",
+      "similarity": 0.6844683018724621,
+      "should_hit": true
+    },
+    {
+      "label": "pos_car_engine",
+      "category": "positive",
+      "prompt_a": "How does a car engine work at a basic level?",
+      "prompt_b": "Explain the basic operation of an internal combustion engine in a car.",
+      "similarity": 0.7106967887358122,
+      "should_hit": true
+    },
+    {
+      "label": "pos_climate_change",
+      "category": "positive",
+      "prompt_a": "What is climate change?",
+      "prompt_b": "Define climate change and why it matters.",
+      "similarity": 0.6817186033113125,
+      "should_hit": true
+    },
+    {
+      "label": "pos_learn_language",
+      "category": "positive",
+      "prompt_a": "What is the best way to learn a new language?",
+      "prompt_b": "How can adults effectively learn a foreign language?",
+      "similarity": 0.7038717013269169,
+      "should_hit": true
+    },
+    {
+      "label": "pos_oop",
+      "category": "positive",
+      "prompt_a": "What is object-oriented programming?",
+      "prompt_b": "Explain object-oriented programming principles.",
+      "similarity": 0.7680156712347025,
+      "should_hit": true
+    },
+    {
+      "label": "pos_wifi",
+      "category": "positive",
+      "prompt_a": "How does WiFi work?",
+      "prompt_b": "Explain how wireless internet connectivity works.",
+      "similarity": 0.7270817329391712,
+      "should_hit": true
+    },
+    {
+      "label": "pos_pythagorean",
+      "category": "positive",
+      "prompt_a": "What is the Pythagorean theorem?",
+      "prompt_b": "State the Pythagorean theorem and what it relates.",
+      "similarity": 0.7103848667669731,
+      "should_hit": true
+    },
+    {
+      "label": "pos_inflation",
+      "category": "positive",
+      "prompt_a": "What is inflation in economics?",
+      "prompt_b": "Define inflation and how it affects prices.",
+      "similarity": 0.6248274143897684,
+      "should_hit": true
+    },
+    {
+      "label": "neg_diabetes_symptoms_causes",
+      "category": "hard_negative",
+      "prompt_a": "What are the symptoms of diabetes?",
+      "prompt_b": "What causes diabetes?",
+      "similarity": 0.5119440411554042,
+      "should_hit": false
+    },
+    {
+      "label": "neg_diabetes_symptoms_treatment",
+      "category": "hard_negative",
+      "prompt_a": "What are the symptoms of diabetes?",
+      "prompt_b": "How is diabetes treated?",
+      "similarity": 0.4928002169955348,
+      "should_hit": false
+    },
+    {
+      "label": "neg_http_cache_vs_semantic_cache",
+      "category": "hard_negative",
+      "prompt_a": "How does HTTP caching work?",
+      "prompt_b": "How does semantic caching for LLM responses work?",
+      "similarity": 0.5324973477408348,
+      "should_hit": false
+    },
+    {
+      "label": "neg_sort_vs_reverse_list",
+      "category": "hard_negative",
+      "prompt_a": "How do I sort a Python list?",
+      "prompt_b": "How do I reverse a Python list?",
+      "similarity": 0.7449203660447105,
+      "should_hit": false
+    },
+    {
+      "label": "neg_list_append_vs_extend",
+      "category": "hard_negative",
+      "prompt_a": "What does list.append do in Python?",
+      "prompt_b": "What does list.extend do in Python?",
+      "similarity": 0.7871569734480462,
+      "should_hit": false
+    },
+    {
+      "label": "neg_ml_define_vs_train",
+      "category": "hard_negative",
+      "prompt_a": "What is machine learning?",
+      "prompt_b": "How do I train a machine learning model from scratch?",
+      "similarity": 0.5094498651963827,
+      "should_hit": false
+    },
+    {
+      "label": "neg_git_merge_vs_rebase",
+      "category": "hard_negative",
+      "prompt_a": "How do I merge branches in Git?",
+      "prompt_b": "When should I use git rebase instead of merge?",
+      "similarity": 0.6326354626908761,
+      "should_hit": false
+    },
+    {
+      "label": "neg_inflation_cause_vs_effect",
+      "category": "hard_negative",
+      "prompt_a": "What causes inflation?",
+      "prompt_b": "How does inflation affect consumers?",
+      "similarity": 0.6060130625263445,
+      "should_hit": false
+    },
+    {
+      "label": "neg_running_start_vs_knee_pain",
+      "category": "hard_negative",
+      "prompt_a": "How should a beginner start running?",
+      "prompt_b": "How do I treat knee pain caused by running?",
+      "similarity": 0.43152423179099686,
+      "should_hit": false
+    },
+    {
+      "label": "neg_sql_select_vs_delete",
+      "category": "hard_negative",
+      "prompt_a": "How do I write a SQL SELECT query?",
+      "prompt_b": "How do I delete rows with SQL?",
+      "similarity": 0.5407574569088338,
+      "should_hit": false
+    },
+    {
+      "label": "neg_encryption_define_vs_howto",
+      "category": "hard_negative",
+      "prompt_a": "What is encryption?",
+      "prompt_b": "How do I encrypt a file on my laptop?",
+      "similarity": 0.48271364344532636,
+      "should_hit": false
+    },
+    {
+      "label": "neg_heart_attack_symptoms_vs_first_aid",
+      "category": "hard_negative",
+      "prompt_a": "What are the symptoms of a heart attack?",
+      "prompt_b": "What first aid should I give during a heart attack?",
+      "similarity": 0.531025844681692,
+      "should_hit": false
+    },
+    {
+      "label": "neg_resume_vs_salary",
+      "category": "hard_negative",
+      "prompt_a": "How do I write a resume?",
+      "prompt_b": "How do I negotiate a higher salary?",
+      "similarity": 0.29901500379190016,
+      "should_hit": false
+    },
+    {
+      "label": "neg_climate_causes_vs_solutions",
+      "category": "hard_negative",
+      "prompt_a": "What causes climate change?",
+      "prompt_b": "What are practical solutions to climate change?",
+      "similarity": 0.47529984147359483,
+      "should_hit": false
+    },
+    {
+      "label": "neg_tcp_vs_udp",
+      "category": "hard_negative",
+      "prompt_a": "What is TCP and when is it used?",
+      "prompt_b": "What is UDP and when is it used?",
+      "similarity": 0.5193785891426907,
+      "should_hit": false
+    },
+    {
+      "label": "neg_react_state_vs_props",
+      "category": "hard_negative",
+      "prompt_a": "What is React state used for?",
+      "prompt_b": "What are props in React used for?",
+      "similarity": 0.6676257500037134,
+      "should_hit": false
+    },
+    {
+      "label": "neg_compile_vs_runtime_error",
+      "category": "hard_negative",
+      "prompt_a": "What is a compile-time error?",
+      "prompt_b": "What is a runtime error?",
+      "similarity": 0.6580110575366279,
+      "should_hit": false
+    },
+    {
+      "label": "neg_db_normalization_vs_indexing",
+      "category": "hard_negative",
+      "prompt_a": "What is database normalization?",
+      "prompt_b": "What is database indexing?",
+      "similarity": 0.4558451462707524,
+      "should_hit": false
+    },
+    {
+      "label": "neg_oauth_auth_vs_authz",
+      "category": "hard_negative",
+      "prompt_a": "How does OAuth authentication work?",
+      "prompt_b": "How does OAuth authorization work?",
+      "similarity": 0.9216787663483498,
+      "should_hit": false
+    },
+    {
+      "label": "neg_type1_vs_type2_diabetes",
+      "category": "hard_negative",
+      "prompt_a": "What are symptoms of type 1 diabetes?",
+      "prompt_b": "What are symptoms of type 2 diabetes?",
+      "similarity": 0.7856879376137144,
+      "should_hit": false
+    },
+    {
+      "label": "neg_array_vs_linked_list",
+      "category": "hard_negative",
+      "prompt_a": "What are advantages of arrays?",
+      "prompt_b": "What are advantages of linked lists?",
+      "similarity": 0.5849857332204964,
+      "should_hit": false
+    },
+    {
+      "label": "neg_bake_vs_store_bread",
+      "category": "hard_negative",
+      "prompt_a": "How do I bake sourdough bread?",
+      "prompt_b": "How should I store bread to keep it fresh?",
+      "similarity": 0.5106105535349047,
+      "should_hit": false
+    },
+    {
+      "label": "neg_primary_vs_foreign_key",
+      "category": "hard_negative",
+      "prompt_a": "What is a primary key in SQL?",
+      "prompt_b": "What is a foreign key in SQL?",
+      "similarity": 0.7056423400291821,
+      "should_hit": false
+    },
+    {
+      "label": "neg_depression_symptoms_vs_treatment",
+      "category": "hard_negative",
+      "prompt_a": "What are common symptoms of depression?",
+      "prompt_b": "What treatments exist for depression?",
+      "similarity": 0.4450772533943344,
+      "should_hit": false
+    },
+    {
+      "label": "neg_cpu_vs_gpu",
+      "category": "hard_negative",
+      "prompt_a": "What does a CPU do in a computer?",
+      "prompt_b": "What does a GPU do in a computer?",
+      "similarity": 0.6781214834257147,
+      "should_hit": false
+    },
+    {
+      "label": "neg_import_vs_export_econ",
+      "category": "hard_negative",
+      "prompt_a": "What are imports in international trade?",
+      "prompt_b": "What are exports in international trade?",
+      "similarity": 0.7686651024220965,
+      "should_hit": false
+    },
+    {
+      "label": "neg_http_vs_https",
+      "category": "hard_negative",
+      "prompt_a": "How does HTTP work?",
+      "prompt_b": "How does HTTPS work?",
+      "similarity": 0.6966282542457294,
+      "should_hit": false
+    },
+    {
+      "label": "neg_overfitting_vs_underfitting",
+      "category": "hard_negative",
+      "prompt_a": "What is overfitting in machine learning?",
+      "prompt_b": "What is underfitting in machine learning?",
+      "similarity": 0.8105648319274057,
+      "should_hit": false
+    },
+    {
+      "label": "neg_flu_symptoms_vs_prevention",
+      "category": "hard_negative",
+      "prompt_a": "What are symptoms of the flu?",
+      "prompt_b": "How can I prevent catching the flu?",
+      "similarity": 0.44424796008833745,
+      "should_hit": false
+    },
+    {
+      "label": "neg_rest_vs_graphql",
+      "category": "hard_negative",
+      "prompt_a": "What is a REST API?",
+      "prompt_b": "What is GraphQL?",
+      "similarity": 0.3251337264014756,
+      "should_hit": false
+    },
+    {
+      "label": "unrel_france_bread",
+      "category": "unrelated",
+      "prompt_a": "What is the capital of France?",
+      "prompt_b": "How do I bake sourdough bread?",
+      "similarity": 0.04685096208792023,
+      "should_hit": false
+    },
+    {
+      "label": "unrel_python_weather",
+      "category": "unrelated",
+      "prompt_a": "How do I sort a Python list?",
+      "prompt_b": "What is the weather like in Tokyo?",
+      "similarity": 0.07939295349567703,
+      "should_hit": false
+    },
+    {
+      "label": "unrel_diabetes_car",
+      "category": "unrelated",
+      "prompt_a": "What are the symptoms of diabetes?",
+      "prompt_b": "How often should I change my car's oil?",
+      "similarity": 0.05934047984769207,
+      "should_hit": false
+    },
+    {
+      "label": "unrel_ml_pasta",
+      "category": "unrelated",
+      "prompt_a": "What is machine learning?",
+      "prompt_b": "Give me a simple pasta recipe.",
+      "similarity": 0.047541891078509535,
+      "should_hit": false
+    },
+    {
+      "label": "unrel_git_piano",
+      "category": "unrelated",
+      "prompt_a": "How do I merge branches in Git?",
+      "prompt_b": "How do I play a C major chord on piano?",
+      "similarity": 0.11258201366701352,
+      "should_hit": false
+    },
+    {
+      "label": "unrel_sql_football",
+      "category": "unrelated",
+      "prompt_a": "How do I write a SQL SELECT query?",
+      "prompt_b": "What are the basic rules of football?",
+      "similarity": 0.16638086866626717,
+      "should_hit": false
+    },
+    {
+      "label": "unrel_photosynthesis_stocks",
+      "category": "unrelated",
+      "prompt_a": "How does photosynthesis work in plants?",
+      "prompt_b": "How does the stock market work?",
+      "similarity": 0.2736837048917043,
+      "should_hit": false
+    },
+    {
+      "label": "unrel_sleep_rome",
+      "category": "unrelated",
+      "prompt_a": "How can I improve my sleep quality?",
+      "prompt_b": "Who were the main rulers of ancient Rome?",
+      "similarity": 0.06613522358666336,
+      "should_hit": false
+    },
+    {
+      "label": "unrel_blockchain_garden",
+      "category": "unrelated",
+      "prompt_a": "What is a blockchain?",
+      "prompt_b": "How do I start a vegetable garden?",
+      "similarity": 0.05295342559779706,
+      "should_hit": false
+    },
+    {
+      "label": "unrel_wifi_marine",
+      "category": "unrelated",
+      "prompt_a": "How does WiFi work?",
+      "prompt_b": "What is coral bleaching in marine biology?",
+      "similarity": 0.06309331086214733,
+      "should_hit": false
+    }
+  ],
+  "threshold_metrics": [
+    {
+      "threshold": 0.7,
+      "tp": 26,
+      "fn": 4,
+      "fp": 7,
+      "tn": 33,
+      "precision": 0.7878787878787878,
+      "recall": 0.8666666666666667,
+      "fp_rate": 0.175,
+      "fn_rate": 0.13333333333333333,
+      "accuracy": 0.8428571428571429
+    },
+    {
+      "threshold": 0.75,
+      "tp": 15,
+      "fn": 15,
+      "fp": 5,
+      "tn": 35,
+      "precision": 0.75,
+      "recall": 0.5,
+      "fp_rate": 0.125,
+      "fn_rate": 0.5,
+      "accuracy": 0.7142857142857143
+    },
+    {
+      "threshold": 0.8,
+      "tp": 4,
+      "fn": 26,
+      "fp": 2,
+      "tn": 38,
+      "precision": 0.6666666666666666,
+      "recall": 0.13333333333333333,
+      "fp_rate": 0.05,
+      "fn_rate": 0.8666666666666667,
+      "accuracy": 0.6
+    },
+    {
+      "threshold": 0.82,
+      "tp": 3,
+      "fn": 27,
+      "fp": 1,
+      "tn": 39,
+      "precision": 0.75,
+      "recall": 0.1,
+      "fp_rate": 0.025,
+      "fn_rate": 0.9,
+      "accuracy": 0.6
+    },
+    {
+      "threshold": 0.85,
+      "tp": 3,
+      "fn": 27,
+      "fp": 1,
+      "tn": 39,
+      "precision": 0.75,
+      "recall": 0.1,
+      "fp_rate": 0.025,
+      "fn_rate": 0.9,
+      "accuracy": 0.6
+    },
+    {
+      "threshold": 0.88,
+      "tp": 2,
+      "fn": 28,
+      "fp": 1,
+      "tn": 39,
+      "precision": 0.6666666666666666,
+      "recall": 0.06666666666666667,
+      "fp_rate": 0.025,
+      "fn_rate": 0.9333333333333333,
+      "accuracy": 0.5857142857142857
+    },
+    {
+      "threshold": 0.9,
+      "tp": 2,
+      "fn": 28,
+      "fp": 1,
+      "tn": 39,
+      "precision": 0.6666666666666666,
+      "recall": 0.06666666666666667,
+      "fp_rate": 0.025,
+      "fn_rate": 0.9333333333333333,
+      "accuracy": 0.5857142857142857
+    },
+    {
+      "threshold": 0.92,
+      "tp": 0,
+      "fn": 30,
+      "fp": 1,
+      "tn": 39,
+      "precision": 0.0,
+      "recall": 0.0,
+      "fp_rate": 0.025,
+      "fn_rate": 1.0,
+      "accuracy": 0.5571428571428572
+    }
+  ]
+}

@@ -10,6 +10,7 @@ from app.providers.base import CompletionRequest, CompletionResponse
 from app.providers.exceptions import AnthropicProviderError, OpenAIProviderError
 from app.providers.retry import complete_with_retry, stream_with_retry
 from app.providers.router import ProviderRouter
+from app.observability.prometheus_metrics import get_prometheus_metrics
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +44,10 @@ async def complete_with_fallback(
             target.provider.name,
             target.model,
             exc.message,
+        )
+        get_prometheus_metrics().record_provider_fallback(
+            from_provider=provider.name,
+            to_provider=target.provider.name,
         )
         fallback_request = replace(request, model=target.model)
         return await complete_with_retry(
@@ -82,6 +87,10 @@ async def stream_with_fallback(
             target.provider.name,
             target.model,
             exc.message,
+        )
+        get_prometheus_metrics().record_provider_fallback(
+            from_provider=provider.name,
+            to_provider=target.provider.name,
         )
         fallback_request = replace(request, model=target.model)
         return await stream_with_retry(

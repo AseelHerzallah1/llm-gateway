@@ -1,0 +1,1171 @@
+{
+  "generated_at": "2026-08-21T09:31:57.906579+00:00",
+  "methodology": {
+    "retrieval_embedding_model": "text-embedding-3-small",
+    "serialization": "messages_to_embed_text(user message)",
+    "similarity_source": "docs\\eval\\embedding_model_comparison.json",
+    "verifier_model": "gpt-4o-mini",
+    "generation_model": "gpt-4o-mini",
+    "production_unchanged": true
+  },
+  "strategy_b": "Strategy B (local cross-encoder/NLI) not evaluated: project has no sentence-transformers or similar dependency; adding one would materially increase Docker image size and deployment complexity for unproven benefit.",
+  "candidate_thresholds": [
+    {
+      "threshold": 0.65,
+      "tp": 13,
+      "fn": 1,
+      "fp": 0,
+      "tn": 40,
+      "precision": 1.0,
+      "recall": 0.9285714285714286,
+      "fp_rate": 0.0,
+      "fn_rate": 0.07142857142857142,
+      "accuracy": 0.9814814814814815,
+      "class_a_candidates": 14,
+      "hard_neg_candidates": 19,
+      "unrelated_candidates": 0,
+      "verifier_calls": 49,
+      "skipped_no_candidate": 21
+    },
+    {
+      "threshold": 0.7,
+      "tp": 12,
+      "fn": 2,
+      "fp": 0,
+      "tn": 40,
+      "precision": 1.0,
+      "recall": 0.8571428571428571,
+      "fp_rate": 0.0,
+      "fn_rate": 0.14285714285714285,
+      "accuracy": 0.9629629629629629,
+      "class_a_candidates": 13,
+      "hard_neg_candidates": 12,
+      "unrelated_candidates": 0,
+      "verifier_calls": 41,
+      "skipped_no_candidate": 29
+    },
+    {
+      "threshold": 0.75,
+      "tp": 11,
+      "fn": 3,
+      "fp": 0,
+      "tn": 40,
+      "precision": 1.0,
+      "recall": 0.7857142857142857,
+      "fp_rate": 0.0,
+      "fn_rate": 0.21428571428571427,
+      "accuracy": 0.9444444444444444,
+      "class_a_candidates": 12,
+      "hard_neg_candidates": 7,
+      "unrelated_candidates": 0,
+      "verifier_calls": 31,
+      "skipped_no_candidate": 39
+    },
+    {
+      "threshold": 0.8,
+      "tp": 9,
+      "fn": 5,
+      "fp": 0,
+      "tn": 40,
+      "precision": 1.0,
+      "recall": 0.6428571428571429,
+      "fp_rate": 0.0,
+      "fn_rate": 0.35714285714285715,
+      "accuracy": 0.9074074074074074,
+      "class_a_candidates": 9,
+      "hard_neg_candidates": 4,
+      "unrelated_candidates": 0,
+      "verifier_calls": 16,
+      "skipped_no_candidate": 54
+    }
+  ],
+  "best_safe_threshold": {
+    "threshold": 0.65,
+    "tp": 13,
+    "fn": 1,
+    "fp": 0,
+    "tn": 40,
+    "precision": 1.0,
+    "recall": 0.9285714285714286,
+    "fp_rate": 0.0,
+    "fn_rate": 0.07142857142857142,
+    "accuracy": 0.9814814814814815,
+    "class_a_candidates": 14,
+    "hard_neg_candidates": 19,
+    "unrelated_candidates": 0,
+    "verifier_calls": 49,
+    "skipped_no_candidate": 21
+  },
+  "report_threshold": 0.65,
+  "pairs": [
+    {
+      "label": "pos_https_security",
+      "category": "class_a",
+      "prompt_a": "Why is HTTPS safer than HTTP?",
+      "prompt_b": "What makes HTTPS more secure than HTTP?",
+      "similarity": 0.9142139925163636,
+      "cached_response_preview": "HTTPS is safer than HTTP because it encrypts the data exchanged between the user's browser and the web server, making it difficult for attackers to intercept or tamper with the information. Additionally, HTTPS uses SSL/TLS protocols to auth",
+      "verifier": {
+        "reuse": true,
+        "reason": "The new request is essentially asking the same question, focusing on the same aspects of HTTPS security.",
+        "latency_ms": 1210.8439999865368,
+        "prompt_tokens": 297,
+        "completion_tokens": 29
+      }
+    },
+    {
+      "label": "pos_python_decorators",
+      "category": "class_a",
+      "prompt_a": "Explain what a Python decorator does.",
+      "prompt_b": "What is the purpose of decorators in Python?",
+      "similarity": 0.818449745611551,
+      "cached_response_preview": "A Python decorator is a design pattern that allows you to modify or enhance the behavior of a function or method without changing its code. It is typically implemented as a function that takes another function as an argument, adds some func",
+      "verifier": {
+        "reuse": true,
+        "reason": "The cached response explains the function of decorators, which aligns with the new request's focus on their purpose.",
+        "latency_ms": 952.1579000283964,
+        "prompt_tokens": 277,
+        "completion_tokens": 31
+      }
+    },
+    {
+      "label": "pos_france_capital",
+      "category": "class_a",
+      "prompt_a": "What is the capital of France?",
+      "prompt_b": "Which city serves as France's capital?",
+      "similarity": 0.8080951173264695,
+      "cached_response_preview": "The capital of France is Paris.",
+      "verifier": {
+        "reuse": true,
+        "reason": "The cached response directly answers the new request with the same information.",
+        "latency_ms": 1117.8889999864623,
+        "prompt_tokens": 211,
+        "completion_tokens": 23
+      }
+    },
+    {
+      "label": "pos_photosynthesis",
+      "category": "class_b",
+      "prompt_a": "How does photosynthesis work in plants?",
+      "prompt_b": "Explain the process of photosynthesis in plants.",
+      "similarity": 0.8202412289240905,
+      "cached_response_preview": "Photosynthesis is the process by which plants convert light energy, usually from the sun, into chemical energy stored in glucose. It occurs mainly in the chloroplasts of plant cells, where chlorophyll captures sunlight. The process involves",
+      "verifier": {
+        "reuse": true,
+        "reason": "The new request asks for an explanation of the same process, which the cached response fully covers.",
+        "latency_ms": 956.0678999987431,
+        "prompt_tokens": 332,
+        "completion_tokens": 29
+      }
+    },
+    {
+      "label": "pos_boil_egg",
+      "category": "class_b",
+      "prompt_a": "What is the best way to boil an egg?",
+      "prompt_b": "How do I hard-boil an egg properly?",
+      "similarity": 0.8110902467840727,
+      "cached_response_preview": "To boil an egg perfectly, start by placing the eggs in a single layer in a saucepan and covering them with cold water, about an inch above the eggs. Bring the water to a rolling boil over medium-high heat, then cover the pot, remove it from",
+      "verifier": {
+        "reuse": true,
+        "reason": "The cached response provides a complete method for hard-boiling eggs, matching the new request's intent and details.",
+        "latency_ms": 845.7219999982044,
+        "prompt_tokens": 311,
+        "completion_tokens": 32
+      }
+    },
+    {
+      "label": "pos_machine_learning",
+      "category": "class_b",
+      "prompt_a": "What is machine learning?",
+      "prompt_b": "Can you define machine learning in simple terms?",
+      "similarity": 0.8262367692416273,
+      "cached_response_preview": "Machine learning is a subset of artificial intelligence that involves the development of algorithms and statistical models that enable computers to learn from and make predictions or decisions based on data. Instead of being explicitly prog",
+      "verifier": {
+        "reuse": true,
+        "reason": "The cached response provides a clear definition of machine learning that can be understood in simple terms.",
+        "latency_ms": 925.4072000039741,
+        "prompt_tokens": 280,
+        "completion_tokens": 28
+      }
+    },
+    {
+      "label": "pos_sql_join",
+      "category": "class_a",
+      "prompt_a": "What does a SQL JOIN do?",
+      "prompt_b": "Explain how JOINs work in SQL.",
+      "similarity": 0.8154069594782944,
+      "cached_response_preview": "A SQL JOIN is used to combine rows from two or more tables based on a related column between them. It allows you to retrieve data that is spread across multiple tables in a relational database, enabling you to create more complex queries an",
+      "verifier": {
+        "reuse": true,
+        "reason": "Both requests seek an explanation of SQL JOINs, and the cached response adequately covers how they work.",
+        "latency_ms": 1000.1873000292107,
+        "prompt_tokens": 287,
+        "completion_tokens": 30
+      }
+    },
+    {
+      "label": "pos_binary_search_complexity",
+      "category": "class_a",
+      "prompt_a": "What is the time complexity of binary search?",
+      "prompt_b": "How fast is binary search in big-O terms?",
+      "similarity": 0.7741658481292518,
+      "cached_response_preview": "The time complexity of binary search is O(log n), where n is the number of elements in the sorted array. This logarithmic time complexity arises because the algorithm repeatedly divides the search interval in half, allowing it to quickly na",
+      "verifier": {
+        "reuse": true,
+        "reason": "The new request asks for the same information about binary search's time complexity in big-O terms.",
+        "latency_ms": 888.9339999877848,
+        "prompt_tokens": 262,
+        "completion_tokens": 29
+      }
+    },
+    {
+      "label": "pos_cover_letter",
+      "category": "class_b",
+      "prompt_a": "How should I write a strong cover letter?",
+      "prompt_b": "What makes an effective cover letter?",
+      "similarity": 0.7718551180981769,
+      "cached_response_preview": "To write a strong cover letter, start with a professional greeting and a clear introduction that states the position you're applying for. Highlight your relevant skills and experiences in the body, using specific examples to demonstrate you",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks for different aspects of cover letters, focusing on effectiveness rather than how to write one.",
+        "latency_ms": 988.0811999901198,
+        "prompt_tokens": 292,
+        "completion_tokens": 31
+      }
+    },
+    {
+      "label": "pos_exercise_benefits",
+      "category": "class_a",
+      "prompt_a": "What are the health benefits of regular exercise?",
+      "prompt_b": "Why is exercising regularly good for your health?",
+      "similarity": 0.8216629291345791,
+      "cached_response_preview": "Regular exercise offers numerous health benefits, including improved cardiovascular health, enhanced muscle strength and flexibility, better weight management, and increased bone density. It also boosts mental health by reducing symptoms of",
+      "verifier": {
+        "reuse": true,
+        "reason": "The cached response directly addresses the benefits of regular exercise, aligning with the new request's intent.",
+        "latency_ms": 1136.4204999990761,
+        "prompt_tokens": 277,
+        "completion_tokens": 29
+      }
+    },
+    {
+      "label": "pos_gdp",
+      "category": "class_a",
+      "prompt_a": "What is GDP?",
+      "prompt_b": "Define gross domestic product.",
+      "similarity": 0.7838813848686245,
+      "cached_response_preview": "Gross Domestic Product (GDP) is the total monetary value of all goods and services produced within a country's borders over a specific time period, typically annually or quarterly. It serves as a key indicator of a country's economic perfor",
+      "verifier": {
+        "reuse": true,
+        "reason": "The cached response provides a clear definition of GDP, which aligns with the new request.",
+        "latency_ms": 845.5438000382856,
+        "prompt_tokens": 268,
+        "completion_tokens": 27
+      }
+    },
+    {
+      "label": "pos_vaccination",
+      "category": "class_b",
+      "prompt_a": "How do vaccines protect against disease?",
+      "prompt_b": "Why do vaccinations help prevent illness?",
+      "similarity": 0.7425923724447713,
+      "cached_response_preview": "Vaccines protect against disease by stimulating the immune system to recognize and fight specific pathogens, such as viruses or bacteria. They contain weakened or inactivated parts of the pathogen, or genetic material that instructs cells t",
+      "verifier": {
+        "reuse": true,
+        "reason": "Both requests seek to explain how vaccines prevent illness, focusing on the immune response.",
+        "latency_ms": 965.6218999880366,
+        "prompt_tokens": 278,
+        "completion_tokens": 26
+      }
+    },
+    {
+      "label": "pos_recursion",
+      "category": "class_b",
+      "prompt_a": "Explain recursion in programming for a beginner.",
+      "prompt_b": "What is recursion and how does it work in code?",
+      "similarity": 0.792318504942036,
+      "cached_response_preview": "Recursion in programming is a technique where a function calls itself to solve a problem. It typically involves a base case, which stops the recursion, and a recursive case, which breaks the problem down into smaller instances of the same p",
+      "verifier": {
+        "reuse": true,
+        "reason": "The cached response explains recursion and its function in code, addressing the new request's intent.",
+        "latency_ms": 868.0302000138909,
+        "prompt_tokens": 314,
+        "completion_tokens": 28
+      }
+    },
+    {
+      "label": "pos_celsius_fahrenheit",
+      "category": "class_a",
+      "prompt_a": "How do you convert Celsius to Fahrenheit?",
+      "prompt_b": "What is the formula to convert from Celsius to Fahrenheit?",
+      "similarity": 0.8707905416102585,
+      "cached_response_preview": "To convert Celsius to Fahrenheit, use the formula: \\( F = \\frac{9}{5}C + 32 \\), where \\( F \\) is the temperature in Fahrenheit and \\( C \\) is the temperature in Celsius. Simply multiply the Celsius temperature by 9/5 and then add 32 to get ",
+      "verifier": {
+        "reuse": true,
+        "reason": "The cached response directly provides the formula for converting Celsius to Fahrenheit, fully satisfying the new request.",
+        "latency_ms": 848.9131000242196,
+        "prompt_tokens": 277,
+        "completion_tokens": 29
+      }
+    },
+    {
+      "label": "pos_speed_of_light",
+      "category": "class_a",
+      "prompt_a": "What is the speed of light in a vacuum?",
+      "prompt_b": "How fast does light travel in empty space?",
+      "similarity": 0.7475237677006602,
+      "cached_response_preview": "The speed of light in a vacuum is approximately 299,792,458 meters per second, commonly rounded to 300,000 kilometers per second (or about 186,282 miles per second). This constant is denoted by the symbol \"c\" in physics.",
+      "verifier": {
+        "reuse": true,
+        "reason": "Both requests ask for the speed of light in a vacuum, providing the same information.",
+        "latency_ms": 975.5569000262767,
+        "prompt_tokens": 262,
+        "completion_tokens": 27
+      }
+    },
+    {
+      "label": "pos_git_merge",
+      "category": "class_a",
+      "prompt_a": "How do I merge one Git branch into another?",
+      "prompt_b": "What are the steps to merge branches in Git?",
+      "similarity": 0.8277804760980464,
+      "cached_response_preview": "To merge one Git branch into another, first switch to the branch you want to merge into using `git checkout <target-branch>`. Then, execute the command `git merge <source-branch>` to merge the changes from the source branch into the target ",
+      "verifier": {
+        "reuse": true,
+        "reason": "The cached response provides the necessary steps to merge branches in Git without any material omissions.",
+        "latency_ms": 1018.5173999634571,
+        "prompt_tokens": 288,
+        "completion_tokens": 27
+      }
+    },
+    {
+      "label": "pos_seasons",
+      "category": "class_a",
+      "prompt_a": "Why do we have seasons on Earth?",
+      "prompt_b": "What causes seasons to change on Earth?",
+      "similarity": 0.844753358040957,
+      "cached_response_preview": "Seasons on Earth are caused by the tilt of the Earth's axis relative to its orbit around the Sun. This axial tilt, which is approximately 23.5 degrees, leads to varying angles of sunlight and daylight duration throughout the year. As the Ea",
+      "verifier": {
+        "reuse": true,
+        "reason": "Both requests ask about the cause of seasons on Earth, and the cached response fully addresses this.",
+        "latency_ms": 1046.202400000766,
+        "prompt_tokens": 285,
+        "completion_tokens": 29
+      }
+    },
+    {
+      "label": "pos_get_vs_post",
+      "category": "class_a",
+      "prompt_a": "What is the difference between HTTP GET and POST?",
+      "prompt_b": "How do GET and POST requests differ in HTTP?",
+      "similarity": 0.8932611745588139,
+      "cached_response_preview": "HTTP GET and POST are both methods used to send and receive data between a client and a server. GET requests data from a specified resource and appends parameters to the URL, making it visible in the browser's address bar; it is generally u",
+      "verifier": {
+        "reuse": true,
+        "reason": "The new request is essentially asking for the same information in different wording.",
+        "latency_ms": 919.9733000132255,
+        "prompt_tokens": 303,
+        "completion_tokens": 24
+      }
+    },
+    {
+      "label": "pos_sleep_quality",
+      "category": "class_b",
+      "prompt_a": "How can I improve my sleep quality?",
+      "prompt_b": "What habits help you sleep better at night?",
+      "similarity": 0.7208155704594896,
+      "cached_response_preview": "To improve your sleep quality, establish a consistent sleep schedule by going to bed and waking up at the same time every day. Create a relaxing bedtime routine, limit exposure to screens before sleep, and ensure your sleep environment is c",
+      "verifier": {
+        "reuse": true,
+        "reason": "The cached response provides relevant habits that contribute to better sleep, aligning with the new request's focus.",
+        "latency_ms": 1112.9356999881566,
+        "prompt_tokens": 279,
+        "completion_tokens": 30
+      }
+    },
+    {
+      "label": "pos_blockchain",
+      "category": "class_b",
+      "prompt_a": "What is a blockchain?",
+      "prompt_b": "Explain blockchain technology in simple terms.",
+      "similarity": 0.7519290318649503,
+      "cached_response_preview": "A blockchain is a decentralized digital ledger that records transactions across multiple computers in a way that ensures the data is secure, transparent, and immutable. Each block in the chain contains a list of transactions and is linked t",
+      "verifier": {
+        "reuse": true,
+        "reason": "The cached response provides a clear and simple explanation of blockchain technology.",
+        "latency_ms": 1171.5257000178099,
+        "prompt_tokens": 279,
+        "completion_tokens": 23
+      }
+    },
+    {
+      "label": "pos_supply_demand",
+      "category": "class_b",
+      "prompt_a": "Explain supply and demand in economics.",
+      "prompt_b": "What is the law of supply and demand?",
+      "similarity": 0.7654225740625654,
+      "cached_response_preview": "Supply and demand are fundamental concepts in economics that describe how markets function. Demand refers to the quantity of a good or service that consumers are willing and able to purchase at various prices, while supply represents the qu",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request specifically asks for the law of supply and demand, which requires a different focus than the general explanation provided.",
+        "latency_ms": 985.3252000175416,
+        "prompt_tokens": 302,
+        "completion_tokens": 34
+      }
+    },
+    {
+      "label": "pos_reduce_stress",
+      "category": "class_b",
+      "prompt_a": "What are effective ways to reduce stress?",
+      "prompt_b": "How can I manage stress in daily life?",
+      "similarity": 0.787486496608621,
+      "cached_response_preview": "Effective ways to reduce stress include practicing mindfulness and meditation, engaging in regular physical exercise, maintaining a balanced diet, and ensuring adequate sleep. Additionally, connecting with friends and family, setting realis",
+      "verifier": {
+        "reuse": true,
+        "reason": "The cached response provides effective strategies that can be applied to manage stress in daily life.",
+        "latency_ms": 925.3476000158116,
+        "prompt_tokens": 262,
+        "completion_tokens": 27
+      }
+    },
+    {
+      "label": "pos_api",
+      "category": "class_a",
+      "prompt_a": "What is an API?",
+      "prompt_b": "Define an application programming interface.",
+      "similarity": 0.6821714828586669,
+      "cached_response_preview": "An API, or Application Programming Interface, is a set of rules and protocols that allows different software applications to communicate with each other. It defines the methods and data formats that applications can use to request and excha",
+      "verifier": {
+        "reuse": true,
+        "reason": "The new request is a rephrased version of the original request, seeking the same definition.",
+        "latency_ms": 990.7396999769844,
+        "prompt_tokens": 272,
+        "completion_tokens": 29
+      }
+    },
+    {
+      "label": "pos_car_engine",
+      "category": "class_b",
+      "prompt_a": "How does a car engine work at a basic level?",
+      "prompt_b": "Explain the basic operation of an internal combustion engine in a car.",
+      "similarity": 0.7523734106393405,
+      "cached_response_preview": "At a basic level, a car engine converts fuel into mechanical energy through a process called internal combustion. The engine draws in air and fuel, compresses the mixture, and ignites it with a spark, causing an explosion that pushes piston",
+      "verifier": {
+        "reuse": true,
+        "reason": "Both requests seek a basic explanation of how an internal combustion engine operates in a car.",
+        "latency_ms": 849.345299997367,
+        "prompt_tokens": 292,
+        "completion_tokens": 27
+      }
+    },
+    {
+      "label": "pos_climate_change",
+      "category": "class_b",
+      "prompt_a": "What is climate change?",
+      "prompt_b": "Define climate change and why it matters.",
+      "similarity": 0.7633615550239498,
+      "cached_response_preview": "Climate change refers to significant and lasting changes in the Earth's climate, primarily driven by human activities such as burning fossil fuels, deforestation, and industrial processes. These activities increase greenhouse gas concentrat",
+      "verifier": {
+        "reuse": true,
+        "reason": "The cached response defines climate change and implies its importance through the mention of risks to ecosystems, health, and economies.",
+        "latency_ms": 1066.6205000015907,
+        "prompt_tokens": 275,
+        "completion_tokens": 33
+      }
+    },
+    {
+      "label": "pos_learn_language",
+      "category": "class_b",
+      "prompt_a": "What is the best way to learn a new language?",
+      "prompt_b": "How can adults effectively learn a foreign language?",
+      "similarity": 0.7419612468281253,
+      "cached_response_preview": "The best way to learn a new language is through a combination of immersive practice, consistent study, and interaction with native speakers. Utilize language learning apps, take formal classes, and engage in conversation with others. Additi",
+      "verifier": {
+        "reuse": true,
+        "reason": "The cached response addresses effective language learning methods applicable to adults.",
+        "latency_ms": 1066.112000029534,
+        "prompt_tokens": 284,
+        "completion_tokens": 22
+      }
+    },
+    {
+      "label": "pos_oop",
+      "category": "class_b",
+      "prompt_a": "What is object-oriented programming?",
+      "prompt_b": "Explain object-oriented programming principles.",
+      "similarity": 0.7704094352991551,
+      "cached_response_preview": "Object-oriented programming (OOP) is a programming paradigm that uses \"objects\" to represent data and methods to manipulate that data. It is based on four main principles: encapsulation (bundling data and methods), inheritance (creating new",
+      "verifier": {
+        "reuse": true,
+        "reason": "The cached response covers the principles of object-oriented programming, which aligns with the new request.",
+        "latency_ms": 881.020000029821,
+        "prompt_tokens": 292,
+        "completion_tokens": 28
+      }
+    },
+    {
+      "label": "pos_wifi",
+      "category": "class_a",
+      "prompt_a": "How does WiFi work?",
+      "prompt_b": "Explain how wireless internet connectivity works.",
+      "similarity": 0.7739407501082315,
+      "cached_response_preview": "WiFi works by using radio waves to transmit data between devices and a router. The router connects to the internet and sends and receives data packets wirelessly to devices like smartphones, laptops, and tablets. These devices have WiFi ada",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request is broader and may require additional details beyond WiFi, such as cellular or satellite connections.",
+        "latency_ms": 919.0586000331677,
+        "prompt_tokens": 290,
+        "completion_tokens": 31
+      }
+    },
+    {
+      "label": "pos_pythagorean",
+      "category": "class_b",
+      "prompt_a": "What is the Pythagorean theorem?",
+      "prompt_b": "State the Pythagorean theorem and what it relates.",
+      "similarity": 0.7880979516567697,
+      "cached_response_preview": "The Pythagorean theorem is a fundamental principle in geometry that states that in a right triangle, the square of the length of the hypotenuse (the side opposite the right angle) is equal to the sum of the squares of the lengths of the oth",
+      "verifier": {
+        "reuse": true,
+        "reason": "The cached response provides the theorem and its relation to right triangles.",
+        "latency_ms": 944.1213000100106,
+        "prompt_tokens": 319,
+        "completion_tokens": 23
+      }
+    },
+    {
+      "label": "pos_inflation",
+      "category": "class_c",
+      "prompt_a": "What is inflation in economics?",
+      "prompt_b": "Define inflation and how it affects prices.",
+      "similarity": 0.7405456248371918,
+      "cached_response_preview": "Inflation in economics refers to the rate at which the general level of prices for goods and services rises, leading to a decrease in purchasing power. It is typically measured by the Consumer Price Index (CPI) or the Producer Price Index (",
+      "verifier": {
+        "reuse": true,
+        "reason": "The cached response defines inflation and explains its effect on prices.",
+        "latency_ms": 865.5011999653652,
+        "prompt_tokens": 274,
+        "completion_tokens": 22
+      }
+    },
+    {
+      "label": "neg_diabetes_symptoms_causes",
+      "category": "hard_negative",
+      "prompt_a": "What are the symptoms of diabetes?",
+      "prompt_b": "What causes diabetes?",
+      "similarity": 0.7478265301539954,
+      "cached_response_preview": "Common symptoms of diabetes include increased thirst, frequent urination, extreme fatigue, blurred vision, and slow-healing wounds. People may also experience increased hunger, unexplained weight loss, and dark patches of skin, particularly",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks for causes, not symptoms, which is a different focus.",
+        "latency_ms": 906.676399987191,
+        "prompt_tokens": 273,
+        "completion_tokens": 26
+      }
+    },
+    {
+      "label": "neg_diabetes_symptoms_treatment",
+      "category": "hard_negative",
+      "prompt_a": "What are the symptoms of diabetes?",
+      "prompt_b": "How is diabetes treated?",
+      "similarity": 0.6549359284705533,
+      "cached_response_preview": "Common symptoms of diabetes include increased thirst, frequent urination, extreme fatigue, blurred vision, and slow-healing wounds. People may also experience increased hunger, unexplained weight loss, and dark patches of skin, particularly",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks for treatment information, which is different from the symptoms provided in the cached response.",
+        "latency_ms": 890.1104000397027,
+        "prompt_tokens": 274,
+        "completion_tokens": 30
+      }
+    },
+    {
+      "label": "neg_http_cache_vs_semantic_cache",
+      "category": "hard_negative",
+      "prompt_a": "How does HTTP caching work?",
+      "prompt_b": "How does semantic caching for LLM responses work?",
+      "similarity": 0.5876886897401412,
+      "cached_response_preview": "HTTP caching works by storing copies of responses from a server so that subsequent requests for the same resource can be served faster without needing to contact the server again. When a client makes a request, it can include headers that i",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request focuses on semantic caching for LLM responses, which is different from general HTTP caching.",
+        "latency_ms": 869.100600015372,
+        "prompt_tokens": 313,
+        "completion_tokens": 30
+      }
+    },
+    {
+      "label": "neg_sort_vs_reverse_list",
+      "category": "hard_negative",
+      "prompt_a": "How do I sort a Python list?",
+      "prompt_b": "How do I reverse a Python list?",
+      "similarity": 0.7755834980367804,
+      "cached_response_preview": "You can sort a Python list using the `sort()` method or the `sorted()` function. The `sort()` method sorts the list in place and modifies the original list, while `sorted()` returns a new sorted list without changing the original. For examp",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks for reversing a list, which is different from sorting.",
+        "latency_ms": 1189.559200021904,
+        "prompt_tokens": 346,
+        "completion_tokens": 25
+      }
+    },
+    {
+      "label": "neg_list_append_vs_extend",
+      "category": "hard_negative",
+      "prompt_a": "What does list.append do in Python?",
+      "prompt_b": "What does list.extend do in Python?",
+      "similarity": 0.7936615584269274,
+      "cached_response_preview": "In Python, the `list.append()` method adds a single element to the end of a list. It modifies the original list in place and does not return a new list. For example, if you have a list `my_list` and you call `my_list.append(5)`, the number ",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks about a different method, list.extend, which has a different function and behavior.",
+        "latency_ms": 988.3363000117242,
+        "prompt_tokens": 278,
+        "completion_tokens": 30
+      }
+    },
+    {
+      "label": "neg_ml_define_vs_train",
+      "category": "hard_negative",
+      "prompt_a": "What is machine learning?",
+      "prompt_b": "How do I train a machine learning model from scratch?",
+      "similarity": 0.6090901645974649,
+      "cached_response_preview": "Machine learning is a subset of artificial intelligence that involves the development of algorithms and statistical models that enable computers to learn from and make predictions or decisions based on data. Instead of being explicitly prog",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks for a process, while the cached response provides a definition.",
+        "latency_ms": 703.7016000249423,
+        "prompt_tokens": 282,
+        "completion_tokens": 26
+      }
+    },
+    {
+      "label": "neg_git_merge_vs_rebase",
+      "category": "hard_negative",
+      "prompt_a": "How do I merge branches in Git?",
+      "prompt_b": "When should I use git rebase instead of merge?",
+      "similarity": 0.6597795829081564,
+      "cached_response_preview": "To merge branches in Git, first, switch to the branch you want to merge into using `git checkout branch-name`. Then, run the command `git merge other-branch-name`, where `other-branch-name` is the branch you want to merge from. Resolve any ",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks for a different concept (rebase) rather than the merging process.",
+        "latency_ms": 936.0724000143819,
+        "prompt_tokens": 277,
+        "completion_tokens": 28
+      }
+    },
+    {
+      "label": "neg_inflation_cause_vs_effect",
+      "category": "hard_negative",
+      "prompt_a": "What causes inflation?",
+      "prompt_b": "How does inflation affect consumers?",
+      "similarity": 0.7127810727936217,
+      "cached_response_preview": "Inflation is primarily caused by an increase in the supply of money in the economy, which can outpace economic growth. Other factors include demand-pull inflation, where demand for goods and services exceeds supply, and cost-push inflation,",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request focuses on the effects of inflation on consumers, which is different from the causes of inflation.",
+        "latency_ms": 886.9354000198655,
+        "prompt_tokens": 274,
+        "completion_tokens": 31
+      }
+    },
+    {
+      "label": "neg_running_start_vs_knee_pain",
+      "category": "hard_negative",
+      "prompt_a": "How should a beginner start running?",
+      "prompt_b": "How do I treat knee pain caused by running?",
+      "similarity": 0.4927450670856285,
+      "cached_response_preview": "A beginner should start running by first establishing a consistent walking routine to build endurance. Gradually incorporate short running intervals into your walks, such as a minute of running followed by a few minutes of walking. Aim for ",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request focuses on treating knee pain, which is different from starting a running routine.",
+        "latency_ms": 1014.3058000248857,
+        "prompt_tokens": 291,
+        "completion_tokens": 28
+      }
+    },
+    {
+      "label": "neg_sql_select_vs_delete",
+      "category": "hard_negative",
+      "prompt_a": "How do I write a SQL SELECT query?",
+      "prompt_b": "How do I delete rows with SQL?",
+      "similarity": 0.6221483932415063,
+      "cached_response_preview": "To write a SQL SELECT query, start with the keyword `SELECT`, followed by the columns you want to retrieve, and then use the `FROM` keyword to specify the table. For example: \n\n```sql\nSELECT column1, column2 FROM table_name;\n```\n\nYou can al",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks for a different SQL operation (DELETE) rather than SELECT.",
+        "latency_ms": 1031.1063000117429,
+        "prompt_tokens": 317,
+        "completion_tokens": 26
+      }
+    },
+    {
+      "label": "neg_encryption_define_vs_howto",
+      "category": "hard_negative",
+      "prompt_a": "What is encryption?",
+      "prompt_b": "How do I encrypt a file on my laptop?",
+      "similarity": 0.5799032579749449,
+      "cached_response_preview": "Encryption is the process of converting information or data into a code to prevent unauthorized access. It uses algorithms and keys to transform readable data (plaintext) into an unreadable format (ciphertext). Only those with the correct d",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks for specific steps to encrypt a file, which is different from the general definition provided.",
+        "latency_ms": 910.226900014095,
+        "prompt_tokens": 280,
+        "completion_tokens": 31
+      }
+    },
+    {
+      "label": "neg_heart_attack_symptoms_vs_first_aid",
+      "category": "hard_negative",
+      "prompt_a": "What are the symptoms of a heart attack?",
+      "prompt_b": "What first aid should I give during a heart attack?",
+      "similarity": 0.6662208297508162,
+      "cached_response_preview": "Common symptoms of a heart attack include chest pain or discomfort, which may feel like pressure, squeezing, fullness, or pain. Other symptoms can include shortness of breath, nausea, lightheadedness, or pain in the arms, back, neck, jaw, o",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks for first aid steps, which is different from symptoms.",
+        "latency_ms": 871.9492999953218,
+        "prompt_tokens": 280,
+        "completion_tokens": 25
+      }
+    },
+    {
+      "label": "neg_resume_vs_salary",
+      "category": "hard_negative",
+      "prompt_a": "How do I write a resume?",
+      "prompt_b": "How do I negotiate a higher salary?",
+      "similarity": 0.4096222151762354,
+      "cached_response_preview": "To write a resume, start by choosing a clear format (chronological, functional, or combination) that best highlights your skills and experience. Include essential sections such as contact information, a summary or objective statement, work ",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request is about salary negotiation, which is a different topic than writing a resume.",
+        "latency_ms": 741.1376999807544,
+        "prompt_tokens": 295,
+        "completion_tokens": 28
+      }
+    },
+    {
+      "label": "neg_climate_causes_vs_solutions",
+      "category": "hard_negative",
+      "prompt_a": "What causes climate change?",
+      "prompt_b": "What are practical solutions to climate change?",
+      "similarity": 0.6693449821110785,
+      "cached_response_preview": "Climate change is primarily caused by the increase of greenhouse gases in the atmosphere due to human activities, such as burning fossil fuels, deforestation, and industrial processes. These gases, including carbon dioxide and methane, trap",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks for solutions, not causes, requiring different information and focus.",
+        "latency_ms": 677.7784000150859,
+        "prompt_tokens": 284,
+        "completion_tokens": 26
+      }
+    },
+    {
+      "label": "neg_tcp_vs_udp",
+      "category": "hard_negative",
+      "prompt_a": "What is TCP and when is it used?",
+      "prompt_b": "What is UDP and when is it used?",
+      "similarity": 0.6713712387039387,
+      "cached_response_preview": "TCP, or Transmission Control Protocol, is a core communication protocol used in the Internet Protocol Suite. It ensures reliable, ordered, and error-checked delivery of data between applications running on hosts communicating over an IP net",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks about UDP, not TCP, requiring different information and focus.",
+        "latency_ms": 839.1647000098601,
+        "prompt_tokens": 283,
+        "completion_tokens": 26
+      }
+    },
+    {
+      "label": "neg_react_state_vs_props",
+      "category": "hard_negative",
+      "prompt_a": "What is React state used for?",
+      "prompt_b": "What are props in React used for?",
+      "similarity": 0.6928044448812966,
+      "cached_response_preview": "React state is used to manage and store dynamic data within a component. It allows components to respond to user input, update the UI based on changes, and maintain local data that can affect rendering. When the state changes, React re-rend",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks about props, which is a different concept than state.",
+        "latency_ms": 938.8813999830745,
+        "prompt_tokens": 270,
+        "completion_tokens": 25
+      }
+    },
+    {
+      "label": "neg_compile_vs_runtime_error",
+      "category": "hard_negative",
+      "prompt_a": "What is a compile-time error?",
+      "prompt_b": "What is a runtime error?",
+      "similarity": 0.7101210753148919,
+      "cached_response_preview": "A compile-time error is an error that occurs during the compilation of source code into executable code, preventing the program from being successfully compiled. These errors can arise from syntax mistakes, type mismatches, or other violati",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks about runtime errors, which are different from compile-time errors.",
+        "latency_ms": 823.4757999889553,
+        "prompt_tokens": 273,
+        "completion_tokens": 26
+      }
+    },
+    {
+      "label": "neg_db_normalization_vs_indexing",
+      "category": "hard_negative",
+      "prompt_a": "What is database normalization?",
+      "prompt_b": "What is database indexing?",
+      "similarity": 0.5036737005156354,
+      "cached_response_preview": "Database normalization is the process of organizing a database to reduce redundancy and improve data integrity. It involves dividing a database into tables and establishing relationships between them, following specific rules called normal ",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks about a different concept, database indexing, which is not covered in the cached response.",
+        "latency_ms": 949.3490000022575,
+        "prompt_tokens": 257,
+        "completion_tokens": 31
+      }
+    },
+    {
+      "label": "neg_oauth_auth_vs_authz",
+      "category": "hard_negative",
+      "prompt_a": "How does OAuth authentication work?",
+      "prompt_b": "How does OAuth authorization work?",
+      "similarity": 0.9348794121768881,
+      "cached_response_preview": "OAuth authentication is a protocol that allows third-party applications to access a user's data without sharing their credentials. It works by having the user grant permission to the application to access their information on another servic",
+      "verifier": {
+        "reuse": false,
+        "reason": "Authorization focuses on granting access, while authentication verifies identity; they are distinct processes.",
+        "latency_ms": 958.5198999848217,
+        "prompt_tokens": 293,
+        "completion_tokens": 26
+      }
+    },
+    {
+      "label": "neg_type1_vs_type2_diabetes",
+      "category": "hard_negative",
+      "prompt_a": "What are symptoms of type 1 diabetes?",
+      "prompt_b": "What are symptoms of type 2 diabetes?",
+      "similarity": 0.8626331430407662,
+      "cached_response_preview": "Symptoms of type 1 diabetes include increased thirst, frequent urination, extreme hunger, unintended weight loss, fatigue, and blurred vision. Additionally, some individuals may experience irritability or mood changes. If you suspect type 1",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks for symptoms of type 2 diabetes, which differ from type 1 diabetes.",
+        "latency_ms": 877.9128999449313,
+        "prompt_tokens": 267,
+        "completion_tokens": 30
+      }
+    },
+    {
+      "label": "neg_array_vs_linked_list",
+      "category": "hard_negative",
+      "prompt_a": "What are advantages of arrays?",
+      "prompt_b": "What are advantages of linked lists?",
+      "similarity": 0.636363439480348,
+      "cached_response_preview": "Arrays offer several advantages, including efficient storage of data elements of the same type in contiguous memory locations, which allows for quick access and manipulation of elements using their indices. They also enable easy iteration t",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks for advantages of linked lists, which is a different data structure than arrays.",
+        "latency_ms": 1144.4665999733843,
+        "prompt_tokens": 271,
+        "completion_tokens": 29
+      }
+    },
+    {
+      "label": "neg_bake_vs_store_bread",
+      "category": "hard_negative",
+      "prompt_a": "How do I bake sourdough bread?",
+      "prompt_b": "How should I store bread to keep it fresh?",
+      "similarity": 0.6140961027698764,
+      "cached_response_preview": "To bake sourdough bread, start by feeding your sourdough starter to ensure it's active. Mix the starter with flour, water, and salt to form a dough, then knead it until smooth. Allow the dough to rise until doubled in size, shape it into a ",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks for storage information, which is different from the baking instructions in the cached response.",
+        "latency_ms": 1077.2519000456668,
+        "prompt_tokens": 311,
+        "completion_tokens": 30
+      }
+    },
+    {
+      "label": "neg_primary_vs_foreign_key",
+      "category": "hard_negative",
+      "prompt_a": "What is a primary key in SQL?",
+      "prompt_b": "What is a foreign key in SQL?",
+      "similarity": 0.7454847838857178,
+      "cached_response_preview": "A primary key in SQL is a unique identifier for a record in a database table. It ensures that each entry is distinct and cannot be null, providing a way to uniquely identify each row. A table can have only one primary key, which can consist",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks about a different concept (foreign key) rather than the primary key.",
+        "latency_ms": 1476.8520999932662,
+        "prompt_tokens": 266,
+        "completion_tokens": 28
+      }
+    },
+    {
+      "label": "neg_depression_symptoms_vs_treatment",
+      "category": "hard_negative",
+      "prompt_a": "What are common symptoms of depression?",
+      "prompt_b": "What treatments exist for depression?",
+      "similarity": 0.6517840416397321,
+      "cached_response_preview": "Common symptoms of depression include persistent feelings of sadness or hopelessness, loss of interest or pleasure in activities once enjoyed, changes in appetite or weight, sleep disturbances, fatigue, difficulty concentrating, and feeling",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks for treatments, which is different from symptoms.",
+        "latency_ms": 974.1847999976017,
+        "prompt_tokens": 285,
+        "completion_tokens": 23
+      }
+    },
+    {
+      "label": "neg_cpu_vs_gpu",
+      "category": "hard_negative",
+      "prompt_a": "What does a CPU do in a computer?",
+      "prompt_b": "What does a GPU do in a computer?",
+      "similarity": 0.7206160068312002,
+      "cached_response_preview": "The CPU, or Central Processing Unit, is often referred to as the brain of the computer. It performs calculations, executes instructions from programs, and manages data flow within the system. Essentially, it processes information and coordi",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks about a GPU, not a CPU, requiring different information and focus.",
+        "latency_ms": 1460.5060999747366,
+        "prompt_tokens": 258,
+        "completion_tokens": 28
+      }
+    },
+    {
+      "label": "neg_import_vs_export_econ",
+      "category": "hard_negative",
+      "prompt_a": "What are imports in international trade?",
+      "prompt_b": "What are exports in international trade?",
+      "similarity": 0.8078210606301791,
+      "cached_response_preview": "Imports in international trade refer to goods and services that are purchased by a country from foreign suppliers. These products are brought into the importing country for consumption, resale, or production. Imports can include a wide rang",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks about exports, not imports, requiring different information and focus.",
+        "latency_ms": 1103.3908000099473,
+        "prompt_tokens": 281,
+        "completion_tokens": 26
+      }
+    },
+    {
+      "label": "neg_http_vs_https",
+      "category": "hard_negative",
+      "prompt_a": "How does HTTP work?",
+      "prompt_b": "How does HTTPS work?",
+      "similarity": 0.7635248272296241,
+      "cached_response_preview": "HTTP (Hypertext Transfer Protocol) is a protocol used for transferring data over the web. It operates as a request-response model where a client (usually a web browser) sends a request to a server for resources, such as web pages or images.",
+      "verifier": {
+        "reuse": false,
+        "reason": "HTTPS is a secure version of HTTP, using encryption for data transfer, which is not covered in the cached response.",
+        "latency_ms": 1171.4980999822728,
+        "prompt_tokens": 304,
+        "completion_tokens": 33
+      }
+    },
+    {
+      "label": "neg_overfitting_vs_underfitting",
+      "category": "hard_negative",
+      "prompt_a": "What is overfitting in machine learning?",
+      "prompt_b": "What is underfitting in machine learning?",
+      "similarity": 0.842341335628836,
+      "cached_response_preview": "Overfitting in machine learning occurs when a model learns the training data too well, capturing noise and outliers instead of the underlying patterns. As a result, the model performs well on the training data but poorly on unseen data, lea",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks about underfitting, which is a different concept from overfitting.",
+        "latency_ms": 1012.9098999896087,
+        "prompt_tokens": 283,
+        "completion_tokens": 29
+      }
+    },
+    {
+      "label": "neg_flu_symptoms_vs_prevention",
+      "category": "hard_negative",
+      "prompt_a": "What are symptoms of the flu?",
+      "prompt_b": "How can I prevent catching the flu?",
+      "similarity": 0.5744653876744674,
+      "cached_response_preview": "Symptoms of the flu typically include fever, chills, body aches, fatigue, cough, sore throat, runny or stuffy nose, headaches, and sometimes gastrointestinal symptoms like nausea or diarrhea. These symptoms usually appear suddenly and can v",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks for prevention methods, not symptoms, which is a different focus.",
+        "latency_ms": 877.2018000017852,
+        "prompt_tokens": 253,
+        "completion_tokens": 27
+      }
+    },
+    {
+      "label": "neg_rest_vs_graphql",
+      "category": "hard_negative",
+      "prompt_a": "What is a REST API?",
+      "prompt_b": "What is GraphQL?",
+      "similarity": 0.4373700711522027,
+      "cached_response_preview": "A REST API (Representational State Transfer Application Programming Interface) is a set of rules and conventions for building and interacting with web services. It allows different software applications to communicate over the internet usin",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks for information about GraphQL, which is different from the cached response about REST APIs.",
+        "latency_ms": 967.1494999784045,
+        "prompt_tokens": 285,
+        "completion_tokens": 31
+      }
+    },
+    {
+      "label": "unrel_france_bread",
+      "category": "unrelated",
+      "prompt_a": "What is the capital of France?",
+      "prompt_b": "How do I bake sourdough bread?",
+      "similarity": 0.1527469889902926,
+      "cached_response_preview": "The capital of France is Paris.",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks for a different topic and type of information.",
+        "latency_ms": 905.6501000304706,
+        "prompt_tokens": 212,
+        "completion_tokens": 23
+      }
+    },
+    {
+      "label": "unrel_python_weather",
+      "category": "unrelated",
+      "prompt_a": "How do I sort a Python list?",
+      "prompt_b": "What is the weather like in Tokyo?",
+      "similarity": 0.15194924022287049,
+      "cached_response_preview": "You can sort a Python list using the `sort()` method or the `sorted()` function. The `sort()` method sorts the list in place and modifies the original list, while `sorted()` returns a new sorted list without changing the original. For examp",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks for weather information, which is unrelated to sorting a Python list.",
+        "latency_ms": 675.8836000226438,
+        "prompt_tokens": 346,
+        "completion_tokens": 27
+      }
+    },
+    {
+      "label": "unrel_diabetes_car",
+      "category": "unrelated",
+      "prompt_a": "What are the symptoms of diabetes?",
+      "prompt_b": "How often should I change my car's oil?",
+      "similarity": 0.18398900235348806,
+      "cached_response_preview": "Common symptoms of diabetes include increased thirst, frequent urination, extreme fatigue, blurred vision, and slow-healing wounds. People may also experience increased hunger, unexplained weight loss, and dark patches of skin, particularly",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request is about car maintenance, which is unrelated to diabetes symptoms.",
+        "latency_ms": 1040.1189000112936,
+        "prompt_tokens": 279,
+        "completion_tokens": 25
+      }
+    },
+    {
+      "label": "unrel_ml_pasta",
+      "category": "unrelated",
+      "prompt_a": "What is machine learning?",
+      "prompt_b": "Give me a simple pasta recipe.",
+      "similarity": 0.19529483101526973,
+      "cached_response_preview": "Machine learning is a subset of artificial intelligence that involves the development of algorithms and statistical models that enable computers to learn from and make predictions or decisions based on data. Instead of being explicitly prog",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request is about a pasta recipe, which is entirely different in topic and scope from machine learning.",
+        "latency_ms": 850.6736000417732,
+        "prompt_tokens": 278,
+        "completion_tokens": 31
+      }
+    },
+    {
+      "label": "unrel_git_piano",
+      "category": "unrelated",
+      "prompt_a": "How do I merge branches in Git?",
+      "prompt_b": "How do I play a C major chord on piano?",
+      "similarity": 0.1701803061046894,
+      "cached_response_preview": "To merge branches in Git, first, switch to the branch you want to merge into using `git checkout branch-name`. Then, run the command `git merge other-branch-name`, where `other-branch-name` is the branch you want to merge from. Resolve any ",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request is about playing a piano chord, which is unrelated to merging branches in Git.",
+        "latency_ms": 999.5140000246465,
+        "prompt_tokens": 277,
+        "completion_tokens": 29
+      }
+    },
+    {
+      "label": "unrel_sql_football",
+      "category": "unrelated",
+      "prompt_a": "How do I write a SQL SELECT query?",
+      "prompt_b": "What are the basic rules of football?",
+      "similarity": 0.27954264053353733,
+      "cached_response_preview": "To write a SQL SELECT query, start with the keyword `SELECT`, followed by the columns you want to retrieve, and then use the `FROM` keyword to specify the table. For example: \n\n```sql\nSELECT column1, column2 FROM table_name;\n```\n\nYou can al",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request is about football rules, which is unrelated to SQL queries.",
+        "latency_ms": 891.3770000217482,
+        "prompt_tokens": 317,
+        "completion_tokens": 25
+      }
+    },
+    {
+      "label": "unrel_photosynthesis_stocks",
+      "category": "unrelated",
+      "prompt_a": "How does photosynthesis work in plants?",
+      "prompt_b": "How does the stock market work?",
+      "similarity": 0.3776834477675776,
+      "cached_response_preview": "Photosynthesis is the process by which plants convert light energy, usually from the sun, into chemical energy stored in glucose. It occurs mainly in the chloroplasts of plant cells, where chlorophyll captures sunlight. The process involves",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request is about the stock market, which is a different topic from photosynthesis.",
+        "latency_ms": 865.6972000026144,
+        "prompt_tokens": 330,
+        "completion_tokens": 28
+      }
+    },
+    {
+      "label": "unrel_sleep_rome",
+      "category": "unrelated",
+      "prompt_a": "How can I improve my sleep quality?",
+      "prompt_b": "Who were the main rulers of ancient Rome?",
+      "similarity": 0.12292289667162296,
+      "cached_response_preview": "To improve your sleep quality, establish a consistent sleep schedule by going to bed and waking up at the same time every day. Create a relaxing bedtime routine, limit exposure to screens before sleep, and ensure your sleep environment is c",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request asks for historical information about rulers, which is unrelated to sleep quality.",
+        "latency_ms": 850.9140000096522,
+        "prompt_tokens": 279,
+        "completion_tokens": 27
+      }
+    },
+    {
+      "label": "unrel_blockchain_garden",
+      "category": "unrelated",
+      "prompt_a": "What is a blockchain?",
+      "prompt_b": "How do I start a vegetable garden?",
+      "similarity": 0.2147004021914624,
+      "cached_response_preview": "A blockchain is a decentralized digital ledger that records transactions across multiple computers in a way that ensures the data is secure, transparent, and immutable. Each block in the chain contains a list of transactions and is linked t",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request is about gardening, which is a different topic from blockchain.",
+        "latency_ms": 917.324100038968,
+        "prompt_tokens": 280,
+        "completion_tokens": 25
+      }
+    },
+    {
+      "label": "unrel_wifi_marine",
+      "category": "unrelated",
+      "prompt_a": "How does WiFi work?",
+      "prompt_b": "What is coral bleaching in marine biology?",
+      "similarity": 0.1328128659719492,
+      "cached_response_preview": "WiFi works by using radio waves to transmit data between devices and a router. The router connects to the internet and sends and receives data packets wirelessly to devices like smartphones, laptops, and tablets. These devices have WiFi ada",
+      "verifier": {
+        "reuse": false,
+        "reason": "The new request is about coral bleaching, which is unrelated to WiFi.",
+        "latency_ms": 787.6175999990664,
+        "prompt_tokens": 291,
+        "completion_tokens": 25
+      }
+    }
+  ],
+  "class_b_summary": {
+    "accept": 13,
+    "reject": 2,
+    "no_candidate": 0
+  },
+  "latency_ms": {
+    "embed_p50_reference": 214.0,
+    "verifier_avg": 962.0314985771464,
+    "verifier_p50": 941.5013499965426,
+    "verified_hit_p50": 1155.5013499965426,
+    "generation_p50": 1510.606949974317,
+    "current_semantic_hit_p50_benchmark": 291,
+    "thin_proxy_p50_benchmark": 615
+  },
+  "cost_usd": {
+    "verifier_total": 0.0041511,
+    "avg_generation_per_call": 5.436206896551724e-05
+  },
+  "outcome": "A"
+}

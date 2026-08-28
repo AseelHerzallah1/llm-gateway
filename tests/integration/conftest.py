@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import uuid
 from collections.abc import AsyncIterator
+from unittest.mock import AsyncMock
 
 import bcrypt
 import pytest
@@ -23,6 +24,7 @@ from app.main import app
 from app.providers.router import resolve_provider_name
 from tests.fakes.embeddings import DeterministicEmbeddingProvider
 from tests.fakes.providers import RetryOnlyRouter, SuccessProvider
+from tests.fakes.verifier import DeterministicVerifier
 from tests.helpers import mock_app_state
 
 _postgres_checked = False
@@ -105,18 +107,30 @@ async def db_client(db_project, monkeypatch) -> AsyncIterator[tuple[AsyncClient,
 async def db_cache_client(
     db_project, monkeypatch
 ) -> AsyncIterator[
-    tuple[AsyncClient, Project, str, InMemorySemanticCache, SuccessProvider, DeterministicEmbeddingProvider]
+    tuple[
+        AsyncClient,
+        Project,
+        str,
+        InMemorySemanticCache,
+        SuccessProvider,
+        DeterministicEmbeddingProvider,
+        DeterministicVerifier,
+    ]
 ]:
     """HTTP client with real semantic cache, deterministic embeddings, stub provider."""
     project, api_key = db_project
     mock_app_state(app, monkeypatch, resolve_provider_name=resolve_provider_name)
 
-    cache = InMemorySemanticCache(similarity_threshold=settings.cache_similarity_threshold)
+    cache = InMemorySemanticCache(candidate_threshold=settings.cache_candidate_threshold)
     embedding_provider = DeterministicEmbeddingProvider()
+    verifier = DeterministicVerifier()
     provider = SuccessProvider("openai", content="from-provider")
 
     app.state.semantic_cache = cache
     app.state.embedding_provider = embedding_provider
+    app.state.cache_verifier = verifier
+    app.state.cache_verifier_client = AsyncMock()
+    app.state.cache_verifier_client.aclose = AsyncMock()
     app.state.provider_router = RetryOnlyRouter(provider)
 
     monkeypatch.setattr("app.config.settings.semantic_cache_enabled", True)
@@ -124,6 +138,6 @@ async def db_cache_client(
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
-        yield client, project, api_key, cache, provider, embedding_provider
+        yield client, project, api_key, cache, provider, embedding_provider, verifier
 
     app.dependency_overrides.clear()

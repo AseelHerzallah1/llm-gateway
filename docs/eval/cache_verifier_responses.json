@@ -1,0 +1,359 @@
+{
+  "generated_at": "2026-08-21T09:30:50.540470+00:00",
+  "model": "gpt-4o-mini",
+  "max_tokens": 150,
+  "latency_ms": {
+    "avg": 1601.1661379307043,
+    "p50": 1510.606949974317
+  },
+  "responses": {
+    "Explain recursion in programming for a beginner.": {
+      "response": "Recursion in programming is a technique where a function calls itself to solve a problem. It typically involves a base case, which stops the recursion, and a recursive case, which breaks the problem down into smaller instances of the same problem. For example, calculating the factorial of a number can be done recursively by multiplying the number by the factorial of the number minus one, until reaching the base case of factorial(1). This approach can simplify code and make it easier to understand for problems that can be divided into similar subproblems.",
+      "latency_ms": 2887.8387000295334,
+      "prompt_tokens": 46,
+      "completion_tokens": 106
+    },
+    "Explain supply and demand in economics.": {
+      "response": "Supply and demand are fundamental concepts in economics that describe how markets function. Demand refers to the quantity of a good or service that consumers are willing and able to purchase at various prices, while supply represents the quantity that producers are willing to sell at those prices. The interaction between supply and demand determines the market price and quantity of goods sold; when demand exceeds supply, prices tend to rise, and when supply exceeds demand, prices typically fall. This relationship helps allocate resources efficiently in an economy.",
+      "latency_ms": 1560.8595999656245,
+      "prompt_tokens": 45,
+      "completion_tokens": 97
+    },
+    "Explain what a Python decorator does.": {
+      "response": "A Python decorator is a design pattern that allows you to modify or enhance the behavior of a function or method without changing its code. It is typically implemented as a function that takes another function as an argument, adds some functionality, and returns a new function. Decorators are often used for logging, access control, memoization, and other cross-cutting concerns.",
+      "latency_ms": 1825.8353000273928,
+      "prompt_tokens": 45,
+      "completion_tokens": 72
+    },
+    "How can I improve my sleep quality?": {
+      "response": "To improve your sleep quality, establish a consistent sleep schedule by going to bed and waking up at the same time every day. Create a relaxing bedtime routine, limit exposure to screens before sleep, and ensure your sleep environment is comfortable, dark, and quiet. Additionally, avoid caffeine and heavy meals close to bedtime, and consider incorporating regular physical activity into your daily routine.",
+      "latency_ms": 1420.5675999983214,
+      "prompt_tokens": 46,
+      "completion_tokens": 73
+    },
+    "How do I bake sourdough bread?": {
+      "response": "To bake sourdough bread, start by feeding your sourdough starter to ensure it's active. Mix the starter with flour, water, and salt to form a dough, then knead it until smooth. Allow the dough to rise until doubled in size, shape it into a loaf, and let it proof again. Finally, bake it in a preheated oven at around 450\u00b0F (232\u00b0C) for about 30-40 minutes, or until it has a golden crust and sounds hollow when tapped.",
+      "latency_ms": 1735.2529999916442,
+      "prompt_tokens": 47,
+      "completion_tokens": 103
+    },
+    "How do I merge branches in Git?": {
+      "response": "To merge branches in Git, first, switch to the branch you want to merge into using `git checkout branch-name`. Then, run the command `git merge other-branch-name`, where `other-branch-name` is the branch you want to merge from. Resolve any conflicts if they arise, and finally, commit the merge if necessary.",
+      "latency_ms": 1695.6785000511445,
+      "prompt_tokens": 46,
+      "completion_tokens": 69
+    },
+    "How do I merge one Git branch into another?": {
+      "response": "To merge one Git branch into another, first switch to the branch you want to merge into using `git checkout <target-branch>`. Then, execute the command `git merge <source-branch>` to merge the changes from the source branch into the target branch. If there are any merge conflicts, you'll need to resolve them before completing the merge. Finally, commit the merge if necessary.",
+      "latency_ms": 1306.0187000082806,
+      "prompt_tokens": 48,
+      "completion_tokens": 79
+    },
+    "How do I sort a Python list?": {
+      "response": "You can sort a Python list using the `sort()` method or the `sorted()` function. The `sort()` method sorts the list in place and modifies the original list, while `sorted()` returns a new sorted list without changing the original. For example:\n\n```python\n# Using sort()\nmy_list = [3, 1, 2]\nmy_list.sort()  # my_list is now [1, 2, 3]\n\n# Using sorted()\nmy_list = [3, 1, 2]\nnew_list = sorted(my_list)  # new_list is [1, 2, 3], my_list remains [3, 1, 2]\n```",
+      "latency_ms": 2426.650899986271,
+      "prompt_tokens": 46,
+      "completion_tokens": 140
+    },
+    "How do I write a SQL SELECT query?": {
+      "response": "To write a SQL SELECT query, start with the keyword `SELECT`, followed by the columns you want to retrieve, and then use the `FROM` keyword to specify the table. For example: \n\n```sql\nSELECT column1, column2 FROM table_name;\n```\n\nYou can also add conditions using the `WHERE` clause, sort results with `ORDER BY`, and limit the number of results with `LIMIT`. For example:\n\n```sql\nSELECT column1, column2 FROM table_name WHERE condition ORDER BY column1 LIMIT 10;\n```",
+      "latency_ms": 2254.8906999872997,
+      "prompt_tokens": 47,
+      "completion_tokens": 110
+    },
+    "How do I write a resume?": {
+      "response": "To write a resume, start by choosing a clear format (chronological, functional, or combination) that best highlights your skills and experience. Include essential sections such as contact information, a summary or objective statement, work experience, education, and relevant skills. Tailor your resume for each job application by using keywords from the job description and quantifying your achievements when possible. Finally, proofread for errors and ensure the layout is professional and easy to read.",
+      "latency_ms": 1327.2662999806926,
+      "prompt_tokens": 45,
+      "completion_tokens": 91
+    },
+    "How do vaccines protect against disease?": {
+      "response": "Vaccines protect against disease by stimulating the immune system to recognize and fight specific pathogens, such as viruses or bacteria. They contain weakened or inactivated parts of the pathogen, or genetic material that instructs cells to produce a harmless piece of the pathogen. This exposure trains the immune system to respond quickly and effectively if it encounters the actual pathogen in the future, thereby preventing illness.",
+      "latency_ms": 1641.549699997995,
+      "prompt_tokens": 45,
+      "completion_tokens": 75
+    },
+    "How do you convert Celsius to Fahrenheit?": {
+      "response": "To convert Celsius to Fahrenheit, use the formula: \\( F = \\frac{9}{5}C + 32 \\), where \\( F \\) is the temperature in Fahrenheit and \\( C \\) is the temperature in Celsius. Simply multiply the Celsius temperature by 9/5 and then add 32 to get the equivalent Fahrenheit temperature.",
+      "latency_ms": 1580.8490000199527,
+      "prompt_tokens": 46,
+      "completion_tokens": 69
+    },
+    "How does HTTP caching work?": {
+      "response": "HTTP caching works by storing copies of responses from a server so that subsequent requests for the same resource can be served faster without needing to contact the server again. When a client makes a request, it can include headers that indicate whether it can accept cached responses. The server can respond with cache-related headers (like `Cache-Control`, `ETag`, and `Last-Modified`) that instruct the client and intermediate caches on how long to store the response and when to check for updates. This reduces latency and server load by minimizing redundant data transfers.",
+      "latency_ms": 1674.7106999973767,
+      "prompt_tokens": 44,
+      "completion_tokens": 108
+    },
+    "How does HTTP work?": {
+      "response": "HTTP (Hypertext Transfer Protocol) is a protocol used for transferring data over the web. It operates as a request-response model where a client (usually a web browser) sends a request to a server for resources, such as web pages or images. The server processes the request and responds with the requested resource or an error message, using standard methods like GET, POST, PUT, and DELETE to define the action. HTTP is stateless, meaning each request is independent, and it typically operates over TCP/IP for reliable communication.",
+      "latency_ms": 1938.782999990508,
+      "prompt_tokens": 43,
+      "completion_tokens": 105
+    },
+    "How does OAuth authentication work?": {
+      "response": "OAuth authentication is a protocol that allows third-party applications to access a user's data without sharing their credentials. It works by having the user grant permission to the application to access their information on another service (like Google or Facebook) through an authorization server. The user is redirected to the service to log in and approve access, after which the service provides an access token to the application. This token can then be used to make authorized API requests on behalf of the user.",
+      "latency_ms": 1562.1577000129037,
+      "prompt_tokens": 44,
+      "completion_tokens": 92
+    },
+    "How does WiFi work?": {
+      "response": "WiFi works by using radio waves to transmit data between devices and a router. The router connects to the internet and sends and receives data packets wirelessly to devices like smartphones, laptops, and tablets. These devices have WiFi adapters that convert the radio signals into data that can be understood and used. WiFi operates on specific frequency bands, typically 2.4 GHz and 5 GHz, allowing multiple devices to connect and communicate simultaneously.",
+      "latency_ms": 1506.489599996712,
+      "prompt_tokens": 44,
+      "completion_tokens": 88
+    },
+    "How does a car engine work at a basic level?": {
+      "response": "At a basic level, a car engine converts fuel into mechanical energy through a process called internal combustion. The engine draws in air and fuel, compresses the mixture, and ignites it with a spark, causing an explosion that pushes pistons down. This motion turns the crankshaft, which ultimately powers the vehicle's wheels. The engine also has systems for cooling and lubrication to ensure smooth operation.",
+      "latency_ms": 1258.5435000364669,
+      "prompt_tokens": 49,
+      "completion_tokens": 79
+    },
+    "How does photosynthesis work in plants?": {
+      "response": "Photosynthesis is the process by which plants convert light energy, usually from the sun, into chemical energy stored in glucose. It occurs mainly in the chloroplasts of plant cells, where chlorophyll captures sunlight. The process involves two main stages: the light-dependent reactions, which convert light energy into ATP and NADPH, and the Calvin cycle, which uses these energy carriers to convert carbon dioxide and water into glucose. Overall, the chemical equation for photosynthesis can be summarized as: 6 CO\u2082 + 6 H\u2082O + light energy \u2192 C\u2086H\u2081\u2082O\u2086 + 6 O\u2082.",
+      "latency_ms": 1864.8423999547958,
+      "prompt_tokens": 46,
+      "completion_tokens": 126
+    },
+    "How should I write a strong cover letter?": {
+      "response": "To write a strong cover letter, start with a professional greeting and a clear introduction that states the position you're applying for. Highlight your relevant skills and experiences in the body, using specific examples to demonstrate your qualifications. Conclude with a strong closing statement that expresses enthusiasm for the role and invites further discussion, while also thanking the employer for their consideration. Make sure to proofread for errors and tailor the letter to the specific job and company.",
+      "latency_ms": 1308.9382000034675,
+      "prompt_tokens": 47,
+      "completion_tokens": 87
+    },
+    "How should a beginner start running?": {
+      "response": "A beginner should start running by first establishing a consistent walking routine to build endurance. Gradually incorporate short running intervals into your walks, such as a minute of running followed by a few minutes of walking. Aim for three to four sessions per week, and listen to your body to avoid injury. Additionally, invest in a good pair of running shoes and consider following a structured program like Couch to 5K to guide your progression.",
+      "latency_ms": 1564.6352000185288,
+      "prompt_tokens": 45,
+      "completion_tokens": 85
+    },
+    "What are advantages of arrays?": {
+      "response": "Arrays offer several advantages, including efficient storage of data elements of the same type in contiguous memory locations, which allows for quick access and manipulation of elements using their indices. They also enable easy iteration through elements, making them suitable for various algorithms. Additionally, arrays have a fixed size, which can lead to better memory management and performance in certain scenarios.",
+      "latency_ms": 1406.0791000374593,
+      "prompt_tokens": 44,
+      "completion_tokens": 69
+    },
+    "What are common symptoms of depression?": {
+      "response": "Common symptoms of depression include persistent feelings of sadness or hopelessness, loss of interest or pleasure in activities once enjoyed, changes in appetite or weight, sleep disturbances, fatigue, difficulty concentrating, and feelings of worthlessness or excessive guilt. Some individuals may also experience physical symptoms such as aches or pains without a clear cause. If you or someone you know is experiencing these symptoms, it may be helpful to seek professional support.",
+      "latency_ms": 1474.1775000002235,
+      "prompt_tokens": 45,
+      "completion_tokens": 83
+    },
+    "What are effective ways to reduce stress?": {
+      "response": "Effective ways to reduce stress include practicing mindfulness and meditation, engaging in regular physical exercise, maintaining a balanced diet, and ensuring adequate sleep. Additionally, connecting with friends and family, setting realistic goals, and incorporating relaxation techniques such as deep breathing or yoga can also help manage stress levels.",
+      "latency_ms": 1258.4573999629356,
+      "prompt_tokens": 46,
+      "completion_tokens": 56
+    },
+    "What are imports in international trade?": {
+      "response": "Imports in international trade refer to goods and services that are purchased by a country from foreign suppliers. These products are brought into the importing country for consumption, resale, or production. Imports can include a wide range of items, such as raw materials, finished goods, and services, and they play a crucial role in a country's economy by providing access to products that may not be available domestically.",
+      "latency_ms": 1186.9270999450237,
+      "prompt_tokens": 45,
+      "completion_tokens": 78
+    },
+    "What are symptoms of the flu?": {
+      "response": "Symptoms of the flu typically include fever, chills, body aches, fatigue, cough, sore throat, runny or stuffy nose, headaches, and sometimes gastrointestinal symptoms like nausea or diarrhea. These symptoms usually appear suddenly and can vary in severity.",
+      "latency_ms": 987.7924000029452,
+      "prompt_tokens": 45,
+      "completion_tokens": 49
+    },
+    "What are symptoms of type 1 diabetes?": {
+      "response": "Symptoms of type 1 diabetes include increased thirst, frequent urination, extreme hunger, unintended weight loss, fatigue, and blurred vision. Additionally, some individuals may experience irritability or mood changes. If you suspect type 1 diabetes, it's important to consult a healthcare professional for proper diagnosis and management.",
+      "latency_ms": 1132.1679999819025,
+      "prompt_tokens": 47,
+      "completion_tokens": 60
+    },
+    "What are the health benefits of regular exercise?": {
+      "response": "Regular exercise offers numerous health benefits, including improved cardiovascular health, enhanced muscle strength and flexibility, better weight management, and increased bone density. It also boosts mental health by reducing symptoms of anxiety and depression, improving mood, and enhancing cognitive function. Additionally, regular physical activity can lower the risk of chronic diseases such as diabetes, hypertension, and certain cancers.",
+      "latency_ms": 1256.7928999778815,
+      "prompt_tokens": 47,
+      "completion_tokens": 70
+    },
+    "What are the symptoms of a heart attack?": {
+      "response": "Common symptoms of a heart attack include chest pain or discomfort, which may feel like pressure, squeezing, fullness, or pain. Other symptoms can include shortness of breath, nausea, lightheadedness, or pain in the arms, back, neck, jaw, or stomach. It's important to seek immediate medical attention if you or someone else experiences these symptoms.",
+      "latency_ms": 1469.087400007993,
+      "prompt_tokens": 47,
+      "completion_tokens": 71
+    },
+    "What are the symptoms of diabetes?": {
+      "response": "Common symptoms of diabetes include increased thirst, frequent urination, extreme fatigue, blurred vision, and slow-healing wounds. People may also experience increased hunger, unexplained weight loss, and dark patches of skin, particularly in areas like the neck and armpits. If you suspect you have diabetes, it's important to consult a healthcare professional for proper diagnosis and management.",
+      "latency_ms": 1145.1207000063732,
+      "prompt_tokens": 45,
+      "completion_tokens": 73
+    },
+    "What causes climate change?": {
+      "response": "Climate change is primarily caused by the increase of greenhouse gases in the atmosphere due to human activities, such as burning fossil fuels, deforestation, and industrial processes. These gases, including carbon dioxide and methane, trap heat from the sun, leading to a rise in global temperatures. Natural factors, like volcanic eruptions and variations in solar radiation, also contribute but are not the main drivers of the current changes observed.",
+      "latency_ms": 1543.6057999613695,
+      "prompt_tokens": 43,
+      "completion_tokens": 82
+    },
+    "What causes inflation?": {
+      "response": "Inflation is primarily caused by an increase in the supply of money in the economy, which can outpace economic growth. Other factors include demand-pull inflation, where demand for goods and services exceeds supply, and cost-push inflation, where rising production costs lead to higher prices. Additionally, external factors like supply chain disruptions and geopolitical events can also contribute to inflationary pressures.",
+      "latency_ms": 2200.041600037366,
+      "prompt_tokens": 42,
+      "completion_tokens": 75
+    },
+    "What does a CPU do in a computer?": {
+      "response": "The CPU, or Central Processing Unit, is often referred to as the brain of the computer. It performs calculations, executes instructions from programs, and manages data flow within the system. Essentially, it processes information and coordinates the activities of all other hardware components.",
+      "latency_ms": 1008.8327000266872,
+      "prompt_tokens": 47,
+      "completion_tokens": 51
+    },
+    "What does a SQL JOIN do?": {
+      "response": "A SQL JOIN is used to combine rows from two or more tables based on a related column between them. It allows you to retrieve data that is spread across multiple tables in a relational database, enabling you to create more complex queries and gain insights from interconnected data. Common types of JOINs include INNER JOIN, LEFT JOIN, RIGHT JOIN, and FULL OUTER JOIN, each serving different purposes in how data is combined.",
+      "latency_ms": 1409.6889000502415,
+      "prompt_tokens": 45,
+      "completion_tokens": 83
+    },
+    "What does list.append do in Python?": {
+      "response": "In Python, the `list.append()` method adds a single element to the end of a list. It modifies the original list in place and does not return a new list. For example, if you have a list `my_list` and you call `my_list.append(5)`, the number 5 will be added to the end of `my_list`.",
+      "latency_ms": 1948.406999988947,
+      "prompt_tokens": 46,
+      "completion_tokens": 73
+    },
+    "What is GDP?": {
+      "response": "Gross Domestic Product (GDP) is the total monetary value of all goods and services produced within a country's borders over a specific time period, typically annually or quarterly. It serves as a key indicator of a country's economic performance and health, reflecting the size and efficiency of its economy. GDP can be measured using three approaches: production, income, and expenditure.",
+      "latency_ms": 1514.7242999519221,
+      "prompt_tokens": 42,
+      "completion_tokens": 70
+    },
+    "What is React state used for?": {
+      "response": "React state is used to manage and store dynamic data within a component. It allows components to respond to user input, update the UI based on changes, and maintain local data that can affect rendering. When the state changes, React re-renders the component to reflect those updates, ensuring the UI stays in sync with the underlying data.",
+      "latency_ms": 1407.4609000235796,
+      "prompt_tokens": 45,
+      "completion_tokens": 66
+    },
+    "What is TCP and when is it used?": {
+      "response": "TCP, or Transmission Control Protocol, is a core communication protocol used in the Internet Protocol Suite. It ensures reliable, ordered, and error-checked delivery of data between applications running on hosts communicating over an IP network. TCP is commonly used for applications that require high reliability, such as web browsing (HTTP/HTTPS), email (SMTP, IMAP), and file transfers (FTP).",
+      "latency_ms": 1557.6153000001796,
+      "prompt_tokens": 47,
+      "completion_tokens": 76
+    },
+    "What is a REST API?": {
+      "response": "A REST API (Representational State Transfer Application Programming Interface) is a set of rules and conventions for building and interacting with web services. It allows different software applications to communicate over the internet using standard HTTP methods such as GET, POST, PUT, and DELETE. REST APIs are stateless, meaning each request from a client contains all the information needed to process it, and they typically return data in formats like JSON or XML.",
+      "latency_ms": 1366.332900011912,
+      "prompt_tokens": 44,
+      "completion_tokens": 85
+    },
+    "What is a blockchain?": {
+      "response": "A blockchain is a decentralized digital ledger that records transactions across multiple computers in a way that ensures the data is secure, transparent, and immutable. Each block in the chain contains a list of transactions and is linked to the previous block, forming a chronological chain. This technology underpins cryptocurrencies like Bitcoin and can also be used for various applications beyond currency, such as supply chain management and smart contracts.",
+      "latency_ms": 1848.817499994766,
+      "prompt_tokens": 43,
+      "completion_tokens": 78
+    },
+    "What is a compile-time error?": {
+      "response": "A compile-time error is an error that occurs during the compilation of source code into executable code, preventing the program from being successfully compiled. These errors can arise from syntax mistakes, type mismatches, or other violations of the programming language's rules. As a result, the compiler generates error messages, indicating what needs to be corrected before the code can run.",
+      "latency_ms": 1649.9924999661744,
+      "prompt_tokens": 45,
+      "completion_tokens": 71
+    },
+    "What is a primary key in SQL?": {
+      "response": "A primary key in SQL is a unique identifier for a record in a database table. It ensures that each entry is distinct and cannot be null, providing a way to uniquely identify each row. A table can have only one primary key, which can consist of a single column or a combination of multiple columns.",
+      "latency_ms": 1201.4364000060596,
+      "prompt_tokens": 46,
+      "completion_tokens": 61
+    },
+    "What is an API?": {
+      "response": "An API, or Application Programming Interface, is a set of rules and protocols that allows different software applications to communicate with each other. It defines the methods and data formats that applications can use to request and exchange information, enabling integration and functionality between different systems. APIs are commonly used in web services, mobile applications, and software development to enhance interoperability and streamline processes.",
+      "latency_ms": 1351.37610003585,
+      "prompt_tokens": 43,
+      "completion_tokens": 72
+    },
+    "What is climate change?": {
+      "response": "Climate change refers to significant and lasting changes in the Earth's climate, primarily driven by human activities such as burning fossil fuels, deforestation, and industrial processes. These activities increase greenhouse gas concentrations in the atmosphere, leading to global warming, altered weather patterns, rising sea levels, and other environmental impacts. It poses serious risks to ecosystems, human health, and economies worldwide.",
+      "latency_ms": 1592.5681999651715,
+      "prompt_tokens": 43,
+      "completion_tokens": 73
+    },
+    "What is database normalization?": {
+      "response": "Database normalization is the process of organizing a database to reduce redundancy and improve data integrity. It involves dividing a database into tables and establishing relationships between them, following specific rules called normal forms. The main goals are to eliminate duplicate data, ensure that data dependencies are logical, and simplify data management.",
+      "latency_ms": 1251.7845000256784,
+      "prompt_tokens": 43,
+      "completion_tokens": 58
+    },
+    "What is encryption?": {
+      "response": "Encryption is the process of converting information or data into a code to prevent unauthorized access. It uses algorithms and keys to transform readable data (plaintext) into an unreadable format (ciphertext). Only those with the correct decryption key can convert the ciphertext back into its original form. This technique is widely used to secure sensitive information in various applications, such as online communications and data storage.",
+      "latency_ms": 1435.2216999977827,
+      "prompt_tokens": 42,
+      "completion_tokens": 77
+    },
+    "What is inflation in economics?": {
+      "response": "Inflation in economics refers to the rate at which the general level of prices for goods and services rises, leading to a decrease in purchasing power. It is typically measured by the Consumer Price Index (CPI) or the Producer Price Index (PPI). Inflation can be caused by various factors, including increased demand, higher production costs, or monetary policy.",
+      "latency_ms": 1228.245899954345,
+      "prompt_tokens": 44,
+      "completion_tokens": 71
+    },
+    "What is machine learning?": {
+      "response": "Machine learning is a subset of artificial intelligence that involves the development of algorithms and statistical models that enable computers to learn from and make predictions or decisions based on data. Instead of being explicitly programmed for specific tasks, machine learning systems improve their performance as they are exposed to more data over time. This technology is widely used in applications such as image recognition, natural language processing, and recommendation systems.",
+      "latency_ms": 1666.097000008449,
+      "prompt_tokens": 43,
+      "completion_tokens": 77
+    },
+    "What is object-oriented programming?": {
+      "response": "Object-oriented programming (OOP) is a programming paradigm that uses \"objects\" to represent data and methods to manipulate that data. It is based on four main principles: encapsulation (bundling data and methods), inheritance (creating new classes based on existing ones), polymorphism (using a single interface to represent different data types), and abstraction (hiding complex implementation details). OOP aims to improve code organization, reusability, and maintainability.",
+      "latency_ms": 1558.0359000014141,
+      "prompt_tokens": 44,
+      "completion_tokens": 91
+    },
+    "What is overfitting in machine learning?": {
+      "response": "Overfitting in machine learning occurs when a model learns the training data too well, capturing noise and outliers instead of the underlying patterns. As a result, the model performs well on the training data but poorly on unseen data, leading to high variance and low generalization. To mitigate overfitting, techniques such as cross-validation, regularization, and pruning can be employed.",
+      "latency_ms": 1179.6721999999136,
+      "prompt_tokens": 47,
+      "completion_tokens": 76
+    },
+    "What is the Pythagorean theorem?": {
+      "response": "The Pythagorean theorem is a fundamental principle in geometry that states that in a right triangle, the square of the length of the hypotenuse (the side opposite the right angle) is equal to the sum of the squares of the lengths of the other two sides. This can be expressed with the formula: \\( a^2 + b^2 = c^2 \\), where \\( c \\) is the length of the hypotenuse and \\( a \\) and \\( b \\) are the lengths of the other two sides.",
+      "latency_ms": 1638.5980000486597,
+      "prompt_tokens": 47,
+      "completion_tokens": 109
+    },
+    "What is the best way to boil an egg?": {
+      "response": "To boil an egg perfectly, start by placing the eggs in a single layer in a saucepan and covering them with cold water, about an inch above the eggs. Bring the water to a rolling boil over medium-high heat, then cover the pot, remove it from heat, and let it sit for 9-12 minutes, depending on your desired doneness. Afterward, transfer the eggs to an ice bath to stop the cooking process, and let them cool for about 5-10 minutes before peeling.",
+      "latency_ms": 5382.9927000333555,
+      "prompt_tokens": 48,
+      "completion_tokens": 102
+    },
+    "What is the best way to learn a new language?": {
+      "response": "The best way to learn a new language is through a combination of immersive practice, consistent study, and interaction with native speakers. Utilize language learning apps, take formal classes, and engage in conversation with others. Additionally, consuming media in the target language, such as books, movies, and music, can enhance comprehension and vocabulary. Regular practice and exposure are key to fluency.",
+      "latency_ms": 1503.882799996063,
+      "prompt_tokens": 49,
+      "completion_tokens": 75
+    },
+    "What is the capital of France?": {
+      "response": "The capital of France is Paris.",
+      "latency_ms": 659.6869999775663,
+      "prompt_tokens": 45,
+      "completion_tokens": 7
+    },
+    "What is the difference between HTTP GET and POST?": {
+      "response": "HTTP GET and POST are both methods used to send and receive data between a client and a server. GET requests data from a specified resource and appends parameters to the URL, making it visible in the browser's address bar; it is generally used for retrieving data. In contrast, POST sends data to the server in the request body, which is not visible in the URL, making it suitable for submitting forms or uploading files, and it can handle larger amounts of data.",
+      "latency_ms": 1621.772599988617,
+      "prompt_tokens": 48,
+      "completion_tokens": 94
+    },
+    "What is the speed of light in a vacuum?": {
+      "response": "The speed of light in a vacuum is approximately 299,792,458 meters per second, commonly rounded to 300,000 kilometers per second (or about 186,282 miles per second). This constant is denoted by the symbol \"c\" in physics.",
+      "latency_ms": 1172.375199967064,
+      "prompt_tokens": 48,
+      "completion_tokens": 54
+    },
+    "What is the time complexity of binary search?": {
+      "response": "The time complexity of binary search is O(log n), where n is the number of elements in the sorted array. This logarithmic time complexity arises because the algorithm repeatedly divides the search interval in half, allowing it to quickly narrow down the potential location of the target value.",
+      "latency_ms": 1432.5782000087202,
+      "prompt_tokens": 47,
+      "completion_tokens": 54
+    },
+    "Why do we have seasons on Earth?": {
+      "response": "Seasons on Earth are caused by the tilt of the Earth's axis relative to its orbit around the Sun. This axial tilt, which is approximately 23.5 degrees, leads to varying angles of sunlight and daylight duration throughout the year. As the Earth orbits the Sun, different regions receive more direct sunlight at different times, resulting in the changing seasons: spring, summer, autumn, and winter.",
+      "latency_ms": 1867.9072000086308,
+      "prompt_tokens": 46,
+      "completion_tokens": 80
+    },
+    "Why is HTTPS safer than HTTP?": {
+      "response": "HTTPS is safer than HTTP because it encrypts the data exchanged between the user's browser and the web server, making it difficult for attackers to intercept or tamper with the information. Additionally, HTTPS uses SSL/TLS protocols to authenticate the server, ensuring that users are communicating with the legitimate site rather than a malicious one. This added layer of security helps protect sensitive information, such as passwords and credit card numbers, from eavesdropping and man-in-the-middle attacks.",
+      "latency_ms": 2008.9241999667138,
+      "prompt_tokens": 45,
+      "completion_tokens": 93
+    }
+  }
+}

@@ -3,22 +3,38 @@
 ```
 llm-gateway/
 ├── app/                    # Application source code
-│   ├── auth/               # API key + admin auth (Phase 3)
-│   ├── cache/              # Semantic cache (Phase 6)
-│   ├── db/                 # Database session + models (Phase 2.5)
-│   ├── embeddings/         # Prompt embeddings (Phase 6)
-│   ├── observability/      # Metrics + logging (Phase 5)
-│   ├── providers/          # OpenAI adapter (Phase 3)
-│   └── routes/             # HTTP endpoints (Phase 2.2)
-├── docs/                   # Design documents
-├── migrations/             # Alembic migrations (Phase 2.6)
-├── tests/                  # Automated tests (Phase 8)
+│   ├── auth/               # API key + admin auth
+│   ├── cache/              # L1 exact + L2 verified semantic cache (v0.2)
+│   │   ├── fingerprint.py  # Versioned SHA-256 request identity
+│   │   ├── semantic_gates.py
+│   │   ├── verifier.py     # gpt-4o-mini answer-equivalence gate
+│   │   ├── memory.py       # GatewayCache (exact index + semantic scan)
+│   │   └── chat_integration.py
+│   ├── db/                 # Database session + models
+│   ├── embeddings/         # Prompt embeddings
+│   ├── observability/      # Metrics, logging, Prometheus
+│   ├── providers/          # OpenAI, Groq, Anthropic adapters
+│   ├── routes/             # HTTP endpoints (chat, metrics, prometheus, dashboard)
+│   └── security/           # PII redaction
+├── deploy/                 # Prometheus + Grafana provisioning (v0.2)
+│   ├── prometheus/
+│   └── grafana/dashboards/
+├── docs/                   # Design documents + benchmark artifacts
+├── migrations/             # Alembic migrations
+├── scripts/                # Demo, benchmarks, E2E helpers
+│   ├── benchmark_cache_v2.py           # v0.2 seven-path benchmark
+│   ├── benchmark_long_provider_baseline.py
+│   ├── demo_grafana_workload.py        # Grafana visualization workload
+│   ├── targeted_cache_validation.py    # Pre-benchmark smoke paths
+│   └── demo.py                         # Quick live demo
+├── tests/                  # unit + integration (pytest -m db)
 ├── .env.example            # Environment variable template
-├── pyproject.toml          # Project metadata + dependencies
-└── requirements.txt        # Pip-installable dependency list
+├── docker-compose.yml      # db + app + prometheus + grafana
+├── pyproject.toml
+└── requirements.txt
 ```
 
-Each package is created empty in Phase 2.1. Code is added in later phases — one layer at a time.
+Each package grew incrementally across phases — see [`DESIGN.md`](DESIGN.md) for the phase timeline.
 
 ## Install and run (Phase 2.2+)
 

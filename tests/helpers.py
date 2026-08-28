@@ -2,14 +2,39 @@
 
 from __future__ import annotations
 
+import os
 import uuid
 from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock
 
+import pytest
 from fastapi import FastAPI
 
 from app.db.models.project import Project
 from app.errors import invalid_request_error
+from tests.fakes.verifier import DeterministicVerifier
+
+# CI and template placeholders — not valid for live OpenAI API regression tests.
+_LIVE_OPENAI_SKIP_VALUES = frozenset(
+    {
+        "sk-test-dummy",
+        "sk-your-openai-key-here",
+    }
+)
+
+
+def live_openai_key_configured() -> bool:
+    """True when OPENAI_API_KEY is set to a non-placeholder value."""
+    key = os.getenv("OPENAI_API_KEY", "").strip()
+    if not key or key in _LIVE_OPENAI_SKIP_VALUES or key.endswith("-dummy"):
+        return False
+    return True
+
+
+def skip_unless_live_openai_key() -> None:
+    """Skip live verifier regression tests unless a real OpenAI key is configured."""
+    if not live_openai_key_configured():
+        pytest.skip("Real OPENAI_API_KEY required for live verifier policy regression")
 
 
 def make_project(*, active: bool = True) -> Project:
@@ -53,21 +78,29 @@ def mock_app_state(
     mock_router.aclose = AsyncMock()
 
     mock_cache = MagicMock()
-    mock_cache.similarity_threshold = 0.92
-    mock_cache.lookup = MagicMock(return_value=None)
-    mock_cache.has_entries = MagicMock(return_value=False)
-    mock_cache.store = MagicMock()
+    mock_cache.candidate_threshold = 0.65
+    mock_cache.lookup_exact = MagicMock(return_value=None)
+    mock_cache.has_semantic_entries = MagicMock(return_value=False)
+    mock_cache.lookup_semantic_candidate = MagicMock(return_value=None)
+    mock_cache.upsert_entry = MagicMock()
     mock_cache.size = 0
 
+    mock_verifier_client = AsyncMock()
+    mock_verifier_client.aclose = AsyncMock()
+    mock_verifier = DeterministicVerifier()
+
     monkeypatch.setattr("app.main.verify_db_connection", AsyncMock())
-    monkeypatch.setattr("app.main.hydrate_semantic_cache", AsyncMock(return_value=0))
+    monkeypatch.setattr("app.main.hydrate_gateway_cache", AsyncMock(return_value=0))
     monkeypatch.setattr("app.main.close_db", AsyncMock())
     monkeypatch.setattr("app.main.create_provider_router", lambda: mock_router)
-    monkeypatch.setattr("app.main.create_semantic_cache", lambda: mock_cache)
+    monkeypatch.setattr("app.main.create_gateway_cache", lambda: mock_cache)
     monkeypatch.setattr("app.main.create_openai_embedding_provider", lambda: mock_embedding)
+    monkeypatch.setattr("app.main.create_verifier_client", lambda: mock_verifier_client)
 
     app.state.provider_router = mock_router
     app.state.semantic_cache = mock_cache
     app.state.embedding_provider = mock_embedding
+    app.state.cache_verifier = mock_verifier
+    app.state.cache_verifier_client = mock_verifier_client
 
     return mock_router
